@@ -1107,6 +1107,9 @@ $(function () {
     // Delete Metal
     $('#tblMetals').on('click', '.btn-delete-metal', function () {
         const idx = $(this).closest('tr').data('index');
+        var cost = parseFloat( metalLines[idx].metalCost);
+        
+        totalMetalCost = parseFloat(totalMetalCost)-parseFloat( cost);
         metalLines.splice(idx, 1);
 
         renderMetalGrid();
@@ -1985,15 +1988,15 @@ function fillLaborFOBValues() {
 
     
 
-    const semiPrice1 = (parseFloat(semiFOB) / semiPrice1Per) + parseFloat(semiDuty);
-    const semiPrice2 = (parseFloat(semiFOB) / semiPrice2Per) + parseFloat(semiDuty);
-    const semiPrice3 = (parseFloat(semiFOB) / semiPrice3Per) + parseFloat(semiDuty);
-    const semiPrice4 = (parseFloat(semiFOB) / semiPrice4Per) + parseFloat(semiDuty);
+    const semiPrice1 = (parseFloat(semiFOB) / (1 - semiPrice1Per)) + parseFloat(semiDuty);
+    const semiPrice2 = (parseFloat(semiFOB) / (1 - semiPrice2Per)) + parseFloat(semiDuty);
+    const semiPrice3 = (parseFloat(semiFOB) / (1 - semiPrice3Per)) + parseFloat(semiDuty);
+    const semiPrice4 = (parseFloat(semiFOB) / (1 - semiPrice4Per)) + parseFloat(semiDuty);
 
-    const centerPrice1 = (parseFloat(completeFOB) / centerPrice1Per) + parseFloat(centerDuty);
-    const centerPrice2 = (parseFloat(completeFOB) / centerPrice2Per) + parseFloat(centerDuty);
-    const centerPrice3 = (parseFloat(completeFOB) / centerPrice3Per) + parseFloat(centerDuty);
-    const centerPrice4 = (parseFloat(completeFOB) / centerPrice4Per) + parseFloat(centerDuty);
+    const centerPrice1 = (parseFloat(completeFOB) / (1 - centerPrice1Per)) + parseFloat(centerDuty);
+    const centerPrice2 = (parseFloat(completeFOB) / (1 - centerPrice2Per)) + parseFloat(centerDuty);
+    const centerPrice3 = (parseFloat(completeFOB) / (1 - centerPrice3Per)) + parseFloat(centerDuty);
+    const centerPrice4 = (parseFloat(completeFOB) / (1 - centerPrice4Per)) + parseFloat(centerDuty);
 
     const semiMargin1 = ((semiPrice1 - (parseFloat(semiDuty)+ parseFloat(semiFOB))) / semiPrice1) * 100;
     const semiMargin2 = ((semiPrice2 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice2) * 100;
@@ -2623,7 +2626,7 @@ document.addEventListener("DOMContentLoaded", function () {
             $('#btnSubmit').removeClass('disabled').attr('disabled', false);
             bindFormData(skuModule);
             loadSummaryFromSkuModel(skuModule);
-
+            $('#nav-sku-information-tab').click();
             $('#nav-summary-tab').removeClass('disabled').attr('disabled', false);
             
         }
@@ -3033,7 +3036,7 @@ function validateTabs(tabname, newTab) {
     var validate = true;
     if (tabname === "nav-stone-information-tab" && newTab === "nav-sku-information-tab") {
         return true;
-    } else if (tabname === "ddlStoneVendor" && (newTab === "nav-sku-information-tab" || newTab === "nav-stone-information-tab") ) {
+    } else if (tabname === "nav-labor-information-tab" && (newTab === "nav-sku-information-tab" || newTab === "nav-stone-information-tab") ) {
         return true;
     } else if (tabname === "nav-summary-tab") {
         return true;
