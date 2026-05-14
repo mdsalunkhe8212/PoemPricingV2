@@ -1,0 +1,47 @@
+[
+  {
+    "DutyId": 1,
+    "VendorLocation": "India",
+    "Duty": 6,
+    "Tariff": 10,
+    "Penalty": 0,
+    "CreatedBy": 0,
+    "CreatedOn": "2025-12-12T00:00:00"
+  },
+  {
+    "DutyId": 2,
+    "VendorLocation": "HK",
+    "Duty": 6,
+    "Tariff": 10,
+    "Penalty": 0,
+    "CreatedBy": 0,
+    "CreatedOn": "2025-12-12T00:00:00"
+  },
+  {
+    "DutyId": 3,
+    "VendorLocation": "China",
+    "Duty": 6,
+    "Tariff": 10,
+    "Penalty": 0,
+    "CreatedBy": 0,
+    "CreatedOn": "2025-12-12T00:00:00"
+  },
+  {
+    "DutyId": 4,
+    "VendorLocation": "USA",
+    "Duty": 0,
+    "Tariff": 10,
+    "Penalty": 0,
+    "CreatedBy": 0,
+    "CreatedOn": "2025-12-12T00:00:00"
+  },
+  {
+    "DutyId": 5,
+    "VendorLocation": "Thailand",
+    "Duty": 6,
+    "Tariff": 10,
+    "Penalty": 0,
+    "CreatedBy": 0,
+    "CreatedOn": "2025-12-12T00:00:00"
+  }
+]

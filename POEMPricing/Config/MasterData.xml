@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DataItems>
+	<Companies>
+		<Item Value="R A Riam">R A Riam</Item>
+		<Item Value="ALTR Inc">ALTR Inc</Item>
+		<Item Value="Jevar">Jevar</Item>
+	</Companies>
+	<OrderTypes>
+		<Item Value="Special">Special</Item>
+		<Item Value="Regular">Regular</Item>
+	</OrderTypes>
+	<Lab>
+		<Item Value="AGS">AGS</Item>
+		<Item Value="GCAL">GCAL</Item>
+		<Item Value="GIA">GIA</Item>
+		<Item Value="HRD">HRD</Item>
+		<Item Value="IGI">IGI</Item>
+		<Item Value="INHOUSE">INHOUSE</Item>
+	</Lab>
+	<SettingLocation>
+		<Item Value="Center">Center</Item>
+		<Item Value="Semi">Semi</Item>
+	</SettingLocation>
+	<GrowingType>
+		<Item Value="Lab - CVD">Lab - CVD</Item>
+		<Item Value="Lab - HPHT">Lab - HPHT</Item>
+		<Item Value="Lab - SCS">Lab - SCS</Item>
+		<Item Value="Lab - HPHT / CVD">Lab - HPHT / CVD</Item>
+		<Item Value="Mined">Mined</Item>
+	</GrowingType>
+	<MetalType>
+		<Item Value="Gold">Gold</Item>
+		<Item Value="Platinum">Platinum</Item>
+		<Item Value="Silver">Silver</Item>
+	</MetalType>
+  <ProcessType>
+    <Item Value="CFP">CFP</Item>
+    <Item Value="Flat Labour per gm">Flat Labour per gm</Item>
+    <Item Value="Flat Labour per piece">Flat Labour per piece</Item>
+  </ProcessType>
+</DataItems>

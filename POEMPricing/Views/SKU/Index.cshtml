@@ -1,0 +1,85 @@
+﻿@model POEM.Model.Model.MasterDataModel
+@{
+    ViewBag.Title = "SKU List - POEM Pricing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row p-2">
+    <div class="col-lg-12 col-sm-12 col-md-12">
+        <div class="row">
+            <div class="card">
+                <div class="card-header">
+                    SKU List - Filter and Search
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-9 col-sm-12 col-md-12">
+                            <!-- Filters -->
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    @Html.LabelFor(m => m.SelectedCompany, "Company", new { @class = "form-label" })
+                                    @Html.DropDownListFor(m => m.SelectedCompany, new SelectList(Model.Companies, "Key", "Value"), " ", new { @class = "form-select", id = "ddlCompany" })
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="txtSkuNumber" class="form-label">SKU Number (min 5)</label>
+                                    <input type="text" id="txtSkuNumber" class="form-control" />
+                                </div>
+                                <div class="col-md-2">
+                                    @Html.LabelFor(m => m.SelectedCategory, "Category", new { @class = "form-label" })
+                                    @Html.DropDownListFor(m => m.SelectedCategory, new SelectList(Model.Categories, "Key", "Value"), " ", new { @class = "form-select", id = "ddlCategory" })
+                                </div>
+                                <div class="col-md-2">
+                                    @Html.LabelFor(m => m.SelectedSubCategory, "Sub Category", new { @class = "form-label" })
+                                    @Html.DropDownListFor(m => m.SelectedSubCategory, new SelectList(Model.SubCategories, "Key", "Value"), " ", new { @class = "form-select", id = "ddlSubCategory" })
+                                </div>
+                                <div class="col-md-2">
+                                    @Html.LabelFor(m => m.SelectedCollection, "Collection", new { @class = "form-label" })
+                                    @Html.DropDownListFor(m => m.SelectedCollection, new SelectList(Model.Collections, "Key", "Value"), " ", new { @class = "form-select", id = "ddlCollection" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="card">
+                <div class="card-header">
+                    SKU List - Data
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-sm-12 col-md-12">
+                            <!-- Table -->
+                            <table class="table table-bordered table-sm" id="skuTable">
+                                <thead>
+                                    <tr>
+                                        <th>SKU</th>
+                                        <th>Metal</th>
+                                        <th>Price1</th>
+                                        <th>Price2</th>
+                                        <th>Price3</th>
+                                        <th>Modified Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
+                            <!-- Pagination -->
+                            <nav>
+                                <ul class="pagination pagination-sm" id="pager"></ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+    @section scripts {
+        <script src="~/Scripts/sku-list.js"></script>
+    }

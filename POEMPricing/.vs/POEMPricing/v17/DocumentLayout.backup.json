@@ -1,0 +1,707 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|e:\\poem\\sourcecode\\poempricingv2\\poempricing\\views\\sku\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:views\\sku\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\scripts\\skucreate.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:scripts\\skucreate.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DCE41DEF-2F51-480B-BBBB-775D829E9AAF}|..\\POEM.Model\\POEM.Model.csproj|e:\\poem\\sourcecode\\poempricingv2\\poem.model\\model\\companymasterdbdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\api\\skucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:api\\skucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\controllers\\skucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:controllers\\skucontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B3E8829-A172-4EDA-9560-254DDF480414}|..\\POEM.Services\\POEM.Services.csproj|e:\\poem\\sourcecode\\poempricingv2\\poem.services\\repository\\skurepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\scripts\\validate-sku.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:scripts\\validate-sku.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DCE41DEF-2F51-480B-BBBB-775D829E9AAF}|..\\POEM.Model\\POEM.Model.csproj|e:\\poem\\sourcecode\\poempricingv2\\poem.model\\model\\collectiondtl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DCE41DEF-2F51-480B-BBBB-775D829E9AAF}|..\\POEM.Model\\POEM.Model.csproj|e:\\poem\\sourcecode\\poempricingv2\\poem.model\\model\\categorydtls.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DCE41DEF-2F51-480B-BBBB-775D829E9AAF}|..\\POEM.Model\\POEM.Model.csproj|e:\\poem\\sourcecode\\poempricingv2\\poem.model\\model\\subcategorymasterdbdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8B3E8829-A172-4EDA-9560-254DDF480414}|..\\POEM.Services\\POEM.Services.csproj|e:\\poem\\sourcecode\\poempricingv2\\poem.services\\repository\\masterdatarepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\views\\shared\\_layout-login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:views\\shared\\_layout-login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\config\\masterdata.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:config\\masterdata.xml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\views\\shared\\error.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:views\\shared\\error.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\config\\dutydetails.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:config\\dutydetails.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\views\\sku\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{C3AD4081-D9FB-4FD6-8EC6-BE19530C4093}|POEMPricing.csproj|solutionrelative:views\\sku\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDbDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Repository\\MasterDataRepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Repository\\SkuRepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\FindingDetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\VendorDetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\ApplicationDbContext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKULaborDbDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKUDetailsDbDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuCalculation.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuCalculationDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\StoneDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\StoneShapeDetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\LaborDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKUStoneDbDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SettingLaborDetail.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\VendorProductDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Interface\\IMasterDataRepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuInfoDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\FindingTypeMasterDbDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\CategoryDtls.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\CollectionDtl.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "MasterDataRepository.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Services\\Repository\\MasterDataRepository.cs",
+              "RelativeDocumentMoniker": "..\\POEM.Services\\Repository\\MasterDataRepository.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Services\\Repository\\MasterDataRepository.cs",
+              "RelativeToolTip": "..\\POEM.Services\\Repository\\MasterDataRepository.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAYwBcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T08:36:11.517Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "SkuRepository.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Services\\Repository\\SkuRepository.cs",
+              "RelativeDocumentMoniker": "..\\POEM.Services\\Repository\\SkuRepository.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Services\\Repository\\SkuRepository.cs",
+              "RelativeToolTip": "..\\POEM.Services\\Repository\\SkuRepository.cs",
+              "ViewState": "AgIAAPkBAAAAAAAAAAASwBMCAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T08:36:04.66Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "MarginDetailsDbDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDbDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDbDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDbDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDbDto.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAzwCAAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T08:31:25.789Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SKUCreate.js",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Scripts\\SKUCreate.js",
+              "RelativeDocumentMoniker": "Scripts\\SKUCreate.js",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Scripts\\SKUCreate.js",
+              "RelativeToolTip": "Scripts\\SKUCreate.js",
+              "ViewState": "AgIAAIcHAAAAAAAAAAAWwJEHAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-05-05T09:50:39.121Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SKUController.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\API\\SKUController.cs",
+              "RelativeDocumentMoniker": "API\\SKUController.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\API\\SKUController.cs",
+              "RelativeToolTip": "API\\SKUController.cs",
+              "ViewState": "AgIAACYBAAAAAAAAAIA3wD4BAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T09:28:40.373Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Validate-SKU.js",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Scripts\\Validate-SKU.js",
+              "RelativeDocumentMoniker": "Scripts\\Validate-SKU.js",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Scripts\\Validate-SKU.js",
+              "RelativeToolTip": "Scripts\\Validate-SKU.js",
+              "ViewState": "AgIAAHAAAAAAAAAAAAAewIMAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-05-08T07:39:12.923Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CompanyMasterDbDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Model\\Model\\CompanyMasterDbDto.cs",
+              "RelativeDocumentMoniker": "..\\POEM.Model\\Model\\CompanyMasterDbDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Model\\Model\\CompanyMasterDbDto.cs",
+              "RelativeToolTip": "..\\POEM.Model\\Model\\CompanyMasterDbDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T08:36:50.335Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\SKU\\Create.cshtml",
+              "RelativeDocumentMoniker": "Views\\SKU\\Create.cshtml",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\SKU\\Create.cshtml",
+              "RelativeToolTip": "Views\\SKU\\Create.cshtml",
+              "ViewState": "AgIAAKwEAAAAAAAAAAAAALAEAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-05T09:19:01.357Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "SubCategoryMasterDbDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs",
+              "RelativeDocumentMoniker": "..\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs",
+              "RelativeToolTip": "..\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T08:36:28.219Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "SKUController.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Controllers\\SKUController.cs",
+              "RelativeDocumentMoniker": "Controllers\\SKUController.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Controllers\\SKUController.cs",
+              "RelativeToolTip": "Controllers\\SKUController.cs",
+              "ViewState": "AgIAAGoAAAAAAAAAAAAawH0AAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:25:15.395Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Web.config",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Web.config",
+              "RelativeDocumentMoniker": "Web.config",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Web.config",
+              "RelativeToolTip": "Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAACCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2026-05-09T09:26:21.635Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "CategoryDtls.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Model\\Model\\CategoryDtls.cs",
+              "RelativeDocumentMoniker": "..\\POEM.Model\\Model\\CategoryDtls.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Model\\Model\\CategoryDtls.cs",
+              "RelativeToolTip": "..\\POEM.Model\\Model\\CategoryDtls.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T08:36:39.105Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "CollectionDtl.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Model\\Model\\CollectionDtl.cs",
+              "RelativeDocumentMoniker": "..\\POEM.Model\\Model\\CollectionDtl.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEM.Model\\Model\\CollectionDtl.cs",
+              "RelativeToolTip": "..\\POEM.Model\\Model\\CollectionDtl.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-12T08:36:41.829Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "_Layout-Login.cshtml",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\Shared\\_Layout-Login.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout-Login.cshtml",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\Shared\\_Layout-Login.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout-Login.cshtml",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAADsAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-09T09:28:27.191Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAEMAAAAAAAAAAAAYwGIAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-09T09:28:45.953Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Error.cshtml",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\Shared\\Error.cshtml",
+              "RelativeDocumentMoniker": "Views\\Shared\\Error.cshtml",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\Shared\\Error.cshtml",
+              "RelativeToolTip": "Views\\Shared\\Error.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-09T09:28:50.465Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "MasterDataRepository.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Repository\\MasterDataRepository.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Services\\Repository\\MasterDataRepository.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Repository\\MasterDataRepository.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Services\\Repository\\MasterDataRepository.cs",
+              "ViewState": "AgIAALoBAAAAAAAAAAAEwMYBAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-21T11:34:29.63Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "SkuRepository.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Repository\\SkuRepository.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Services\\Repository\\SkuRepository.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Repository\\SkuRepository.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Services\\Repository\\SkuRepository.cs",
+              "ViewState": "AgIAAIcAAAAAAAAAAAAhwJQAAAAzAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:12:10.511Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "MasterData.xml",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Config\\MasterData.xml",
+              "RelativeDocumentMoniker": "Config\\MasterData.xml",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Config\\MasterData.xml",
+              "RelativeToolTip": "Config\\MasterData.xml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACYAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003576|",
+              "WhenOpened": "2026-05-12T07:34:02.876Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\SKU\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\SKU\\Index.cshtml",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\SKU\\Index.cshtml",
+              "RelativeToolTip": "Views\\SKU\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-09T09:27:13.423Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Controllers\\HomeController.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Controllers\\HomeController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABoAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T09:27:22.627Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "DutyDetails.json",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Config\\DutyDetails.json",
+              "RelativeDocumentMoniker": "Config\\DutyDetails.json",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Config\\DutyDetails.json",
+              "RelativeToolTip": "Config\\DutyDetails.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACsAAAATAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-05-11T07:45:14.275Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Views\\Home\\Index.cshtml",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABwAAABBAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-09T09:27:07.054Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "MarginDetailsDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\MarginDetailsDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACcAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T08:33:57.893Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "Views\\_ViewStart.cshtml",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\Views\\_ViewStart.cshtml",
+              "RelativeToolTip": "Views\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-05-09T09:28:56.87Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "FindingDetail.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\FindingDetail.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\FindingDetail.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\FindingDetail.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\FindingDetail.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwBYAAAA/AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-09T08:32:31.345Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "VendorDetails.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\VendorDetails.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\VendorDetails.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\VendorDetails.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\VendorDetails.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAgAAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T09:00:48.898Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "ApplicationDbContext.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\ApplicationDbContext.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\ApplicationDbContext.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\ApplicationDbContext.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\ApplicationDbContext.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAhwB8AAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T08:56:02.88Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "SKULaborDbDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKULaborDbDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\SKULaborDbDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKULaborDbDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\SKULaborDbDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:01:25.743Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "SKUDetailsDbDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKUDetailsDbDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\SKUDetailsDbDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKUDetailsDbDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\SKUDetailsDbDto.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAewBUAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:20:50.737Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "SkuCalculation.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuCalculation.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\SkuCalculation.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuCalculation.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\SkuCalculation.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAuwBgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:45:15.03Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "SkuCalculationDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuCalculationDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\SkuCalculationDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuCalculationDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\SkuCalculationDto.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAArwCkAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:44:29.016Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "StoneDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\StoneDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\StoneDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\StoneDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\StoneDto.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAuwAoAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:11:46.074Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "StoneShapeDetail.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\StoneShapeDetail.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\StoneShapeDetail.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\StoneShapeDetail.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\StoneShapeDetail.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABQAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T11:02:35.086Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "LaborDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\LaborDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\LaborDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\LaborDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\LaborDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:41:09.886Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "SKUStoneDbDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKUStoneDbDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\SKUStoneDbDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SKUStoneDbDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\SKUStoneDbDto.cs",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAvwA4AAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T10:59:24.416Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "SettingLaborDetail.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SettingLaborDetail.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\SettingLaborDetail.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SettingLaborDetail.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\SettingLaborDetail.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABEAAAA1AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T08:48:28.107Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
+              "Title": "VendorProductDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\VendorProductDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\VendorProductDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\VendorProductDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\VendorProductDto.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABEAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:22:21.432Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "IMasterDataRepository.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Interface\\IMasterDataRepository.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Services\\Interface\\IMasterDataRepository.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Services\\Interface\\IMasterDataRepository.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Services\\Interface\\IMasterDataRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAA5AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T11:30:04.832Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 39,
+              "Title": "SkuInfoDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuInfoDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\SkuInfoDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SkuInfoDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\SkuInfoDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-07T11:22:17.772Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "FindingTypeMasterDbDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\FindingTypeMasterDbDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\FindingTypeMasterDbDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\FindingTypeMasterDbDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\FindingTypeMasterDbDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T09:15:43.534Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "CategoryDtls.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\CategoryDtls.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\CategoryDtls.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\CategoryDtls.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\CategoryDtls.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T08:46:46.047Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "SubCategoryMasterDbDto.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\SubCategoryMasterDbDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T08:54:37.87Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "CollectionDtl.cs",
+              "DocumentMoniker": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\CollectionDtl.cs",
+              "RelativeDocumentMoniker": "..\\..\\PoemPricing\\POEM.Model\\Model\\CollectionDtl.cs",
+              "ToolTip": "E:\\POEM\\SourceCode\\PoemPricing\\POEM.Model\\Model\\CollectionDtl.cs",
+              "RelativeToolTip": "..\\..\\PoemPricing\\POEM.Model\\Model\\CollectionDtl.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-05-05T08:57:32.296Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

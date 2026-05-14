@@ -1,0 +1,1227 @@
+﻿@model POEM.Model.Model.MasterDataModel
+@{
+    ViewBag.Title = "Create SKU";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <style type="text/css">
+        .input-error {
+            border: 2px solid #d9534f !important;
+            background-color: #fff5f5;
+        }
+
+        .col-lg-1-25 {
+            flex: 0 0 auto;
+            width: 11.666667%;
+        }
+        .col-lg-2-20 {
+            flex: 0 0 auto;
+            width: 20%;
+        }
+        .pricinglbl {
+            width: 100%;
+            text-align: center;
+        }
+        /*.ms-autocust {
+            margin-right: 0px !important;
+            margin-left: auto;
+        }*/
+            .ms-autocust button {
+                
+                width: 65%;
+            }
+        table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        .form-label {
+            margin-top: 0.5rem;
+        }
+
+        #tblStone > :not(caption) > * > * {
+            padding-top: 0;
+            padding-bottom: 0;
+
+            vertical-align: middle;
+
+        }
+        #tblFindings > :not(caption) > * > * {
+           text-align:center;
+            vertical-align: middle;
+        }
+
+        #tblStone td .btn {
+            --bs-btn-padding-y: 0;
+        }
+    </style>
+}
+<h3>Create SKU</h3>
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-sku-information-tab" data-bs-toggle="tab" data-bs-target="#nav-sku-information" type="button" role="tab" aria-controls="nav-sku-information" aria-selected="true">SKU Information</button>
+        <button class="nav-link" id="nav-stone-information-tab" data-bs-toggle="tab" data-bs-target="#nav-stone-information" type="button" role="tab" aria-controls="nav-stone-information" aria-selected="false">Stone Information</button>
+        <button class="nav-link" id="nav-labor-information-tab" data-bs-toggle="tab" data-bs-target="#nav-labor-information" type="button" role="tab" aria-controls="nav-labor-information" aria-selected="false">Labor Information</button>
+        <button class="nav-link" id="nav-summary-tab" data-bs-toggle="tab" data-bs-target="#nav-summary" type="button" role="tab" aria-controls="nav-summary" aria-selected="false">Summary</button>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade show active" id="nav-sku-information" role="tabpanel" aria-labelledby="nav-sku-information-tab">
+        <div class="card">
+            <div class="card-header">
+                Vendor and Product
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-10 col-sm-12 col-md-12">
+                        <div class="row">
+                            <!--div class="col-lg-1 col-sm-4 col-md-2 -->
+                            <div class="col-sm-4 col-md-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.SelectedCompany, "Company", new { @class = "form-label" })
+                                    @Html.DropDownListFor(m => m.SelectedCompany, new SelectList(Model.Companies, "Key", "Value"), " ", new { @class = "form-select", id = "ddlCompany" })
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                @Html.LabelFor(m => m.SelectedVendor, "Vendor", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedVendor, new SelectList(Model.Vendors, "Key", "Value"), " ", new { @class = "form-select", id = "ddlVendor" })
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                @Html.LabelFor(m => m.SelectedOrderType, "Order Type", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedOrderType, new SelectList(Model.OrderTypes, "Key", "Value"), " ", new { @class = "form-select", id = "ddlOrderType" })
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                <label for="txtVendorNumber" class="form-label">Vendor Number</label>
+                                <input type="text" class="form-control" id="txtVendorNumber" placeholder="">
+                            </div>
+
+                            <div class="col-sm-4 col-md-3">
+                                <label for="txtSKUNumber" class="form-label">SKU Number</label>
+                                <input type="text" class="form-control" id="txtSKUNumber" placeholder="">
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                @Html.LabelFor(m => m.SelectedCollection, "Collection", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedCollection, new SelectList(Model.Collections, "Key", "Value"), " ", new { @class = "form-select", id = "ddlCollection" })
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                @Html.LabelFor(m => m.SelectedCategory, "Category", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedCategory, new SelectList(Model.Categories, "Key", "Value"), " ", new { @class = "form-select", id = "ddlCategory" })
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                @Html.LabelFor(m => m.SelectedSubCategory, "Sub Category", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedSubCategory, new SelectList(Model.SubCategories, "Key", "Value"), " ", new { @class = "form-select", id = "ddlSubCategory" })
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                <label for="txtSizeLength" class="form-label">Size/ Length </label>
+                                <input type="number" step="0.01" min="0.00" class="form-control text-end" id="txtSizeLength" placeholder="">
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                <label for="txtMMWidth" class="form-label">MM Width</label>
+                                <input type="number" step="0.01" min="0.00" class="form-control text-end" id="txtMMWidth" placeholder="">
+                            </div>
+                            <div class="col-sm-4 col-md-3">
+                                <label for="txtMMHeight" class="form-label">MM Height</label>
+                                <input type="number" step="0.01" min="0.00" class="form-control text-end" id="txtMMHeight" placeholder="">
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-lg-2 col-sm-6 col-md-4 text-center ">
+                        @*<label for="product_image" class="form-label">Product Image</label>*@
+                        <img src="~/Content/images/200X200.png" id="product_image" class="img-thumbnail" alt="Product Image">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        @*<div class="row">*@
+        <div class="card mt-3">
+            <div class="card-header">
+                Metal Information
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12 col-md-12">
+                        <div class="row">
+                            <!--<div class="col-lg-2 col-sm-6 col-md-3">-->
+                            <div class="col-sm-3 col-md-2">
+                                @{
+                                    var isGold = Model.SelectedMetal == "Gold"; // or by ID logic
+                                }
+                                @Html.LabelFor(m => m.SelectedMetal, "Metal", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedMetal, new SelectList(Model.Metals, "Key", "Value"), " ", new { @class = "form-select", id = "ddlMetal" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtMetalRatePOz" class="form-label">Rate P. Oz $</label>
+                                <input class="form-control text-end" type="text" value="" id="txtMetalRatePOz" disabled readonly>
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedKarat, "Karat", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedKarat,
+                                    new SelectList(Model.Karats, "Key", "Value"),
+                                    " ",
+                                    new
+                                        {
+                                        @class = "form-select",
+                                        id = "ddlKarat",
+                                        disabled = isGold ? (string)null : "disabled"
+                                    })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedMetalColors, "Color", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedMetalColors, new SelectList(Model.MetalColors, "Key", "Value"), " ", new { @class = "form-select", id = "ddlMetalColor" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtMetalGmWt" class="form-label">Gm Wt</label>
+                                <input type="text" class="form-control text-end" id="txtMetalGmWt" placeholder="" />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtMetalRatePerGm" class="form-label">Rate in Gm $</label>
+                                <input class="form-control text-end" type="text" id="txtMetalRatePerGm" disabled readonly />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtMetalCost" class="form-label">Metal Cost $</label>
+                                <input class="form-control text-end" type="text" id="txtMetalCost" disabled readonly />
+                            </div>
+
+                            @*<div class="col-lg-1 col-sm-4 col-md-2">
+                                    <label for="txtMetalInc" class="form-label">Inc.</label>
+                                    <input class="form-control" type="text" id="txtMetalInc" disabled readonly />
+                                </div>
+
+                                <div class="col-lg-1 col-sm-4 col-md-2">
+                                    <label for="txtMetalDec" class="form-label">Dec.</label>
+                                    <input class="form-control" type="text" id="txtMetalDec" disabled readonly />
+                                </div>*@
+                            <div class="col-sm-3 col-md-2 ms-autocust">
+                                <label for="exampleFormControlInput1" class="form-label d-block">&nbsp;</label>
+                                <button type="button" class="btn btn-primary" id="btnMetalAddUpdate">Add Metal</button>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-md-12 mt-2">
+                                <table class="table table-striped table-bordered" id="tblMetals">
+                                    <thead>
+                                        <tr>
+                                            <th>Metal Type</th>
+                                            <th>Kt</th>
+                                            <th>Color</th>
+                                            <th>Gm Wt</th>
+                                            <th>Rate Per Gm</th>
+                                            <th>Metal Cost</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*</div>*@
+        <div class="card mt-3">
+            <div class="card-header">
+                Findings
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 col-sm-12 col-md-12">
+                        <div class="row">
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedFindingType, "Type", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedFindingType, new SelectList(Model.FindingTypes, "Key", "Value"), " ", new { @class = "form-select", id = "ddlFindingType" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @*<label for="txtFindingMetal" class="form-label">Metal</label>
+        <input class="form-control" type="text" id="txtMetal" disabled readonly />*@
+                                @{
+                                    var isGoldfnd = Model.SelectedMetal == "Gold"; // or by ID logic
+                                }
+                                @Html.LabelFor(m => m.SelectedMetal, "Metal", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedMetal, new SelectList(Model.Metals, "Key", "Value"), " ", new { @class = "form-select", id = "ddlMetalFinding" })
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtFindingKarat" class="form-label">Karat</label>
+                                @*<input class="form-control" type="text" id="txtKarat" disabled readonly />*@
+                                @Html.DropDownListFor(m => m.SelectedKarat,
+                                    new SelectList(Model.Karats, "Key", "Value"),
+                                    " ",
+                                    new
+                                        {
+                                        @class = "form-select",
+                                        id = "ddlKaratFinding",
+                                        disabled = isGoldfnd ? (string)null : "disabled"
+                                    })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @*<label for="txtFindingColor" class="form-label">Color</label>
+        <input class="form-control" type="text" id="txtColor" disabled readonly />*@
+                                @Html.LabelFor(m => m.SelectedMetalColors, "Color", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedMetalColors, new SelectList(Model.MetalColors, "Key", "Value"), " ", new { @class = "form-select", id = "ddlFindingColor" })
+
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedFindingSupplier, "Supplier", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedFindingSupplier, new SelectList(Model.FindingSuppliers, "Key", "Value"), " ", new { @class = "form-select", id = "ddlFindingSupplier" })
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="exampleFormControlInput1" class="form-label">Description</label>
+                                <input type="text" style="max-width: 100%;" id="txtFindingDescription" class="form-control" placeholder="Description" autocomplete="off" />
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="exampleFormControlInput1" class="form-label">SKU</label>
+                                <input type="text" id="txtFindingSku" class="form-control" placeholder="SKU" autocomplete="off" />
+                            </div>
+
+
+
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedFindingAssembly, "Assembly", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedFindingAssembly, new SelectList(Model.FindingAssemblys, "Key", "Value"), " ", new { @class = "form-select", id = "ddlFindingAssembly" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtQty" class="form-label">Qty</label>
+                                <input type="text" class="form-control text-end" id="txtFindingQty" />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtGmPerPc" class="form-label">Gm Wt / Pc</label>
+                                <input class="form-control text-end" type="text" id="txtFindingGmPerPc" disabled readonly />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtTotalGmWt" class="form-label">Total Gm Wt</label>
+                                <input class="form-control text-end" type="text" id="txtFindingTotalGmWt" disabled readonly />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtCostPerPc" class="form-label">Cost / Pc $</label>
+                                <input class="form-control  text-end" type="text" id="txtFindingCostPerPc" disabled readonly />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtTotalCost" class="form-label">Total Cost $</label>
+                                <input class="form-control  text-end" type="text" id="txtFindingTotalCost" disabled readonly />
+                            </div>
+
+                            @*<div class="col-lg-1 col-sm-4 col-md-2">
+                                    <label for="txtInc" class="form-label">Inc.</label>
+                                    <input class="form-control" type="text" id="txtFindingInc" disabled readonly />
+                                </div>
+
+                                <div class="col-lg-1 col-sm-4 col-md-2">
+                                    <label for="txtDec" class="form-label">Dec.</label>
+                                    <input class="form-control" type="text" id="txtFindingDec" disabled readonly />
+                                </div>*@
+                            <div class="col-sm-3 col-md-2 ms-autocust">
+                                <label for="exampleFormControlInput1" class="form-label d-block">&nbsp;</label>
+                                <button type="button" class="btn btn-primary" id="btnFindingAddUpdate">Add Finding</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-1 p-2">
+                    <table class="table table-striped table-bordered" id="tblFindings">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Metal</th>
+                                @*<th>Metal Kt</th>
+                                <th>Metal Color</th>*@
+                                <th>Supplier</th>
+                                <th>Sku</th>
+                                <th style="width:15%">Description</th>
+                                <th>Qty</th>
+                                <th>Gm Wt./Pc</th>
+                                <th>Total Gm Wt.</th>
+                                <th>Cost Pc.</th>
+                                <th>Total Cost</th>
+                                <th>Assembly</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Stone Information Tab*@
+    <div class="tab-pane fade" id="nav-stone-information" role="tabpanel" aria-labelledby="nav-stone-information-tab">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-12 col-md-12">
+                        <div class="row">
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedStoneVendor, "Vendor", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedStoneVendor, new SelectList(Model.StoneVendors, "Key", "Value"), " ", new { @class = "form-select", id = "ddlStoneVendor" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedStoneType, "Gem", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedStoneType, new SelectList(Model.StoneTypes, "Key", "Value"), " ", new { @class = "form-select", id = "ddlStoneType" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @{
+                                    // Example: Model.GrowingTypes is IEnumerable<KeyValuePair<string,string>> or similar
+                                    var growingItems = Model.GrowingTypes
+                                        .Select(g => new SelectListItem
+                                        {
+                                            Value = (g.Key ?? string.Empty).Replace("/", string.Empty),
+                                            Text = g.Value,
+                                            Selected = (Model.SelectedGrowingType ?? string.Empty)
+                                                       .Replace("/", string.Empty)
+                                                       .Equals((g.Key ?? string.Empty).Replace("/", string.Empty), StringComparison.OrdinalIgnoreCase)
+                                        })
+                                        .ToList();
+                                }
+
+                                @Html.LabelFor(m => m.SelectedGrowingType, "Growing", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedGrowingType, growingItems, " ", new { @class = "form-select", id = "ddlGrowing" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedSettingLocation, "Setting Loc.", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedSettingLocation, new SelectList(Model.SettingLocations, "Key", "Value"), " ", new { @class = "form-select", id = "ddlSettingLocation" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedLab, "Lab", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedLab, new SelectList(Model.Labs, "Key", "Value"), " ", new { @class = "form-select", id = "ddlLab" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="btnClearStoneInfo" class="form-label d-block">&nbsp;</label>
+                                <button type="button" class="form-control btn btn-primary" onclick="clearStoneControls();" id="btnClearStoneInfo">Clear Stone Info</button>
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedStoneShape, "Shape", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedStoneShape, new SelectList(Model.StoneShapes, "Key", "Value"), " ", new { @class = "form-select", id = "ddlStoneShape" })
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtStoneMMSize" class="form-label">Size Range</label>
+                                <input type="text" class="form-control" id="txtSizeRange" placeholder="">
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtStoneMMSize" class="form-label">MM Size</label>
+                                <input type="text" class="form-control" id="txtStoneMMSize" placeholder="">
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtStoneWidth1" class="form-label">Width 1</label>
+                                <input type="text" class="form-control text-end" id="txtStoneWidth1" placeholder="">
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtStoneWidth2" class="form-label">Width 2</label>
+                                <input type="text" class="form-control text-end" id="txtStoneWidth2" placeholder="">
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtPerStoneWt" class="form-label">Per Stone Wt</label>
+                                <input id="txtPerStoneWt" name="PerStoneWt" class="form-control text-end" type="text" value="" disabled readonly />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtStoneQty" class="form-label">Qty</label>
+                                <input id="txtStoneQty" name="Qty" type="text" class="form-control text-end" placeholder="" />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtTotalStoneWt" class="form-label">Total Stone Wt</label>
+                                <input id="txtTotalStoneWt" name="TotalStoneWt" class="form-control text-end" type="text" value="" disabled readonly />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtTotalAdjStoneWt" class="form-label">Total Adj Stone Wt</label>
+                                <input id="txtTotalAdjStoneWt" name="TotalAdjStoneWt" type="number" class="form-control text-end" step="0.0001" /> <!-- allow 4 decimal precision -->
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                @Html.LabelFor(m => m.SelectedStoneQuality, "Stone Quality", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedStoneQuality, new SelectList(Model.StoneQualitys, "Key", "Value"), " ", new { @class = "form-select", id = "ddlStoneQuality" })
+                            </div>
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtStoneCostPerCarat" class="form-label">Stone Cost / Carat $</label>
+                                <input id="txtStoneCostPerCarat" name="StoneCostPerCarat" type="text" class="form-control text-end" placeholder="" disabled readonly />
+                            </div>
+
+                            <div class="col-sm-3 col-md-2">
+                                <label for="txtStoneTotalCost" class="form-label">Total Cost $</label>
+                                <input id="txtStoneTotalCost" name="TotalCost" type="text" class="form-control text-end" placeholder="" disabled readonly />
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row  mt-3">
+            <div class="col-10">
+                <div class="card" style=" width: 96%;">
+                    <div class="card-header" >
+                        Setting Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-10 col-sm-10 col-md-10">
+                                <div class="row" >
+                                    <div class="col-sm-4 col-md-3">
+                                        @Html.LabelFor(m => m.SelectedSettingVendor, "Vendor", new { @class = "form-label" })
+                                        @Html.DropDownListFor(m => m.SelectedSettingVendor, new SelectList(Model.SettingVendors, "Key", "Value"), " ", new { @class = "form-select", id = "ddlSettingVendor" })
+                                    </div>
+                                    <div class="col-sm-4 col-md-3">
+                                        @Html.LabelFor(m => m.SelectedSettingType, "Type", new { @class = "form-label" })
+                                        @Html.DropDownListFor(m => m.SelectedSettingType, new SelectList(Model.SettingTypes, "Key", "Value"), " ", new { @class = "form-select", id = "ddlSettingType" })
+                                    </div>
+                                    <div class="col-sm-4 col-md-3">
+                                        <label for="txtCostPerStone" class="form-label">Cost Per Stone $</label>
+                                        <input id="txtCostPerStone" name="CostPerStone" class="form-control text-end" type="text" value="" disabled readonly>
+                                    </div>
+
+                                    <div class="col-sm-4 col-md-3">
+                                        <label for="txtTotalCost" class="form-label">Total Cost $</label>
+                                        <input id="txtTotalCost" name="TotalCost" class="form-control text-end" type="text" value="" disabled readonly>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <label for="exampleFormControlInput1" class="form-label d-block">&nbsp;</label>
+                                <button type="button" class="form-control btn btn-primary" id="btnStoneAddUpdate">Add Stone</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row  mt-3">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        &nbsp;
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-md-12">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtSemiMinWt" class="form-label">Semi Min Wt</label>
+                                        <input id="txtSemiMinWt" name="SemiMinWt" type="text" class="form-control text-end" placeholder="">
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtSemiAdjWt" class="form-label">Semi Adj Wt</label>
+                                        <input id="txtSemiAdjWt" name="SemiAdjWt" class="form-control text-end" type="number" step="0.0001" value="">
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtCenterMinWt" class="form-label">Center Min Wt</label>
+                                        <input id="txtCenterMinWt" name="CenterMinWt" type="text" class="form-control text-end" placeholder="">
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtCenterAdjWt" class="form-label">Center Adj Wt</label>
+                                        <input id="txtCenterAdjWt" name="CenterAdjWt" class="form-control text-end" type="number" step="0.0001" value="">
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtTotalMinWt" class="form-label">Total Min Wt</label>
+                                        <input id="txtTotalMinWt" name="TotalMinWt" class="form-control text-end" type="text" value="" disabled readonly>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtTotalAdjWt" class="form-label">Total Adj Wt</label>
+                                        <input id="txtTotalAdjWt" name="TotalAdjWt" class="form-control text-end" type="text" value="" disabled readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3 ">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+                <table id="tblStone" class="table table-striped table-bordered ">
+                    <thead>
+                        <tr>
+                            <th>Stone Vendor</th>
+                            <th>Setting Location</th>
+                            <th>Shape</th>
+                            <th>MM Size</th>
+                            <th>Per stone Wt</th>
+                            <th>Qty</th>
+                            <th>Total Stone Wt</th>
+                            <th>Total Adj Stone Wt</th>
+                            <th>Setting Vendor</th>
+                            <th>Total Cost </th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot style="font-weight: bold;"></tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+    @*Labor Information Tab*@
+    <div class="tab-pane fade" id="nav-labor-information" role="tabpanel" aria-labelledby="nav-labor-information-tab">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-md-12">
+                                <div class="row">
+                                    <div class="col-sm-3 col-md-2">
+                                        @Html.LabelFor(m => m.SelectedLaborLocation, "Location", new { @class = "form-label" })
+                                        @Html.DropDownListFor(m => m.SelectedLaborLocation, new SelectList(Model.LaborLocations, "Key", "Value"), " ", new { @class = "form-select", id = "ddlLaborLocation" })
+                                    </div>
+
+                                    <div class="col-sm-3 col-md-2">
+                                        @Html.LabelFor(m => m.ProcessType, "ProcessType", new { @class = "form-label" })
+                                        @Html.DropDownListFor(m => m.SelectedProcessType, new SelectList(Model.ProcessType, "Key", "Value"), " ", new { @class = "form-select", id = "ddlProcessType" })
+                                    </div>
+                                    @*<div class="col-lg-1 col-sm-4 col-md-2">
+                                            <label for="txtCastingLabor" class="form-label">Casting Labor</label>
+                                            <input type="text" class="form-control" id="txtCastingLabor" placeholder="">
+                                        </div>
+
+                                        <div class="col-lg-1 col-sm-4 col-md-2">
+                                            <label for="txtCastPcs" class="form-label">Cast Pcs</label>
+                                            <input type="number" id="txtCastPcs" class="form-control" min="1" max="2" step="1" />
+                                        </div>*@
+
+
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtCFP" class="form-label">CFP $</label>
+                                        <input class="form-control text-end" type="text" id="txtCFP" disabled readonly>
+                                    </div>
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtRhodium" class="form-label">Rhodium $</label>
+                                        <input class="form-control text-end" type="text" id="txtRhodium" disabled readonly>
+                                    </div>
+
+                                    @*<div class="col-lg-1 col-sm-4 col-md-2">
+                                            <label for="txtAssembly" class="form-label">Assembly</label>
+                                            <input class="form-control" type="text" id="txtAssembly" disabled readonly>
+                                        </div>
+
+                                        <div class="col-lg-1 col-sm-4 col-md-2">
+                                            <label for="txtSolder" class="form-label">Solder</label>
+                                            <input class="form-control" type="text" id="txtSolder" disabled readonly>
+                                        </div>
+
+                                        <div class="col-lg-1 col-sm-4 col-md-2">
+                                            <label for="txtTag" class="form-label">Tag</label>
+                                            <input class="form-control" type="text" id="txtTag" disabled readonly>
+                                        </div>*@
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtDiaHandling" class="form-label">Dia. Handling $</label>
+                                        <input class="form-control text-end" type="text" id="txtDiaHandling">
+                                    </div>
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtFinHandling" class="form-label">Fin. Handling $</label>
+                                        <input class="form-control text-end" type="text" id="txtFinHandling" disabled readonly>
+                                    </div>
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtStamping" class="form-label">Stamping $</label>
+                                        <input class="form-control text-end" type="text" id="txtStamping" disabled readonly>
+                                    </div>
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtModel" class="form-label">Model $</label>
+                                        <input type="text" class="form-control text-end" id="txtModel" placeholder="">
+                                    </div>
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtCAM" class="form-label">CAM $</label>
+                                        <input class="form-control text-end" type="text" id="txtCAM" disabled readonly>
+                                    </div>
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtGiftBox" class="form-label">Gift Box $</label>
+                                        <input type="text" class="form-control text-end" id="txtGiftBox" placeholder="">
+                                    </div>
+
+                                    <div class="col-sm-3 col-md-2">
+                                        <label for="txtTotalLabor" class="form-label">Total Labor $</label>
+                                        <input class="form-control text-end" type="text" id="txtTotalLabor" disabled readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3 ">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Other Information
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-md-12">
+                                <div class="row">
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        @*<label for="txtOtherHead1" class="form-label">Other Head 1</label>
+                                            <input type="text" class="form-control" id="txtOtherHead1" placeholder="">*@
+                                        @Html.LabelFor(m => m.OtherOption1, "Other Head 2", new { @class = "form-label" })
+                                        @Html.DropDownListFor(m => m.OtherOption1, new SelectList(Model.OtherOption1, "Key", "Value"), " ", new { @class = "form-select", id = "ddlOtherHead1" })
+
+                                    </div>
+
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtOtherCost1" class="form-label">Other Cost 1 $</label>
+                                        <input type="text" class="form-control text-end" id="txtOtherCost1" placeholder="">
+                                    </div>
+
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        @*<label for="txtOtherHead2" class="form-label">Other Head 2</label>
+                                            <input type="text" class="form-control" id="txtOtherHead2" placeholder="">*@
+                                        @Html.LabelFor(m => m.OtherOption2, "Other Head 2", new { @class = "form-label" })
+                                        @Html.DropDownListFor(m => m.OtherOption2, new SelectList(Model.OtherOption2, "Key", "Value"), " ", new { @class = "form-select", id = "ddlOtherHead2" })
+
+                                    </div>
+
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtOtherCost2" class="form-label">Other Cost 2 $</label>
+                                        <input type="text" class="form-control text-end" id="txtOtherCost2" placeholder="">
+                                    </div>
+
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        @*<label for="txtOtherHead3" class="form-label">Other Head 3</label>
+                                            <input type="text" class="form-control" id="txtOtherHead3" placeholder="">*@
+                                        @Html.LabelFor(m => m.OtherOption3, "Other Head 3", new { @class = "form-label" })
+                                        @Html.DropDownListFor(m => m.OtherOption3, new SelectList(Model.OtherOption2, "Key", "Value"), " ", new { @class = "form-select", id = "ddlOtherHead3" })
+
+                                    </div>
+
+                                    <div class="col-lg-2 col-sm-6 col-md-3">
+                                        <label for="txtOtherCost3" class="form-label">Other Cost 3 $</label>
+                                        <input type="text" class="form-control text-end" id="txtOtherCost3" placeholder="">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3 ">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        Cost & Sell Details
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-md-12">
+                                <div class="row">
+                                    <div class="col-6" style="display: grid;place-items: center;">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <label for="txtSemiFOB" class="form-label">Semi FOB $</label>
+                                                <input type="text" class="form-control text-end" id="txtSemiFOB" placeholder="" disabled readonly>
+                                            </div>
+
+                                            <div class="col-4">
+                                                <label for="txtSemiDuty" class="form-label">Semi Duty $</label>
+                                                <input type="text" class="form-control text-end" id="txtSemiDuty" placeholder="" disabled readonly>
+                                            </div>
+
+                                            <div class="col-4">
+                                                <label for="txtLandedCost" class="form-label">Landed Cost $</label>
+                                                <input type="text" class="form-control text-end" id="txtLandedCost" placeholder="" disabled readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-2 col-sm-2 col-md-2">
+                                                        <label style="margin-top: 36%;" class="form-label">Price $</label>
+                                                    </div>
+                                                    <div class="col-lg-10 col-sm-10 col-md-10">
+                                                        <div class="row">
+                                                            <div class="col-3">
+                                                                <label for="txtPrice1" class="pricinglbl form-label">1</label>
+                                                                <input type="text" class="form-control text-end" id="txtPrice1" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtPrice2" class="pricinglbl form-label">2</label>
+                                                                <input type="text" class="form-control text-end" id="txtPrice2" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtPrice3" class="pricinglbl form-label">3</label>
+                                                                <input type="text" class="form-control text-end" id="txtPrice3" placeholder="" disabled readonly>
+                                                            </div>
+                                                            <div class="col-3">
+                                                                <label for="txtPrice4" class="pricinglbl form-label">4</label>
+                                                                <input type="text" class="form-control text-end" id="txtPrice4" placeholder="" disabled readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-2 col-sm-2 col-md-2">
+                                                        <label style="margin-top: 24%;" class="form-label">Margin $</label>
+                                                    </div>
+                                                    <div class="col-lg-10 col-sm-10 col-md-10">
+                                                        <div class="row">
+                                                            <div class="col-3">
+                                                                <label for="txtMargin1" class="form-label"></label>
+                                                                <input type="text" class="form-control text-end" id="txtMargin1" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtMargin2" class="form-label"></label>
+                                                                <input type="text" class="form-control text-end" id="txtMargin2" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtMargin3" class="form-label"></label>
+                                                                <input type="text" class="form-control text-end" id="txtMargin3" placeholder="" disabled readonly>
+                                                            </div>
+                                                            <div class="col-3">
+                                                                <label for="txtMargin4" class="form-label"></label>
+                                                                <input type="text" class="form-control text-end" id="txtMargin4" placeholder="" disabled readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-4">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 col-sm-12 col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-4">
+                                                                    <label for="txtMargin1" class="form-label">Margin 1</label>
+                                                                    <input type="text" class="form-control" id="txtMargin1" placeholder="" disabled readonly>
+                                                                </div>
+
+                                                                <div class="col-4">
+                                                                    <label for="txtMargin2" class="form-label">Margin 2</label>
+                                                                    <input type="text" class="form-control" id="txtMargin2" placeholder="" disabled readonly>
+                                                                </div>
+
+                                                                <div class="col-4">
+                                                                    <label for="txtMargin3" class="form-label">Margin 3</label>
+                                                                    <input type="text" class="form-control" id="txtMargin3" placeholder="" disabled readonly>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2 ">
+                            <div class="col-lg-12 col-sm-12 col-md-12">
+                                <div class="row">
+                                    <div class="col-6" style="display: grid;place-items: center;">
+                                        <div class="row">
+                                            <div class="col-4">
+                                                <label for="txtCompleteFOB" class="form-label">Complete FOB $</label>
+                                                <input type="text" class="form-control text-end" id="txtCompleteFOB" placeholder="" disabled readonly>
+                                            </div>
+
+                                            <div class="col-4">
+                                                <label for="txtCompleteDuty" class="form-label">Complete Duty $</label>
+                                                <input type="text" class="form-control text-end" id="txtCompleteDuty" placeholder="" disabled readonly>
+                                            </div>
+
+                                            <div class="col-4">
+                                                <label for="txtLandedCostComplete" class="form-label">Landed Cost $</label>
+                                                <input type="text" class="form-control text-end" id="txtLandedCostComplete" placeholder="" disabled readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-lg-2 col-sm-2 col-md-2">
+                                                        <label style="margin-top: 36%;" class="form-label">Price $</label>
+                                                    </div>
+                                                    <div class="col-lg-10 col-sm-10 col-md-10">
+                                                        <div class="row">
+                                                            <div class="col-3">
+                                                                <label for="txtCompletePrice1" class="pricinglbl form-label">1</label>
+                                                                <input type="text" class="form-control text-end" id="txtCompletePrice1" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtCompletePrice2" class="pricinglbl form-label">2</label>
+                                                                <input type="text" class="form-control text-end" id="txtCompletePrice2" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtCompletePrice3" class="pricinglbl form-label">3</label>
+                                                                <input type="text" class="form-control text-end" id="txtCompletePrice3" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtCompletePrice4" class="pricinglbl form-label">4</label>
+                                                                <input type="text" class="form-control text-end" id="txtCompletePrice4" placeholder="" disabled readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-lg-2 col-sm-2 col-md-2">
+                                                        <label style="margin-top: 24%;" class="form-label">Margin $</label>
+                                                    </div>
+                                                    <div class="col-lg-10 col-sm-10 col-md-10">
+                                                        <div class="row">
+                                                            <div class="col-3">
+                                                                <label for="txtCompleteMargin1" class="pricinglbl form-label"></label>
+                                                                <input type="text" class="form-control text-end" id="txtCompleteMargin1" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtCompleteMargin2" class="pricinglbl form-label"></label>
+                                                                <input type="text" class="form-control text-end" id="txtCompleteMargin2" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtCompleteMargin3" class="pricinglbl form-label"></label>
+                                                                <input type="text" class="form-control text-end" id="txtCompleteMargin3" placeholder="" disabled readonly>
+                                                            </div>
+
+                                                            <div class="col-3">
+                                                                <label for="txtCompleteMargin4" class="pricinglbl form-label"></label>
+                                                                <input type="text" class="form-control text-end" id="txtCompleteMargin4" placeholder="" disabled readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-4">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-lg-12 col-sm-12 col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-4">
+                                                                    <label for="txtCompleteMargin1" class="form-label">Margin 1</label>
+                                                                    <input type="text" class="form-control" id="txtCompleteMargin1" placeholder="" disabled readonly>
+                                                                </div>
+
+                                                                <div class="col-4">
+                                                                    <label for="txtCompleteMargin2" class="form-label">Margin 2</label>
+                                                                    <input type="text" class="form-control" id="txtCompleteMargin2" placeholder="" disabled readonly>
+                                                                </div>
+
+                                                                <div class="col-4">
+                                                                    <label for="txtCompleteMargin3" class="form-label">Margin 3</label>
+                                                                    <input type="text" class="form-control" id="txtCompleteMargin3" placeholder="" disabled readonly>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+                <div class="mb-3">
+                    <label for="txtRemark" class="form-label">Remark</label>
+                    <textarea class="form-control" style="max-width:100%" id="txtRemark" rows="3" placeholder=""></textarea>
+                    <small id="wordCountHelp" class="form-text text-muted">0 / 250 words</small>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 d-flex justify-content-end ">
+                <button type="button" id="btnSubmit" class="btn btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+    <div class="tab-pane fade" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab">
+        <div class="row">
+            <div class="col-lg-8 col-sm-8 col-md-8">
+               <div id="divSummary" class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-md-12">
+                                <div class="row">
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Company</label><br />
+                                        <label id="lblCompanyValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Order Type</label><br />
+                                        <label id="lblOrderTypeValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Collection</label><br />
+                                        <label id="lblCollectionValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">SKU</label><br />
+                                        <label id="lblSkuValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Category</label><br />
+                                        <label id="lblCategoryValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Sub Category</label><br />
+                                        <label id="lblSubCategoryValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Rate P. Oz.</label><br />
+                                        <label id="lblRatePOzValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Metal</label><br />
+                                        <label id="lblMetalValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">No. of Stones</label><br />
+                                        <label id="lblNoOfStonesValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Semi Wt</label><br />
+                                        <label id="lblSemiWtValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Center Wt</label><br />
+                                        <label id="lblCenterWtValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Complete Wt</label><br />
+                                        <label id="lblCompleteWtValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Semi Stone Quality</label><br />
+                                        <label id="lblSemiStoneQualityValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Center Stone Quality</label><br />
+                                        <label id="lblCenterStoneQualityValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Size / Length</label><br />
+                                        <label id="lblSizeLengthValue" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Price 1</label><br />
+                                        <label id="lblPrice1Value" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Price 2</label><br />
+                                        <label id="lblPrice2Value" class="form-label">XXXXXX</label>
+                                    </div>
+
+                                    <div class="col-lg-4 col-sm-4 col-md-4">
+                                        <label class="form-label fw-bold">Price 3</label><br />
+                                        <label id="lblPrice3Value" class="form-label">XXXXXX</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-4">
+                <div id="divImage" style="margin-top:20px;" class="row">
+
+                    <div class="col-12 text-center">
+                        @*<label for="product_image" style="width:100%" class="form-label">Product Image</label>*@
+                        <img src="~/Content/images/200X200.png" style="max-width: 80%;" id="product_image" class="img-thumbnail" alt="Product Image">
+                    </div>
+
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <label for="exampleFormControlInput1" class="form-label">Last Modified</label> : <label for="exampleFormControlInput1" class="form-label"> @DateTime.Now.ToShortDateString() </label>
+                    </div>
+                    @*<div class="col-6">
+                <button type="button" id="btnActive" class="btn btn-outline-primary  col-lg-12 col-sm-12 col-md-12 ">In Active</button>
+            </div>*@
+                </div>
+                <!--  <div class="row mt-3">
+          <div class="col-6">
+              <button type="button" id="btnEdit" class="btn btn-primary  col-lg-12 col-sm-12 col-md-12">Edit</button>
+          </div>
+          <div class="col-6">
+              <button type="button" id="btnCopy" class="btn btn-primary  col-lg-12 col-sm-12 col-md-12 ">Duplicate</button>
+          </div>
+      </div>
+
+      <div class="row mt-3">
+          <div class="col-6">
+              <button type="button" id="btnActive" class="btn btn-primary  col-lg-12 col-sm-12 col-md-12 ">In Active</button>
+          </div>
+          <div class="col-6">
+              <button type="button" id="btnPrint" onclick="return printSummaryPage();" class="btn btn-primary  col-lg-12 col-sm-12 col-md-12">Print / Download </button>
+          </div>
+          @*<div class="col-6">
+          <button type="button" id="btnDownload" onclick="downloadSummaryPage();" class="btn btn-outline-primary  col-lg-12 col-sm-12 col-md-12 ">Download</button>
+      </div>*@
+      </div>-->
+            </div>
+
+        </div>
+        <div class="row" style="padding-top: 20px;">
+            <div class="col-lg-8 col-sm-8 col-md-8">
+                <div id="divPricing" class="card">
+                    <div class="card-header fw-bold">
+                        Price Options
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12 col-sm-12 col-md-12">
+                                <table class="table table-bordered table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Metal</th>
+                                            <th>10kt</th>
+                                            <th>14kt</th>
+                                            <th>18kt</th>
+                                            <th>Platinum</th>
+                                            <th>Silver</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Price 1</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Price 2</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Price 3</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Price 4</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <button type="button" id="btnEdit" class="btn btn-primary  col-lg-12 col-sm-12 col-md-12">Edit</button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" id="btnCopy" class="btn btn-primary  col-lg-12 col-sm-12 col-md-12 ">Duplicate</button>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button type="button" id="btnActive" class="btn btn-primary  col-lg-12 col-sm-12 col-md-12 ">In Active</button>
+                    </div>
+                   
+
+                </div>
+
+                <div class="row mt-3">
+                    
+                    <div class="col-12">
+                        <button type="button" id="btnPrint" style="--bs-btn-line-height: 3;" onclick="return printSummaryPage();" class="btn btn-primary  col-lg-12 col-sm-12 col-md-12">Print / Download </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row" id="printSummarypg" style="display:none;"> 
+            <div class="row">
+                <div class="col-9">
+                    <div id="printSummary" class="card">
+
+                    </div>
+                </div>
+                <div class="col-3" style="padding-left: 0px;">
+                    <div id="printImage" class="row"></div>
+                </div>
+            </div>
+            <div class="row" style=" padding-top: 20px;">
+                <div class="col-12">
+                    <div id="printPricing" class="card"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+@section scripts {
+    <script src="~/Scripts/Validate-SKU.js?v1.13"></script>
+    <script src="~/Scripts/SKUCreate.js?v1.13"></script>
+
+    <!-- In your .cshtml -->
+    <script id="skuData" type="application/json">
+        @Html.Raw(ViewBag.SkuModule ?? "{}")
+    </script>
+
+}
