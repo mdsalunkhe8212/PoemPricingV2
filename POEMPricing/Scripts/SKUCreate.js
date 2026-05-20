@@ -215,7 +215,7 @@ $(document).ready(function () {
         }
     });
 
-    
+
 
     ///********************************************************
     // * FINDING SUPPLIER → FINDING TYPE
@@ -241,7 +241,7 @@ $(document).ready(function () {
      ********************************************************/
     $('#ddlFindingType').change(function () {
         const findingdll = $('#ddlMetalFinding');
-        const field ="Metal"
+        const field = "Metal"
         const filter = $(this).val();
 
         if (!filter) {
@@ -257,9 +257,9 @@ $(document).ready(function () {
         $('#ddlMetalFinding').change();
     });
 
-/********************************************************
-*  FINDING TYPE -> Metal -> Karate
-********************************************************/
+    /********************************************************
+    *  FINDING TYPE -> Metal -> Karate
+    ********************************************************/
     $('#ddlMetalFinding').change(function () {
         const findingdll = $('#ddlKaratFinding');
         const field = "Karat"
@@ -267,7 +267,7 @@ $(document).ready(function () {
         const filter1 = $(this).val();
 
         if (filter1 && filter1.toLowerCase() !== 'gold') {
-            
+
             findingdll.empty().append('<option value=""></option>');
             $('#ddlKaratFinding').change()
         } else {
@@ -282,9 +282,9 @@ $(document).ready(function () {
         // Enable/disable karat
         if (filter1.toLowerCase() === 'gold') {
             findingdll.prop('disabled', false).val(''); $('#ddlKaratFinding').change();
-    } else {
-        findingdll.prop('disabled', true).val('');
-    }
+        } else {
+            findingdll.prop('disabled', true).val('');
+        }
     });
 
     /********************************************************
@@ -414,21 +414,21 @@ $(document).ready(function () {
      * mode = 'sku'  → user types SKU
      ********************************************************/
     function initFindingAutocomplete($sourceBox, $targetBox, mode) {
-         
+
         $sourceBox.autocomplete({
             minLength: 5,
             delay: 100,
             source: function (request, response) {
-               
+
                 const findingSupplier = $('#ddlFindingSupplier').val() || '';
                 const findingType = $('#ddlFindingType').val() || '';
                 const search = request.term;
-                
+
                 const field = "Supplier";
                 const filter = $('#ddlFindingType').val();
                 const filter1 = $('#ddlMetalFinding').val();
                 var filter2 = $('#ddlKaratFinding').val();
-               /* const filter3 = request.term;*/
+                /* const filter3 = request.term;*/
                 if (!findingSupplier || !findingType) {
                     response([]);
                     return;
@@ -510,11 +510,11 @@ function loadFindingDetails(sku) {
         if (!data) return;
 
         //$('#txtMetal').val(data.findingMetalType || data.FindingMetalType);
-       // $('#ddlMetalFinding').val(data.findingMetalType || data.FindingMetalType);
-       //// $('#txtKarat').val(data.findingMetalKt || data.FindingMetalKt);
-       // $('#ddlKaratFinding').val(data.findingMetalKt || data.FindingMetalKt);
+        // $('#ddlMetalFinding').val(data.findingMetalType || data.FindingMetalType);
+        //// $('#txtKarat').val(data.findingMetalKt || data.FindingMetalKt);
+        // $('#ddlKaratFinding').val(data.findingMetalKt || data.FindingMetalKt);
 
-       // $('#txtColor').val(data.findingMetalColor || data.FindingMetalColor);
+        // $('#txtColor').val(data.findingMetalColor || data.FindingMetalColor);
         $('#txtFindingDescription').val(data.FindingDescription || data.FindingDescription);
         $('#txtFindingGmPerPc').val(data.perPcFindingWeightGms || data.PerPcFindingWeightGms);
         $('#txtFindingInc').val(data.increment || data.Increment);
@@ -536,9 +536,9 @@ function getVendorDetails(VendorCode) {
     $.getJSON(url, function (data) {
         if (!data) return;
 
-        diamondHandling = data.DiamondHandling || 0;
-        diaHndLow = data.DiaHndLow || 0;
-        diaHndHigh = data.DiaHndHigh ||0;
+        diamondHandling = data.DiamondHandlingLab || 0;
+        diaHndLow = data.DiaHndLabLow || 0;
+        diaHndHigh = data.DiaHndLabHigh || 0;
 
         findingHndGold = data.FindingHndGold || 0;
         findingHndPlatinum = data.FindingHndPlatinum || 0;
@@ -556,7 +556,7 @@ function getVendorDetails(VendorCode) {
 
     });
 }
-    
+
 function HandlingCaluculation() {
 
     var DimondHndl = 0.0;
@@ -571,16 +571,23 @@ function HandlingCaluculation() {
     }, 0);
     var dimondhndlSTCost = (parseFloat(totalStnCost).toFixed(2) * parseFloat(diamondHandling).toFixed(2)) / 100;
     var dimondhndlAadjwtCost = parseFloat(totalDHAdjWT).toFixed(4) * parseFloat(diaHndLow).toFixed(2);
-    DimondHndl = Math.min(dimondhndlSTCost, dimondhndlAadjwtCost);
-    if (DimondHndl >= diaHndHigh) {
+    //DimondHndl = Math.min(dimondhndlSTCost, dimondhndlAadjwtCost);
+    DimondHndl = parseFloat( dimondhndlSTCost);
+
+    if (DimondHndl > diaHndHigh) {
         DimondHndl = diaHndHigh;
+    }
+    if (DimondHndl < diaHndLow) {
+        DimondHndl = diaHndLow;
     }
     $("#txtDiaHandling").val(parseFloat(DimondHndl).toFixed(2));
 
     // Dimond Handling Calculation End
     var labourFindingcost = 0.0;
     var vendorFindingCost = 0.0;
-
+    var vendorModelCost = 0.00;
+    var vendorCamCost = 0.00;
+    var metalType1 = 'gold';
     var distinctMetal = new Set(findingLines.map(x => x.metal));
 
     //var totalStnCost = findingLines.reduce(function (sum, item) {
@@ -588,8 +595,9 @@ function HandlingCaluculation() {
     //}, 0);
     distinctMetal.forEach(matelType => {
         var findingtotalCost = findingLines.filter(x => x.metal.toLowerCase() === matelType.toLowerCase())
-                            .reduce(function (sum, item) {
-                            return sum + (parseFloat(item.totalCost) || 0);}, 0);
+            .reduce(function (sum, item) {
+                return sum + (parseFloat(item.totalCost) || 0);
+            }, 0);
         if (matelType.toLowerCase() === 'gold') {
             vendorFindingCost = findingHndGold;
         } else if (matelType.toLowerCase() === 'platinum') {
@@ -599,8 +607,29 @@ function HandlingCaluculation() {
         }
         labourFindingcost += (parseFloat(findingtotalCost) * parseFloat(vendorFindingCost)) / 100;
     });
-   
+
     $('#txtFinHandling').val(parseFloat(labourFindingcost).toFixed(2));
+   
+
+    if (metalLines.length > 0) {
+        metalType1 = metalLines[0].metalText;
+    }
+
+    if (metalType1.toLowerCase() === 'gold') {
+        vendorModelCost = modelMkgGold;
+        vendorCamCost = camGold;
+    } else if (metalType1.toLowerCase() === 'platinum') {
+        vendorModelCost = modelMkgPlatinum;
+        vendorCamCost = camPlatinum;
+    } else if (metalType1.toLowerCase() === 'silver') {
+        vendorModelCost = modelMkgSilver;
+        vendorCamCost = camSilver;
+
+    }
+    $('#txtModel').val(parseFloat(vendorModelCost).toFixed(2));
+    $('#txtCAM').val(parseFloat(vendorCamCost).toFixed(2));
+    $('#txtCAM').change();
+
 }
 
 // Trigger loadFindingDetails when SKU changes manually
@@ -631,7 +660,7 @@ $('#ddlLaborLocation').on('change', function () {
         });
     });
 
-    getVendorDetails(vendor);
+    //getVendorDetails(vendor);
     //calculateTotalLabor();
 });
 
@@ -641,20 +670,38 @@ $('#ddlProcessType').on('change', function () {
     var vendor = encodeURIComponent($('#ddlLaborLocation').val());
     var type = encodeURIComponent($(this).val().trim());
     var category = encodeURIComponent($('#ddlCategory  option:selected').text().trim());
-    var url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + type+ '/' + category ;
+    var url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + type + '/' + category;
     $.getJSON(url, function (data) {
-        if (!data) return;
+        if (!data) {
+            data = {
+                GoldCharges: 0,
+                PlatinumCharges: 0,
+                SilverCharges:0,
+            }
 
-        setProcessValues(data,'txtCFP',type);
+        }
+
+        setProcessValues(data, 'txtCFP', type);
+    //    if (type === 'CFP') {
+    //        var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+            
+    //    } 
     });
 
-    if (encodeURIComponent($(this).val().trim()) === 'CFP' && metalLines[0].metalText === 'Gold' && metalLines[0].colorText === 'White') { 
-    type = 'Rhodium';
-    url = webRoot + '/api/sku/getprocesscost/' + vendor + '/Rhodium/' + category;
-    $.getJSON(url, function (data) {
-        if (!data) return;
-        setProcessValues(data, 'txtRhodium',type);
-    });
+    if (encodeURIComponent($(this).val().trim()) === 'CFP' && metalLines[0].metalText === 'Gold' && metalLines[0].colorText === 'White') {
+        type = 'Rhodium';
+        url = webRoot + '/api/sku/getprocesscost/' + vendor + '/Rhodium/' + category;
+        $.getJSON(url, function (data) {
+            if (!data) {
+                data = {
+                    GoldCharges: 0,
+                    PlatinumCharges: 0,
+                    SilverCharges: 0,
+                }
+
+            }
+            setProcessValues(data, 'txtRhodium', type);
+        });
     }
 
     //calculateTotalLabor();
@@ -672,13 +719,17 @@ function setProcessValues(data, ctrl, type) {
         else if (metalLines[0].metalText === 'Silver') {
             $('#' + ctrl).val(data.SilverCharges);
         }
-        HandlingCaluculation();
+        //HandlingCaluculation();
+        var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+        if (data.Type === 'CFP') {
+            getVendorDetails(vendor);
+        }
         calculateTotalLabor();
         //fillLaborFOBValues();
 
         txtboxDisEna('enabled');
         $('#txtTotalLabor').prop('disabled', true).prop('readonly', true);
-        
+
     } else if (type === 'Flat Labour per gm') {
         const semiMin = parseFloat(txtSemiMinWt.value) || 0;
         // const semiAdj = parseFloat(txtSemiAdjWt.value) || 0;
@@ -691,7 +742,7 @@ function setProcessValues(data, ctrl, type) {
         if (metalLines.length > 0) {
             totalwt = metalLines[0].gmWt;
         }
-       
+
         var cost = 0;
         if (metalLines[0].metalText === 'Gold') {
             cost = data.GoldCharges;
@@ -712,10 +763,10 @@ function setProcessValues(data, ctrl, type) {
         //calculateTotalLabor();
     } else if (type === 'Flat Labour per piece') {
         const semiMin = parseFloat(txtSemiMinWt.value) || 0;
-       
+
         const centerMin = parseFloat(txtCenterMinWt.value) || 0;
 
-       
+
 
 
         if (metalLines[0].metalText === 'Gold') {
@@ -741,7 +792,7 @@ function setProcessValues(data, ctrl, type) {
 
         ctrl = ctrl.replace('ddlOtherHead', 'txtOtherCost');
         if (metalLines[0].metalText === 'Gold') {
-            $('#'+ctrl).val(data.GoldCharges);
+            $('#' + ctrl).val(data.GoldCharges);
         }
         else if (metalLines[0].metalText === 'Platinum') {
             $('#' + ctrl).val(data.PlatinumCharges);
@@ -759,10 +810,10 @@ function setProcessValues(data, ctrl, type) {
     const el = document.getElementById(id);
     if (el) {
         el.addEventListener("change", function () {
-            var ctrl=this.id
+            var ctrl = this.id
             var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
             var type = encodeURIComponent($(this).val().trim());
-            var category = encodeURIComponent($('#' + ctrl+'  option:selected').text().trim());
+            var category = encodeURIComponent($('#' + ctrl + '  option:selected').text().trim());
             var url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + type + '/' + category;
             if (category.trim().length > 0) {
                 $.getJSON(url, function (data) {
@@ -779,24 +830,23 @@ function setProcessValues(data, ctrl, type) {
     }
 });
 
-function txtboxDisEna( status) {
-    var setField = ["txtRhodium", "txtDiaHandling", "txtFinHandling", "txtStamping", "txtModel", "txtCAM", "txtGiftBox", 'txtCFP' ];
+function txtboxDisEna(status) {
+    var setField = ["txtRhodium", "txtDiaHandling", "txtFinHandling", "txtStamping", "txtModel", "txtCAM", "txtGiftBox", 'txtCFP'];
 
     setField.forEach(id => {
-        var $txt = $('#'+id);
+        var $txt = $('#' + id);
         if ($txt) {
-           
-    if (status === 'disabled') {
-        $txt.prop('disabled', true).prop('readonly', true);
-        $txt.val('');
-    }
-    else
-    {
-        $txt.prop('disabled', false).prop('readonly', false);
-    }
+
+            if (status === 'disabled') {
+                $txt.prop('disabled', true).prop('readonly', true);
+                $txt.val('');
+            }
+            else {
+                $txt.prop('disabled', false).prop('readonly', false);
+            }
         }
     });
-    
+
 }
 
 /************************************************************
@@ -856,7 +906,7 @@ function readFindingForm() {
  * Fill form fields when editing a row.
  */
 function fillForm(row) {
-    
+
     $('#ddlFindingType').val(row.typeId).change();
     setTimeout(function () {
         $('#ddlMetalFinding').val(row.metal).change();
@@ -866,7 +916,7 @@ function fillForm(row) {
                 $('#ddlFindingColor').val(row.color).change();
                 setTimeout(function () {
                     $('#ddlFindingSupplier').val(row.supplierId).change();
-                   
+
                     $('#txtFindingDescription').val(row.description);
                     $('#txtFindingSku').val(row.sku);
                     $('#ddlFindingAssembly').val(row.assemblyId);
@@ -881,18 +931,18 @@ function fillForm(row) {
             }, 800);
         }, 800);
     }, 800);
-    
-    
-   
 
-    
+
+
+
+
     //$('#txtMetal').val(row.metal);
-    
-    //$('#txtKarat').val(row.karat);
- 
- 
 
-    
+    //$('#txtKarat').val(row.karat);
+
+
+
+
 }
 
 /**
@@ -924,7 +974,7 @@ function renderTable() {
         const tr = `
             <tr data-index="${idx}">
                 <td>${row.type}</td>
-                <td>${karat + ' ' + row.color + ' ' +row.metal}</td>
+                <td>${karat + ' ' + row.color + ' ' + row.metal}</td>
                 <td>${row.supplier}</td>
                 <td>${row.sku}</td>
                 <td style="text-align:left;">${row.description}</td>
@@ -956,17 +1006,20 @@ $(function () {
     // Add or Update Finding
     $('#btnFindingAddUpdate').on('click', function (e) {
         e.preventDefault();
-        if (validateButtonAddUpdate("btnFindingAddUpdate")) { 
-        const row = readFindingForm();
+        if (validateButtonAddUpdate("btnFindingAddUpdate")) {
+            if (editIndex > -1) {
+                totalFindingCost = parseFloat(totalFindingCost) - parseFloat(findingLines[editIndex].totalCost);
+            }
+            const row = readFindingForm();
 
-        if (editIndex === -1) {
-            findingLines.push(row);
-        } else {
-            findingLines[editIndex] = row;
-        }
+            if (editIndex === -1) {
+                findingLines.push(row);
+            } else {
+                findingLines[editIndex] = row;
+            }
 
-        renderTable();
-        toggleTableVisibility();
+            renderTable();
+            toggleTableVisibility();
             clearForm();
         }
     });
@@ -982,6 +1035,7 @@ $(function () {
     // Delete Finding
     $('#tblFindings').on('click', '.btn-delete', function () {
         const idx = $(this).closest('tr').data('index');
+        totalFindingCost = parseFloat(totalFindingCost) - parseFloat(findingLines[idx].totalCost);
         findingLines.splice(idx, 1);
         renderTable();
         toggleTableVisibility();
@@ -1065,8 +1119,9 @@ function readMetalForm() {
 function renderMetalGrid() {
     const $tbody = $('#tblMetals tbody');
     $tbody.empty();
-
+    totalMetalCost = 0;
     metalLines.forEach((row, idx) => {
+        totalMetalCost += row.metalCost;
         const tr = `
             <tr data-index="${idx}">
                 <td class="text-center">${row.metalText}</td>
@@ -1095,11 +1150,11 @@ $(function () {
 
     // Add Metal
     $('#btnMetalAddUpdate').on('click', function () {
-        if (validateButtonAddUpdate("btnMetalAddUpdate")) { 
-        const row = readMetalForm();
-        metalLines.push(row);
+        if (validateButtonAddUpdate("btnMetalAddUpdate")) {
+            const row = readMetalForm();
+            metalLines.push(row);
 
-        renderMetalGrid();
+            renderMetalGrid();
             toggleTableVisibility();
         }
     });
@@ -1107,9 +1162,9 @@ $(function () {
     // Delete Metal
     $('#tblMetals').on('click', '.btn-delete-metal', function () {
         const idx = $(this).closest('tr').data('index');
-        var cost = parseFloat( metalLines[idx].metalCost);
-        
-        totalMetalCost = parseFloat(totalMetalCost)-parseFloat( cost);
+        var cost = parseFloat(metalLines[idx].metalCost);
+
+        totalMetalCost = parseFloat(totalMetalCost) - parseFloat(cost);
         metalLines.splice(idx, 1);
 
         renderMetalGrid();
@@ -1122,7 +1177,7 @@ $(function () {
  * METAL COST CALCULATION
  ************************************************************/
 function calculateMetalCost() {
-    
+
     const gmWt = parseFloat($('#txtMetalGmWt').val()) || 0;
     const rateOz = parseFloat($('#txtMetalRatePOz').val()) || 0;
     const metal = $('#ddlMetal').val();
@@ -1396,11 +1451,11 @@ $('#ddlSettingType').on('change', function () {
     const type = $('#ddlSettingType option:selected').text();
     const perStoneWt = $('#txtPerStoneWt').val();
     const stoneShape = $('#ddlStoneShape option:selected').text();
-    const category = $('#ddlCategory option:selected').text().trim();      
-    const subCategory = $('#ddlSubCategory option:selected').text().trim(); 
+    const category = $('#ddlCategory option:selected').text().trim();
+    const subCategory = $('#ddlSubCategory option:selected').text().trim();
     const errormsg = "Cost for given Vendor/Type not found.";
     $('#txtCostPerStone').val('');
-    
+
 
     if (!vendor || !type || !perStoneWt) {
         $('#txtCostPerStone').val('');
@@ -1554,7 +1609,7 @@ function loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter) 
             else {
                 clearFieldError($("#txtStoneMMSize"));
             }
-    }
+        }
 
     });
 }
@@ -1619,7 +1674,8 @@ $('#txtCenterAdjWt').on('change', function () {
 
 $('#btnStoneAddUpdate').on('click', function () {
     if (!validateButtonAddUpdate("btnStoneAddUpdate")) {
-        return 0;}
+        return 0;
+    }
     const model = getStoneModel();
     totalStoneQty = parseInt(totalStoneQty) + parseInt(model.Qty);
     // Total Center and Simi cost accumulators
@@ -1628,14 +1684,14 @@ $('#btnStoneAddUpdate').on('click', function () {
         totalCenterWt += parseFloat(model.TotalStoneWt) || 0;
         totalCenterSettingCost += parseFloat(model.TotalCost) || 0;
         totalCenterAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;//added By Mahesh
-        
+
     }
     else {
-        totalSemiStoneCost += parseFloat(model.StoneTotalCost) || 0;        
+        totalSemiStoneCost += parseFloat(model.StoneTotalCost) || 0;
         totalSemiWt += parseFloat(model.TotalStoneWt) || 0;
         totalSemiSettingCost += parseFloat(model.TotalCost) || 0;
         totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
-    }    
+    }
     $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(4));
     $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(4));
     $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(4));//added By Mahesh
@@ -1653,14 +1709,14 @@ $('#btnStoneAddUpdate').on('click', function () {
 
     renderStoneTable();
     clearStoneControls();
-   // $("#ddlStoneVendor").focus();
+    // $("#ddlStoneVendor").focus();
 });
 
 function renderStoneTable() {
     let html = '';
     totalStoneQty = 0;
     totalTotalStoneWt = 0;
-    totalTotalAdjStoneWt =0;
+    totalTotalAdjStoneWt = 0;
     totalCosttotal = 0;
     stoneList.sort(function (a, b) {
 
@@ -1701,7 +1757,7 @@ function renderStoneTable() {
         totalTotalAdjStoneWt = parseFloat(totalTotalAdjStoneWt) + parseFloat(s.TotalAdjStoneWt);
         totalCosttotal = parseFloat(totalCosttotal) + parseFloat(s.TotalCost);;
     });
-        htmlFoot = `
+    htmlFoot = `
             <tr>
                 <td></b>Total</b></td>
                 <td></td>
@@ -1746,7 +1802,7 @@ function editStone(index) {
     }
 
 
-    
+
     //$('#ddlSettingLocation').val(s.SettingLocation);
     setValue('#ddlSettingLocation', s.SettingLocation);
     //$('#ddlLab').val(s.Lab);
@@ -1783,14 +1839,14 @@ function editStone(index) {
 }
 
 function deleteStone(index) {
-    
+
     if (stoneList[index].SettingLocation === 'Center') {
         totalCenterStoneCost -= parseFloat(stoneList[index].StoneTotalCost) || 0;
         totalCenterWt -= parseFloat(stoneList[index].TotalStoneWt) || 0;
         totalCenterSettingCost -= parseFloat(stoneList[index].TotalCost) || 0;
         totalCenterAdjWt -= parseFloat(stoneList[index].TotalAdjStoneWt) || 0;//added By Mahesh
 
-        
+
     }
     else {
         totalSemiStoneCost -= parseFloat(stoneList[index].StoneTotalCost) || 0;
@@ -1808,7 +1864,7 @@ function deleteStone(index) {
 
     calculateTotals();
     stoneList.splice(index, 1);
-   
+
     renderStoneTable();
 }
 
@@ -1816,7 +1872,7 @@ function setStoneData(index) {
     var data = stoneList[index];
     $('#ddlStoneVendor').val(data.StoneVendorCode);
     $('#ddlStoneType').val(data.StoneType).trigger('change');
-    
+
     $('#ddlGrowing').val(data.Growing);
     $('#ddlSettingLocation').val(data.SettingLocation);
     $('#ddlLab').val(data.Lab);
@@ -1839,8 +1895,8 @@ function setStoneData(index) {
     $('#txtTotalStoneWt').val(data.TotalStoneWt);
     $('#txtTotalAdjStoneWt').val(data.TotalAdjStoneWt);
 
-   // $('#ddlStoneQuality').val(data.StoneQuality);
-    
+    // $('#ddlStoneQuality').val(data.StoneQuality);
+
     $('#txtStoneTotalCost').val(data.StoneTotalCost);
 
     $('#ddlSettingVendor').val(data.SettingVendorCode).trigger('change');
@@ -1914,15 +1970,15 @@ function getMarginDetails() {
     const category = $('#ddlCategory').val();
     const subCategory = $('#ddlSubCategory').val();
     var metal = 'Gold';
-    if (metalLines.length >0) {
+    if (metalLines.length > 0) {
         metal = metalLines[0].metalText;
     }
-    const url = webRoot + '/api/sku/margindetails/' + encodeURIComponent(vendor) + '/' + encodeURIComponent(category) + '/' + encodeURIComponent(subCategory) + '/' + encodeURIComponent(metal) ;
+    const url = webRoot + '/api/sku/margindetails/' + encodeURIComponent(vendor) + '/' + encodeURIComponent(category) + '/' + encodeURIComponent(subCategory) + '/' + encodeURIComponent(metal);
 
     $.getJSON(url, function (data) {
         if (!data) return;
 
-        semiPrice1Per = (data.PMargin1/100) || 0;
+        semiPrice1Per = (data.PMargin1 / 100) || 0;
         semiPrice2Per = (data.PMargin2 / 100) || 0;
         semiPrice3Per = (data.PMargin3 / 100) || 0;
         semiPrice4Per = (data.PMargin4 / 100) || 0;
@@ -1930,20 +1986,45 @@ function getMarginDetails() {
         centerPrice2Per = (data.PMargin2 / 100) || 0;
         centerPrice3Per = (data.PMargin3 / 100) || 0;
         centerPrice4Per = (data.PMargin4 / 100) || 0;
-
+        fillLaborFOBValues();
     });
 }
 function fillLaborFOBValues() {
-  
-   // getMarginDetails();
+
+    // getMarginDetails();
 
     var dutyPer = 0.0;
-   
+
     var landedcost = 0.00;
     var landedcostCenter = 0.00;
-
-    
+    totalFindingCost = 0;
+    findingLines.forEach((row, idx) => {
+        totalFindingCost += parseFloat(row.totalCost)||0;
+    });
+    totalMetalCost = 0;
+    metalLines.forEach((row, idx) => {
+        totalMetalCost += parseFloat(row.metalCost)||0;
+    });
+    totalCenterSettingCost = 0;
+    totalCenterStoneCost = 0;
+    totalSemiStoneCost = 0;
+    totalSemiSettingCost = 0;
+    stoneList.forEach((row, idx) => {
        
+   
+        if (row.SettingLocation === 'Center') {
+            totalCenterStoneCost += parseFloat(row.StoneTotalCost) || 0;
+        
+            totalCenterSettingCost += parseFloat(row.TotalCost) || 0;
+        
+
+    }
+    else {
+            totalSemiStoneCost += parseFloat(row.StoneTotalCost) || 0;
+            totalSemiSettingCost += parseFloat(row.TotalCost) || 0;
+
+        }
+    });
 
     // Calculate Semi FOB (without center stone)
     const semiFOBNRound = parseFloat(totalMetalCost)
@@ -1953,18 +2034,18 @@ function fillLaborFOBValues() {
         + parseFloat(totalLaborCost);
 
     const semiFOB = roundUpToQuarter(semiFOBNRound);
-    
-    
+
+
 
 
     // Calculate Complete FOB (with center stone)
     const completeFOBNRound = parseFloat(semiFOB) + parseFloat(totalCenterStoneCost) + parseFloat(totalCenterSettingCost);
     const completeFOB = roundUpToQuarter(completeFOBNRound);
-    
+
 
     // Duty rates
     var LaborLocation = $('#ddlLaborLocation').val();
-    LaborLocation='India'
+    LaborLocation = 'India'
     if (LaborLocation === 'USA') {
         dutyPer = 0.0;
     } else {
@@ -1986,7 +2067,7 @@ function fillLaborFOBValues() {
         landedcostCenter = parseFloat(completeFOB);
     }
 
-    
+
 
     const semiPrice1 = (parseFloat(semiFOB) / (1 - semiPrice1Per)) + parseFloat(semiDuty);
     const semiPrice2 = (parseFloat(semiFOB) / (1 - semiPrice2Per)) + parseFloat(semiDuty);
@@ -1998,17 +2079,28 @@ function fillLaborFOBValues() {
     const centerPrice3 = (parseFloat(completeFOB) / (1 - centerPrice3Per)) + parseFloat(centerDuty);
     const centerPrice4 = (parseFloat(completeFOB) / (1 - centerPrice4Per)) + parseFloat(centerDuty);
 
-    const semiMargin1 = ((semiPrice1 - (parseFloat(semiDuty)+ parseFloat(semiFOB))) / semiPrice1) * 100;
+    const semiMargin1 = ((semiPrice1 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice1) * 100;
     const semiMargin2 = ((semiPrice2 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice2) * 100;
     const semiMargin3 = ((semiPrice3 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice3) * 100;
     const semiMargin4 = ((semiPrice4 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice4) * 100;
 
-    const centerMargin1 = ((centerPrice1-(parseFloat(centerDuty)+ parseFloat(completeFOB)) ) / centerPrice1) * 100;
+    const centerMargin1 = ((centerPrice1 - (parseFloat(centerDuty) + parseFloat(completeFOB))) / centerPrice1) * 100;
     const centerMargin2 = ((centerPrice2 - (parseFloat(centerDuty) + parseFloat(completeFOB))) / centerPrice2) * 100;
     const centerMargin3 = ((centerPrice3 - (parseFloat(centerDuty) + parseFloat(completeFOB))) / centerPrice3) * 100;
     const centerMargin4 = ((centerPrice4 - (parseFloat(centerDuty) + parseFloat(completeFOB))) / centerPrice4) * 100;
 
     // Update SKU Module calculations
+    skuModule.calculations.totalMetalCost = parseFloat(totalMetalCost).toFixed(2);
+    skuModule.calculations.totalFindingCost = parseFloat(totalFindingCost).toFixed(2);
+    skuModule.calculations.totalSemiStoneCost = parseFloat(totalSemiStoneCost).toFixed(2);
+    skuModule.calculations.totalCenterStoneCost = parseFloat(totalCenterStoneCost).toFixed(2);
+    skuModule.calculations.totalSemiSettingCost = parseFloat(totalSemiSettingCost).toFixed(2);
+    skuModule.calculations.totalCenterSettingCost = parseFloat(totalCenterSettingCost).toFixed(2);
+    skuModule.calculations.totalLaborCost = parseFloat(totalLaborCost).toFixed(2);
+    skuModule.calculations.semiDuty = parseFloat(semiDuty).toFixed(2);
+
+
+
     skuModule.calculations.semiFOB = semiFOB.toFixed(2);
     skuModule.calculations.completeFOB = completeFOB.toFixed(2);
 
@@ -2119,17 +2211,17 @@ function calculateTotalLabor() {
     const other2 = getValue("txtOtherCost2");
     const other3 = getValue("txtOtherCost3");
 
-const totalLaborEl = document.getElementById("txtTotalLabor");
+    const totalLaborEl = document.getElementById("txtTotalLabor");
     var totalLabor = 0;
     if ($('#ddlProcessType').val() == 'Flat Labour per gm' || $('#ddlProcessType').val() == 'Flat Labour per piece') {
         totalLabor = totalLaborEl.value;
     }
     else {
-// Total calculation
-    totalLabor = model + giftBox +cfp + rhodium +diaHandle + finHandle + stamping + cam + other1 + other2 + other3 ;
+        // Total calculation
+        totalLabor = model + giftBox + cfp + rhodium + diaHandle + finHandle + stamping + cam + other1 + other2 + other3;
     }
     // Fill into txtTotalLabor
-    
+
     if (totalLaborEl) {
         totalLaborEl.value = parseFloat(totalLabor).toFixed(2);
         totalLaborCost = parseFloat(totalLabor).toFixed(2); // Update global total labor cost
@@ -2206,7 +2298,7 @@ function setLaborObject(obj) {
 
     //$('#ddlLaborLocation').val(obj.LaborLocation);
     $('#ddlLaborLocation option:selected').text(obj.VendorCode).trim(),
-    $('#ddlProcessType').val(obj.ProcessType);
+        $('#ddlProcessType').val(obj.ProcessType);
 
     $('#txtCastingLabor').val(obj.CastingLabor);
     $('#txtCastPcs').val(obj.CastPcs);
@@ -2314,7 +2406,7 @@ function collectSkuInfo() {
     if (window.location.pathname.toLowerCase().includes("/sku/edit")) {
         // return; // exit early
         skuID = parseInt(skuModule.skuInfo.VendorProduct.skuId);
-        
+
     }
     else {
         skuModule.skuInfo.VendorProduct = {
@@ -2352,7 +2444,7 @@ function collectSkuInfo() {
  * COLLECT STONE INFORMATION
  ************************************************************/
 function collectStoneInfo() {
-    skuModule.stoneInfo = stoneList;    
+    skuModule.stoneInfo = stoneList;
     semiMinWt = totalSemiWt;
     centerMinWt = totalCenterWt;
     SemiAdjWt = $('#txtSemiAdjWt').val();
@@ -2368,36 +2460,36 @@ function collectStoneInfo() {
  ************************************************************/
 function collectLaborInfo() {
     skuModule.laborInfo = getLabor();
-    skuModule.calculations = {
-        totalMetalCost: totalMetalCost,
-        totalFindingCost: totalFindingCost,
-        totalSemiStoneCost: totalSemiStoneCost,
-        totalCenterStoneCost: totalCenterStoneCost,
-        totalSemiSettingCost: totalSemiSettingCost,
-        totalCenterSettingCost: totalCenterSettingCost,
-        totalLaborCost: totalLaborCost,
-        semiDuty: semiDuty,
-        semiFOB: 0,
-        completeFOB: 0,
-        semiPrice1: 0,
-        semiPrice2: 0,
-        semiPrice3: 0,
-        semiPrice4: 0,
-        centerPrice1: 0,
-        centerPrice2: 0,
-        centerPrice3: 0,
-        centerPrice4: 0,
-        semiMargin1: 0,
-        semiMargin2: 0,
-        semiMargin3: 0,
-        semiMargin4: 0,
-        centerMargin1: 0,
-        centerMargin2: 0,
-        centerMargin3: 0,
-        centerMargin4: 0,
-        landedcost: 0,
-        landedcostCenter: 0
-    };    
+    //skuModule.calculations = {
+    //    totalMetalCost: totalMetalCost,
+    //    totalFindingCost: totalFindingCost,
+    //    totalSemiStoneCost: totalSemiStoneCost,
+    //    totalCenterStoneCost: totalCenterStoneCost,
+    //    totalSemiSettingCost: totalSemiSettingCost,
+    //    totalCenterSettingCost: totalCenterSettingCost,
+    //    totalLaborCost: totalLaborCost,
+    //    semiDuty: semiDuty
+    //    //semiFOB: 0,
+    //    //completeFOB: 0,
+    //    //semiPrice1: 0,
+    //    //semiPrice2: 0,
+    //    //semiPrice3: 0,
+    //    //semiPrice4: 0,
+    //    //centerPrice1: 0,
+    //    //centerPrice2: 0,
+    //    //centerPrice3: 0,
+    //    //centerPrice4: 0,
+    //    //semiMargin1: 0,
+    //    //semiMargin2: 0,
+    //    //semiMargin3: 0,
+    //    //semiMargin4: 0,
+    //    //centerMargin1: 0,
+    //    //centerMargin2: 0,
+    //    //centerMargin3: 0,
+    //    //centerMargin4: 0,
+    //    //landedcost: 0,
+    //    //landedcostCenter: 0
+    //};
 }
 
 /************************************************************
@@ -2407,6 +2499,10 @@ function saveCurrentTabData(tabId) {
     switch (tabId) {
         case 'nav-sku-information':
             collectSkuInfo();
+            if (path.includes("/sku/edit")) {
+                fillLaborFOBValues();
+
+            }
             break;
 
         case 'nav-stone-information':
@@ -2416,6 +2512,10 @@ function saveCurrentTabData(tabId) {
 
         case 'nav-labor-information':
             collectLaborInfo();
+            if (path.includes("/sku/edit")) {
+                fillLaborFOBValues();
+
+            }
             break;
     }
 
@@ -2431,7 +2531,7 @@ $(function () {
         const currentPaneId = $(event.target).attr('data-bs-target');
         if (currentPaneId === '#nav-sku-information') {
             const skupv = skuModule.skuInfo.VendorProduct;
-            setSelectedText("ddlSubCategory", skupv.subCategory);            
+            setSelectedText("ddlSubCategory", skupv.subCategory);
         }
         if (!prevPaneId) return;
 
@@ -2449,7 +2549,7 @@ function saveSkuModule() {
 
     // Collect data before saving    
     collectLaborInfo();
-    
+
     $.ajax({
         url: webRoot + '/api/sku/savesku',
         method: 'POST',
@@ -2480,7 +2580,7 @@ function saveSkuModule() {
 function loadSummaryFromSkuModel(skuModel) {
     if (!skuModel || !skuModel.skuInfo) return;
 
-    
+
 
     const vp = skuModel.skuInfo.VendorProduct;
     const metals = skuModel.skuInfo.Metals?.[0] || {};
@@ -2504,9 +2604,9 @@ function loadSummaryFromSkuModel(skuModel) {
     SkuNumberPDF = vp.skuNumber;
     // Metals
     setLabel("lblRatePOzValue", '$ ' + metals.ratePOz);
-    var metaltxtval = (metals.karatText.length > 0 ? metals.karatText + ' ' : '') + metals.colorText +' '+ metals.metalText
+    var metaltxtval = (metals.karatText.length > 0 ? metals.karatText + ' ' : '') + metals.colorText + ' ' + metals.metalText
     setLabel("lblMetalValue", metaltxtval);
-    
+
     // Stones
     if (skuModel.stoneInfo && Array.isArray(skuModel.stoneInfo)) {
         // Total Qty across all stones
@@ -2609,7 +2709,7 @@ const skuModule = {
     calculations: {}
 };
 
-document.addEventListener("DOMContentLoaded", function () {   
+document.addEventListener("DOMContentLoaded", function () {
 
     const path = window.location.pathname.toLowerCase();
 
@@ -2628,7 +2728,7 @@ document.addEventListener("DOMContentLoaded", function () {
             loadSummaryFromSkuModel(skuModule);
             $('#nav-sku-information-tab').click();
             $('#nav-summary-tab').removeClass('disabled').attr('disabled', false);
-            
+
         }
     }
     else {
@@ -2639,7 +2739,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (path.includes("/sku/info")) {
-        
+
         // ✅ overwrite global skuModule instead of shadowing
         Object.assign(skuModule, JSON.parse(document.getElementById("skuData").textContent));
 
@@ -2649,9 +2749,9 @@ document.addEventListener("DOMContentLoaded", function () {
             $('#nav-summary-tab').click();
             $('#btnSubmit').addClass('disabled').attr('disabled', true);
             bindFormData(skuModule);
-            loadSummaryFromSkuModel(skuModule);            
+            loadSummaryFromSkuModel(skuModule);
             $('#nav-summary-tab').removeClass('disabled').attr('disabled', false);
-            
+
         }
     }
 
@@ -2670,7 +2770,7 @@ document.addEventListener("DOMContentLoaded", function () {
             $("#txtVendorNumber").val(""); // Clear Vendor Number for copy"
             skuModule.skuInfo.VendorProduct.skuId = 0; // Reset SKU ID for new SKU
             $('#nav-summary-tab').removeClass('disabled').attr('disabled', true);
-            
+
         }
     }
 
@@ -2734,9 +2834,9 @@ function bindFormData(skuModel) {
     //const stones = skuModel.stoneInfo?.[0] || {};
     const stones = skuModel.stoneInfo || {};
     const labor = skuModel.laborInfo || {};
-    const calculations = skuModel.calculations || {};    
+    const calculations = skuModel.calculations || {};
 
-    
+
 
     // VendorProduct    
     setValue("ddlCompany", vp.company);
@@ -2773,11 +2873,11 @@ function bindFormData(skuModel) {
     toggleTableVisibility();
     // Stones
     stoneList = skuModel.stoneInfo || []; // set global stone array
-    renderStoneTable();    
+    renderStoneTable();
 
     // Labor
     setSelectedText("ddlLaborLocation", labor.VendorName);
-    setValue("txtCastPcs", labor.CastPcs);    
+    setValue("txtCastPcs", labor.CastPcs);
     setValue("txtGiftBox", labor.GiftBox);
     /*Added by Mahesh Start*/
     setValue("txtCFP", labor.CFP);
@@ -2806,7 +2906,9 @@ function bindFormData(skuModel) {
     totalCenterSettingCost = calculations.totalCenterSettingCost || 0;
     totalLaborCost = calculations.totalLaborCost || 0;
     semiDuty = calculations.semiDuty || 0;
-    fillLaborFOBValues();//
+    getMarginDetails();
+    //setTimeout(fillLaborFOBValues, 1100);
+    //fillLaborFOBValues();//
 }
 
 // Bind summary labels
@@ -2817,7 +2919,7 @@ function bindSummaryData(skuModel) {
     const labor = skuModel.laborInfo || {};
     const calculations = skuModel.calculations || {};
 
-     
+
 
     function setLabel(id, value) {
         var el = document.getElementById(id);
@@ -2886,91 +2988,91 @@ const txtAssembly = document.getElementById("txtAssembly");
 const txtSolder = document.getElementById("txtSolder");
 
 
-    function GetCFP() {
-        const castPcs = parseInt(txtCastPcs.value, 10);
-        
-        //// Only allow 1 or 2
-        //if (![1, 2].includes(castPcs)) {
-        //    txtCFP.value = "";
-        //    return;
-        //}
+function GetCFP() {
+    const castPcs = parseInt(txtCastPcs.value, 10);
 
-        const vendorCode = $('#ddlLaborLocation').val();
-        const category = $('#ddlCategory option:selected').text().trim();
+    //// Only allow 1 or 2
+    //if (![1, 2].includes(castPcs)) {
+    //    txtCFP.value = "";
+    //    return;
+    //}
 
-        //// Find CFP record
-        //const record = msdCFPLaborData.find(r =>
-        //    r.VendorCode === vendorCode.trim()
-        //    && r.Category === category.trim()
-        //    && r.LaborType ==="CFP"
-        //);
+    const vendorCode = $('#ddlLaborLocation').val();
+    const category = $('#ddlCategory option:selected').text().trim();
 
-        //if (record) {
-        //    if (castPcs === 1) {
-        //        txtCFP.value = record.GoldCast1.toFixed(2);
-        //    } else if (castPcs === 2) {
-        //        txtCFP.value = record.GoldCast2.toFixed(2);
-        //    }            
-        //} else {
-        //    txtCFP.value = "";            
-        //}
+    //// Find CFP record
+    //const record = msdCFPLaborData.find(r =>
+    //    r.VendorCode === vendorCode.trim()
+    //    && r.Category === category.trim()
+    //    && r.LaborType ==="CFP"
+    //);
 
-        //// Find Rhodium record
-        //const Rhodiumrecord = msdCFPLaborData.find(r =>
-        //    r.VendorCode === vendorCode.trim()
-        //    && r.Category === category.trim()
-        //    && r.LaborType === "Rhodium"
-        //);
+    //if (record) {
+    //    if (castPcs === 1) {
+    //        txtCFP.value = record.GoldCast1.toFixed(2);
+    //    } else if (castPcs === 2) {
+    //        txtCFP.value = record.GoldCast2.toFixed(2);
+    //    }            
+    //} else {
+    //    txtCFP.value = "";            
+    //}
 
-        //if (Rhodiumrecord) {
-        //    if (castPcs === 1) {
-        //        txtRhodium.value = Rhodiumrecord.GoldCast1.toFixed(2);
-        //    } else if (castPcs === 2) {
-        //        txtRhodium.value = Rhodiumrecord.GoldCast2.toFixed(2);
-        //    }
-        //} else {
-        //    txtRhodium.value = "";
-        //}
+    //// Find Rhodium record
+    //const Rhodiumrecord = msdCFPLaborData.find(r =>
+    //    r.VendorCode === vendorCode.trim()
+    //    && r.Category === category.trim()
+    //    && r.LaborType === "Rhodium"
+    //);
 
-        //// Find Assembly record
-        //const Assemblyrecord = msdCFPLaborData.find(r =>
-        //    r.VendorCode === vendorCode.trim()
-        //    && r.Category === category.trim()
-        //    && r.LaborType === "Assembly"
-        //);
+    //if (Rhodiumrecord) {
+    //    if (castPcs === 1) {
+    //        txtRhodium.value = Rhodiumrecord.GoldCast1.toFixed(2);
+    //    } else if (castPcs === 2) {
+    //        txtRhodium.value = Rhodiumrecord.GoldCast2.toFixed(2);
+    //    }
+    //} else {
+    //    txtRhodium.value = "";
+    //}
 
-        //if (Assemblyrecord) {
-        //    if (castPcs === 1) {
-        //        txtAssembly.value = Assemblyrecord.GoldCast1.toFixed(2);
-        //    } else if (castPcs === 2) {
-        //        txtAssembly.value = Assemblyrecord.GoldCast2.toFixed(2);
-        //    }
-        //} else {
-        //    txtAssembly.value = "";
-        //}
+    //// Find Assembly record
+    //const Assemblyrecord = msdCFPLaborData.find(r =>
+    //    r.VendorCode === vendorCode.trim()
+    //    && r.Category === category.trim()
+    //    && r.LaborType === "Assembly"
+    //);
 
-        // Find Solder record
-        //const Solderrecord = msdCFPLaborData.find(r =>
-        //    r.VendorCode === vendorCode.trim()
-        //    && r.Category === category.trim()
-        //    && r.LaborType === "Solder"
-        //);
+    //if (Assemblyrecord) {
+    //    if (castPcs === 1) {
+    //        txtAssembly.value = Assemblyrecord.GoldCast1.toFixed(2);
+    //    } else if (castPcs === 2) {
+    //        txtAssembly.value = Assemblyrecord.GoldCast2.toFixed(2);
+    //    }
+    //} else {
+    //    txtAssembly.value = "";
+    //}
 
-        //if (Solderrecord) {
-        //    if (castPcs === 1) {
-        //        txtSolder.value = Solderrecord.GoldCast1.toFixed(2);
-        //    } else if (castPcs === 2) {
-        //        txtSolder.value = Solderrecord.GoldCast2.toFixed(2);
-        //    }
-        //} else {
-        //    txtSolder.value = "";
-        //}
+    // Find Solder record
+    //const Solderrecord = msdCFPLaborData.find(r =>
+    //    r.VendorCode === vendorCode.trim()
+    //    && r.Category === category.trim()
+    //    && r.LaborType === "Solder"
+    //);
 
-        // Find Dia. Handling
-        // Need business rules for Dia. Handling lookup
+    //if (Solderrecord) {
+    //    if (castPcs === 1) {
+    //        txtSolder.value = Solderrecord.GoldCast1.toFixed(2);
+    //    } else if (castPcs === 2) {
+    //        txtSolder.value = Solderrecord.GoldCast2.toFixed(2);
+    //    }
+    //} else {
+    //    txtSolder.value = "";
+    //}
+
+    // Find Dia. Handling
+    // Need business rules for Dia. Handling lookup
 }
 // Attach event listeners to trigger calculation on change
-["txtCFP","txtCAM", "txtModel", "txtGiftBox", "txtOtherCost1", "txtOtherCost2", "txtOtherCost3", "txtDiaHandling", 'txtFinHandling', 'txtStamping', 'txtOtherCost1', 'txtOtherCost2','txtOtherCost3'].forEach(id => {
+["txtCFP", "txtCAM", "txtModel", "txtGiftBox", "txtOtherCost1", "txtOtherCost2", "txtOtherCost3", "txtDiaHandling", 'txtFinHandling', 'txtStamping', 'txtOtherCost1', 'txtOtherCost2', 'txtOtherCost3'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
         el.addEventListener("input", function () {
@@ -2994,6 +3096,15 @@ const txtSolder = document.getElementById("txtSolder");
     }
 });
 
+const el = document.getElementById('txtTotalLabor');
+if (el) {
+    el.addEventListener("input", function () {
+        if ($('#ddlProcessType').val() === 'Flat Labour per piece') {
+            totalLaborCost = parseFloat( $(this).val()) || 0;
+            fillLaborFOBValues(); // always recalc labor
+        }
+    });
+}
 const txtSemiMinWt = document.getElementById("txtSemiMinWt");
 const txtSemiAdjWt = document.getElementById("txtSemiAdjWt");
 const txtCenterMinWt = document.getElementById("txtCenterMinWt");
@@ -3020,12 +3131,12 @@ function calculateTotals() {
 $(document).ready(function () {
 
 
-/* validate Tab Mahesh*/
+    /* validate Tab Mahesh*/
     $('.nav-tabs button').on('show.bs.tab', function (e) {
 
         if (!validateTabs(e.relatedTarget.id, e.target.id)) {
             e.preventDefault();
-    }
+        }
         //alert('New tab will be visible now!');
         //alert(e.relatedTarget.id);
 
@@ -3036,18 +3147,18 @@ function validateTabs(tabname, newTab) {
     var validate = true;
     if (tabname === "nav-stone-information-tab" && newTab === "nav-sku-information-tab") {
         return true;
-    } else if (tabname === "nav-labor-information-tab" && (newTab === "nav-sku-information-tab" || newTab === "nav-stone-information-tab") ) {
+    } else if (tabname === "nav-labor-information-tab" && (newTab === "nav-sku-information-tab" || newTab === "nav-stone-information-tab")) {
         return true;
     } else if (tabname === "nav-summary-tab") {
         return true;
-    } 
+    }
     var ValidateField = ["#", "#"];
 
     if (tabname === "nav-sku-information-tab") {
-        ValidateField = ["ddlCompany", "ddlVendor", "ddlOrderType", "txtSKUNumber", "ddlCategory", "ddlSubCategory"]; 
+        ValidateField = ["ddlCompany", "ddlVendor", "ddlOrderType", "txtSKUNumber", "ddlCategory", "ddlSubCategory"];
     } else if (tabname === "nav-stone-information-tab") {
         //ValidateField = ["ddlStoneVendor", "ddlStoneType", "ddlGrowing", "ddlSettingLocation", "ddlStoneShape", "txtStoneMMSize", "txtStoneQty", "txtTotalAdjStoneWt","ddlStoneQuality"]
-       var stoneAdded= $("#tblStone tr").length;
+        var stoneAdded = $("#tblStone tr").length;
         if (stoneAdded > 1) {
             clearFieldError($("#tblStone"));
             return true;
@@ -3059,11 +3170,12 @@ function validateTabs(tabname, newTab) {
         //ValidateField = ["txtCastPcs"]
         return true;
     } else {
-        return true;}
+        return true;
+    }
     ValidateField.forEach((name, index) => {
 
-        const $el = $("#"+name);
-        const validator = FieldValidators["#"+name];
+        const $el = $("#" + name);
+        const validator = FieldValidators["#" + name];
         const error = validator($el);
 
         if (error) {
@@ -3075,7 +3187,7 @@ function validateTabs(tabname, newTab) {
     });
 
     return validate;
-    
+
 
 }
 
@@ -3100,7 +3212,7 @@ function validateButtonAddUpdate(buttonid) {
         const $el = $(name);
         const validator = FieldValidators[name];
         const error = validator($el);
-        
+
         if (error) {
             setFieldError($el, error);
             validate = false;
@@ -3117,7 +3229,7 @@ function validateButtonAddUpdate(buttonid) {
         }
     });
 
-   
+
 
     return validate;
 
@@ -3147,7 +3259,7 @@ function printSummaryPage() {
     return false;
 
 }
- 
+
 
 function downloadSummaryPage() {
     $("#printSummary").html($("#divSummary").html());
@@ -3156,8 +3268,8 @@ function downloadSummaryPage() {
     $("#divRmImage", $("#printSummarypg")).css('display', 'none');;
     $("#divRmImage1", $("#printSummarypg")).css('display', 'none');;
     var printContents = $("#printSummarypg");
-    const element = document.getElementById('printSummarypg'); 
-   
+    const element = document.getElementById('printSummarypg');
+
 
     html2canvas(element, {
         useCORS: true, // Needed if your div contains images from other domains
@@ -3177,7 +3289,7 @@ function downloadSummaryPage() {
         //const { jsPDF } = window.jspdf;
         // 'p' for portrait, 'mm' for millimeters unit
         //const doc = new jsPDF('p', 'mm', 'a4');
-        const doc = new jsPDF('p','mm','a4');
+        const doc = new jsPDF('p', 'mm', 'a4');
         // Calculate the dimensions to fit the PDF
         const pdfWidth = doc.internal.pageSize.getWidth();
         const pdfHeight = doc.internal.pageSize.getHeight();

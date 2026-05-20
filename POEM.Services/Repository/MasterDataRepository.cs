@@ -537,7 +537,7 @@ namespace POEM.Services.Repository
                 .AsNoTracking()
                 .Where(s => s.SettingVendor == vendor &&
                             s.SettingType == settingType &&
-                            (s.Shape == shape || s.Shape == "All Shape") &&
+                            (s.Shape == shape || s.Shape == "All Shape" || s.Shape.ToLower() == "all Fancy") &&
                             //(s.Category == category || s.Category == "") &&
                             //(s.SubCategory == subCategory || s.SubCategory == "") &&
                             (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
