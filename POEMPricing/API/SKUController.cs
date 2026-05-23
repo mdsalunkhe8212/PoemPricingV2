@@ -205,7 +205,7 @@ namespace POEMPricing.API
             }
             catch (Exception ex)
             {
-                return InternalServerError(ex);
+                return InternalServerError(ex); 
             }
         }
         //GET: api/sku/margindetails
