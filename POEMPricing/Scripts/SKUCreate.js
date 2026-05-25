@@ -43,8 +43,11 @@ let msdDutyDetails = [];
 let SkuNumberPDF = '';
 /// Added By Mahesh Start
 var diamondHandling = 0.00;
+var diamondHandlingMined = 0.00;
 var diaHndLow = 0.00;
 var diaHndHigh = 0.00;
+var diaHndLowMined = 0.00;
+var diaHndHighMined = 0.00;
 var findingHndGold = 0.00;
 var findingHndPlatinum = 0.00;
 var findingHndSilver = 0.00;
@@ -535,18 +538,17 @@ function getVendorDetails(VendorCode) {
 
     $.getJSON(url, function (data) {
         if (!data) return;
-        var growingType = $('#ddlGrowing').val();
-        if (growingType.toLowerCase() === 'mined') {
-            diamondHandling = data.DiamondHandlingMined || 0;
-            //diaHndLow = data.DiaHndLabLow || 0;
-            //diaHndHigh = data.DiaHndLabHigh || 0;
-        } else {
+        
+        diamondHandlingMined = data.DiamondHandlingMined || 0;
+            diaHndLowMined = data.DiaHndMinedLow || 0;
+            diaHndHighMined = data.DiaHndMinedHigh || 0;
+       
             diamondHandling = data.DiamondHandlingLab || 0;
-            //diaHndLow = data.DiaHndLabLow || 0;
-            //diaHndHigh = data.DiaHndLabHigh || 0;
-        }
-        diaHndLow = data.DiaHndLabLow || 0;
-        diaHndHigh = data.DiaHndLabHigh || 0;
+            diaHndLow = data.DiaHndLabLow || 0;
+            diaHndHigh = data.DiaHndLabHigh || 0;
+        
+        //diaHndLow = data.DiaHndLabLow || 0;
+        //diaHndHigh = data.DiaHndLabHigh || 0;
 
         findingHndGold = data.FindingHndGold || 0;
         findingHndPlatinum = data.FindingHndPlatinum || 0;
