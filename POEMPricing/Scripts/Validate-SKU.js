@@ -316,7 +316,14 @@ const stoneRules = [
     { min: 5, max: 9.99, per: 0.03 },
     { min: 10, max: 20, per: 0.02 }
 ];
-
+const totalStoneRules = [
+    { min: 0.0001, max: 0.57, permin: 0.07, permax: 0.12 },
+    { min: 0.58, max: 1.49, permin: 0.07, permax: 0.12 },
+    { min: 1.5, max: 2.99, permin: 0.03, permax: 0.05 },
+    { min: 3, max: 4.99, permin: 0.03, permax: 0.05 },
+    { min: 5, max: 9.99, perpermin: 0.03, permax: 0.05 },
+    { min: 10, max: 20, permin: 0.02, permax: 0.04 }
+];
 /**
  * Generic validation function
  * adjInput - the adjusted weight textbox being validated
@@ -324,9 +331,19 @@ const stoneRules = [
  */
 function validateAdjStoneGeneric(adjInput, baseWt) {
     const adjValue = parseFloat(adjInput.value) || 0;
-
+    var minAllowed = 0;
+    var maxAllowed = 0;
     // Find matching rule based on base weight
-    const rule = stoneRules.find(r => baseWt >= r.min && baseWt <= r.max);
+    var istotal = false;
+    var ctrlid = adjInput.id;
+    if (ctrlid === 'txtSemiAdjWt' || ctrlid === 'txtCenterAdjWt' ) {
+        istotal = true;
+    }
+    var rule = stoneRules.find(r => baseWt >= r.min && baseWt <= r.max);
+    if (istotal) {
+        rule = totalStoneRules.find(r => baseWt >= r.min && baseWt <= r.max);
+
+    }
 
     if (!rule) {
         setFieldError($(adjInput), "Base weight not in any defined range.");
@@ -334,9 +351,14 @@ function validateAdjStoneGeneric(adjInput, baseWt) {
     }
 
     // Allowed range with 4 decimal precision
-    const minAllowed = parseFloat((baseWt - (baseWt * rule.per)).toFixed(4));
-    const maxAllowed = parseFloat((baseWt + (baseWt * rule.per)).toFixed(4));
-
+    if (istotal) {
+        minAllowed = parseFloat((baseWt - (baseWt * rule.permin)).toFixed(4));
+        maxAllowed = parseFloat((baseWt + (baseWt * rule.permax)).toFixed(4));
+    }
+    else {
+        minAllowed = parseFloat((baseWt - (baseWt * rule.per)).toFixed(4));
+        maxAllowed = parseFloat((baseWt + (baseWt * rule.per)).toFixed(4));
+    }
     console.log("Range:", minAllowed, "-", maxAllowed, "Adj:", adjValue);
 
     if (adjValue < minAllowed || adjValue > maxAllowed) {

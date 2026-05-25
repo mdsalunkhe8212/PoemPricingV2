@@ -535,8 +535,16 @@ function getVendorDetails(VendorCode) {
 
     $.getJSON(url, function (data) {
         if (!data) return;
-
-        diamondHandling = data.DiamondHandlingLab || 0;
+        var growingType = $('#ddlGrowing').val();
+        if (growingType.toLowerCase() === 'mined') {
+            diamondHandling = data.DiamondHandlingMined || 0;
+            //diaHndLow = data.DiaHndLabLow || 0;
+            //diaHndHigh = data.DiaHndLabHigh || 0;
+        } else {
+            diamondHandling = data.DiamondHandlingLab || 0;
+            //diaHndLow = data.DiaHndLabLow || 0;
+            //diaHndHigh = data.DiaHndLabHigh || 0;
+        }
         diaHndLow = data.DiaHndLabLow || 0;
         diaHndHigh = data.DiaHndLabHigh || 0;
 
@@ -572,14 +580,13 @@ function HandlingCaluculation() {
     var dimondhndlSTCost = (parseFloat(totalStnCost).toFixed(2) * parseFloat(diamondHandling).toFixed(2)) / 100;
     var dimondhndlAadjwtCost = parseFloat(totalDHAdjWT).toFixed(4) * parseFloat(diaHndLow).toFixed(2);
     //DimondHndl = Math.min(dimondhndlSTCost, dimondhndlAadjwtCost);
-    DimondHndl = parseFloat( dimondhndlSTCost);
-
+    DimondHndl =  Math.min(parseFloat(dimondhndlSTCost), parseFloat(dimondhndlAadjwtCost));
     if (DimondHndl > diaHndHigh) {
         DimondHndl = diaHndHigh;
     }
-    if (DimondHndl < diaHndLow) {
-        DimondHndl = diaHndLow;
-    }
+    //if (DimondHndl < diaHndLow) {
+    //    DimondHndl = diaHndLow;
+    //}
     $("#txtDiaHandling").val(parseFloat(DimondHndl).toFixed(2));
 
     // Dimond Handling Calculation End
@@ -614,7 +621,8 @@ function HandlingCaluculation() {
     if (metalLines.length > 0) {
         metalType1 = metalLines[0].metalText;
     }
-
+    var ordertype = $('#ddlOrderType').val();
+    if (ordertype.toLowerCase() === 'special') { 
     if (metalType1.toLowerCase() === 'gold') {
         vendorModelCost = modelMkgGold;
         vendorCamCost = camGold;
@@ -625,6 +633,7 @@ function HandlingCaluculation() {
         vendorModelCost = modelMkgSilver;
         vendorCamCost = camSilver;
 
+        }
     }
     $('#txtModel').val(parseFloat(vendorModelCost).toFixed(2));
     $('#txtCAM').val(parseFloat(vendorCamCost).toFixed(2));
@@ -1745,7 +1754,7 @@ function renderStoneTable() {
                 <td class="text-center">${s.TotalStoneWt}</td>
                 <td class="text-center">${s.TotalAdjStoneWt}</td>
                 <td>${s.SettingVendor}</td>
-                <td class="text-center">$${s.TotalCost}</td>
+                <td class="text-center">$${(parseFloat(s.TotalCost) + parseFloat(s.StoneTotalCost))}</td>
                 <td class="text-center">
                     <button class="btn btn-sm btn-info m-1" onclick="setStoneData(${i})">View</button>
                     <button class="btn btn-sm btn-danger  m-1" onclick="deleteStone(${i})">Delete</button>
@@ -1755,7 +1764,7 @@ function renderStoneTable() {
         totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
         totalTotalStoneWt = parseFloat(totalTotalStoneWt) + parseFloat(s.TotalStoneWt);
         totalTotalAdjStoneWt = parseFloat(totalTotalAdjStoneWt) + parseFloat(s.TotalAdjStoneWt);
-        totalCosttotal = parseFloat(totalCosttotal) + parseFloat(s.TotalCost);;
+        totalCosttotal = parseFloat(totalCosttotal) + parseFloat(s.TotalCost) + parseFloat(s.StoneTotalCost);
     });
     htmlFoot = `
             <tr>
@@ -2097,32 +2106,32 @@ function fillLaborFOBValues() {
     skuModule.calculations.totalSemiSettingCost = parseFloat(totalSemiSettingCost).toFixed(2);
     skuModule.calculations.totalCenterSettingCost = parseFloat(totalCenterSettingCost).toFixed(2);
     skuModule.calculations.totalLaborCost = parseFloat(totalLaborCost).toFixed(2);
-    skuModule.calculations.semiDuty = parseFloat(semiDuty).toFixed(2);
+    skuModule.calculations.semiDuty = parseFloat(semiDuty).toFixed(0);
 
 
 
-    skuModule.calculations.semiFOB = semiFOB.toFixed(2);
-    skuModule.calculations.completeFOB = completeFOB.toFixed(2);
+    skuModule.calculations.semiFOB = semiFOB.toFixed(0);
+    skuModule.calculations.completeFOB = completeFOB.toFixed(0);
 
-    skuModule.calculations.landedcost = landedcost.toFixed(2);
-    skuModule.calculations.landedcostCenter = landedcostCenter.toFixed(2);
+    skuModule.calculations.landedcost = landedcost.toFixed(0);
+    skuModule.calculations.landedcostCenter = landedcostCenter.toFixed(0);
 
-    skuModule.calculations.semiPrice1 = semiPrice1.toFixed(2);
-    skuModule.calculations.semiPrice2 = semiPrice2.toFixed(2);
-    skuModule.calculations.semiPrice3 = semiPrice3.toFixed(2);
-    skuModule.calculations.semiPrice4 = semiPrice4.toFixed(2);
-    skuModule.calculations.centerPrice1 = centerPrice1.toFixed(2);
-    skuModule.calculations.centerPrice2 = centerPrice2.toFixed(2);
-    skuModule.calculations.centerPrice3 = centerPrice3.toFixed(2);
-    skuModule.calculations.centerPrice4 = centerPrice4.toFixed(2);
-    skuModule.calculations.semiMargin1 = semiMargin1.toFixed(2);
-    skuModule.calculations.semiMargin2 = semiMargin2.toFixed(2);
-    skuModule.calculations.semiMargin3 = semiMargin3.toFixed(2);
-    skuModule.calculations.semiMargin4 = semiMargin4.toFixed(2);
-    skuModule.calculations.centerMargin1 = centerMargin1.toFixed(2);
-    skuModule.calculations.centerMargin2 = centerMargin2.toFixed(2);
-    skuModule.calculations.centerMargin3 = centerMargin3.toFixed(2);
-    skuModule.calculations.centerMargin4 = centerMargin4.toFixed(2);
+    skuModule.calculations.semiPrice1 = semiPrice1.toFixed(0);
+    skuModule.calculations.semiPrice2 = semiPrice2.toFixed(0);
+    skuModule.calculations.semiPrice3 = semiPrice3.toFixed(0);
+    skuModule.calculations.semiPrice4 = semiPrice4.toFixed(0);
+    skuModule.calculations.centerPrice1 = centerPrice1.toFixed(0);
+    skuModule.calculations.centerPrice2 = centerPrice2.toFixed(0);
+    skuModule.calculations.centerPrice3 = centerPrice3.toFixed(0);
+    skuModule.calculations.centerPrice4 = centerPrice4.toFixed(0);
+    skuModule.calculations.semiMargin1 = semiMargin1.toFixed(0);
+    skuModule.calculations.semiMargin2 = semiMargin2.toFixed(0);
+    skuModule.calculations.semiMargin3 = semiMargin3.toFixed(0);
+    skuModule.calculations.semiMargin4 = semiMargin4.toFixed(0);
+    skuModule.calculations.centerMargin1 = centerMargin1.toFixed(0);
+    skuModule.calculations.centerMargin2 = centerMargin2.toFixed(0);
+    skuModule.calculations.centerMargin3 = centerMargin3.toFixed(0);
+    skuModule.calculations.centerMargin4 = centerMargin4.toFixed(0);
 
 
 
@@ -2152,28 +2161,28 @@ function fillLaborFOBValues() {
     const txtLandedCostComplete = document.getElementById("txtLandedCostComplete");
 
 
-    if (txtSemiFOB) txtSemiFOB.value = semiFOB.toFixed(2);
-    if (txtCompleteFOB) txtCompleteFOB.value = completeFOB.toFixed(2);
-    if (txtSemiDuty) txtSemiDuty.value = semiDuty.toFixed(2);
-    if (txtCompleteDuty) txtCompleteDuty.value = centerDuty.toFixed(2);
-    if (txtPrice1) txtPrice1.value = semiPrice1.toFixed(2);
-    if (txtPrice2) txtPrice2.value = semiPrice2.toFixed(2);
-    if (txtPrice3) txtPrice3.value = semiPrice3.toFixed(2);
-    if (txtPrice4) txtPrice4.value = semiPrice4.toFixed(2);
+    if (txtSemiFOB) txtSemiFOB.value = semiFOB.toFixed(0);
+    if (txtCompleteFOB) txtCompleteFOB.value = completeFOB.toFixed(0);
+    if (txtSemiDuty) txtSemiDuty.value = semiDuty.toFixed(0);
+    if (txtCompleteDuty) txtCompleteDuty.value = centerDuty.toFixed(0);
+    if (txtPrice1) txtPrice1.value = semiPrice1.toFixed(0);
+    if (txtPrice2) txtPrice2.value = semiPrice2.toFixed(0);
+    if (txtPrice3) txtPrice3.value = semiPrice3.toFixed(0);
+    if (txtPrice4) txtPrice4.value = semiPrice4.toFixed(0);
     if (txtMargin1) txtMargin1.value = semiMargin1.toFixed(0);
     if (txtMargin2) txtMargin2.value = semiMargin2.toFixed(0);
     if (txtMargin3) txtMargin3.value = semiMargin3.toFixed(0);
     if (txtMargin4) txtMargin4.value = semiMargin4.toFixed(0);
-    if (txtCompletePrice1) txtCompletePrice1.value = centerPrice1.toFixed(2);
-    if (txtCompletePrice2) txtCompletePrice2.value = centerPrice2.toFixed(2);
-    if (txtCompletePrice3) txtCompletePrice3.value = centerPrice3.toFixed(2);
-    if (txtCompletePrice4) txtCompletePrice4.value = centerPrice4.toFixed(2);
+    if (txtCompletePrice1) txtCompletePrice1.value = centerPrice1.toFixed(0);
+    if (txtCompletePrice2) txtCompletePrice2.value = centerPrice2.toFixed(0);
+    if (txtCompletePrice3) txtCompletePrice3.value = centerPrice3.toFixed(0);
+    if (txtCompletePrice4) txtCompletePrice4.value = centerPrice4.toFixed(0);
     if (txtCompleteMargin1) txtCompleteMargin1.value = centerMargin1.toFixed(0);
     if (txtCompleteMargin2) txtCompleteMargin2.value = centerMargin2.toFixed(0);
     if (txtCompleteMargin3) txtCompleteMargin3.value = centerMargin3.toFixed(0);
     if (txtCompleteMargin4) txtCompleteMargin4.value = centerMargin4.toFixed(0);
-    if (txtLandedCost) txtLandedCost.value = landedcost.toFixed(2);
-    if (txtLandedCostComplete) txtLandedCostComplete.value = landedcostCenter.toFixed(2);
+    if (txtLandedCost) txtLandedCost.value = landedcost.toFixed(0);
+    if (txtLandedCostComplete) txtLandedCostComplete.value = landedcostCenter.toFixed(0);
 
 }
 
