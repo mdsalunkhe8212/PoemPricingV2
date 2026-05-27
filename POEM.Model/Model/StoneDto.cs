@@ -16,6 +16,7 @@ namespace POEM.Model.Model
 
         public string Shape { get; set; }
         public string ShapeText { get; set; }
+        public string SizeRange { get; set; }
         public string MMSize { get; set; }
         public string Width1 { get; set; }
         public string Width2 { get; set; }

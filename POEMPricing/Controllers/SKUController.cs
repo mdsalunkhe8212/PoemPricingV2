@@ -85,6 +85,10 @@ namespace POEMPricing.Controllers
                 {
                     new KeyValuePair<string, string>("", "")
                 },
+                StoneSizeRange = new List<KeyValuePair<string, string>>
+                {
+                    new KeyValuePair<string, string>("", "")
+                },
                 StoneQualitys = new List<KeyValuePair<string, string>>
                 {
                     new KeyValuePair<string, string>("", "")

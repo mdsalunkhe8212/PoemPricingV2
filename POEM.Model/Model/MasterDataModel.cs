@@ -26,6 +26,7 @@ namespace POEM.Model.Model
         public string SelectedStoneShape { get; set; }
         public string SelectedSettingLocation { get; set; }
         public string SelectedStoneQuality { get; set; }
+        public string SelectedSizeRange { get; set; }
         public string SelectedSettingVendor { get; set; }
         public string SelectedSettingType { get; set; }
         public string SelectedLaborLocation { get; set; }
@@ -49,6 +50,7 @@ namespace POEM.Model.Model
         public List<KeyValuePair<string, string>> StoneShapes { get; set; }
         public List<KeyValuePair<string, string>> SettingLocations { get; set; }
         public List<KeyValuePair<string, string>> StoneQualitys { get; set; }
+        public List<KeyValuePair<string, string>> StoneSizeRange { get; set; }
         public List<KeyValuePair<string, string>> SettingVendors { get; set; }
         public List<KeyValuePair<string, string>> SettingTypes { get; set; }
         public List<KeyValuePair<string, string>> LaborLocations { get; set; }

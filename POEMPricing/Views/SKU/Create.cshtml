@@ -401,8 +401,11 @@
                             </div>
 
                             <div class="col-sm-3 col-md-2">
-                                <label for="txtStoneMMSize" class="form-label">Size Range</label>
-                                <input type="text" class="form-control" id="txtSizeRange" placeholder="">
+                                @*<label for="txtStoneMMSize" class="form-label">Size Range</label>
+        <input type="text" class="form-control" id="txtSizeRange" placeholder="">*@
+                                @Html.LabelFor(m => m.SelectedSizeRange, "Size Range", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedSizeRange, new SelectList(Model.StoneSizeRange, "Key", "Value"), " ", new { @class = "form-select", id = "ddlSizeRange" })
+
                             </div>
 
                             <div class="col-sm-3 col-md-2">
@@ -1216,8 +1219,8 @@
 
 </div>
 @section scripts {
-    <script src="~/Scripts/Validate-SKU.js?v1.131"></script>
-    <script src="~/Scripts/SKUCreate.js?v1.131"></script>
+    <script src="~/Scripts/Validate-SKU.js?v1.21"></script>
+    <script src="~/Scripts/SKUCreate.js?v1.21"></script>
 
     <!-- In your .cshtml -->
     <script id="skuData" type="application/json">

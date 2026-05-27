@@ -21,7 +21,9 @@ namespace POEM.Model.Model
         [Required, MaxLength(50)]
         public string GrowingType { get; set; } = string.Empty;
 
+        public string StoneShapeCode { get; set; } = string.Empty;
         [Required, MaxLength(50)]
+
         public string StoneShape { get; set; } = string.Empty;
 
         [Required, MaxLength(50)]
