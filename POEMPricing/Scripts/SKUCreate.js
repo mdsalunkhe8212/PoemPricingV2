@@ -1164,7 +1164,13 @@ $(function () {
         if (validateButtonAddUpdate("btnMetalAddUpdate")) {
             const row = readMetalForm();
             metalLines.push(row);
-
+            $('#ddlMetal').val('');
+            $('#txtMetalRatePOz').val('0.00');
+            $('#ddlKarat').val('');
+            $('#ddlMetalColor').val('');
+            $('#txtMetalGmWt').val('0');
+            $('#txtMetalRatePerGm').val('0.00');
+            $('#txtMetalCost').val('0.00');
             renderMetalGrid();
             toggleTableVisibility();
         }
@@ -1317,6 +1323,7 @@ const $ddlQuality = $('#ddlStoneQuality');
 const $ddlStoneType = $('#ddlStoneType');
 const $ddlGrowingType = $('#ddlGrowingType');
 const $ddlStoneShape = $('#ddlStoneShape');
+const $ddlSizeRange = $('#ddlSizeRange');
 
 const $txtCost = $('#txtStoneCostPerCarat');
 const $txtStoneTotalCost = $('#txtStoneTotalCost');
@@ -1421,6 +1428,7 @@ $mmSize.on('input change', costHandler);
 $ddlStoneType.on('change', costHandler);
 $ddlGrowingType.on('change', costHandler);
 $ddlStoneShape.on('change', costHandler);
+$ddlSizeRange.on('change', costHandler);
 $ddlQuality.on('input change', costHandler);
 $txtTotalAdjStoneWt.on('input change', costHandler);
 
@@ -1438,6 +1446,7 @@ $('#ddlSettingVendor').on('change', function () {
     const vendor = $(this).val();
 
     if (!vendor) {
+        $('#ddlSettingType').empty().append('<option value=""></option>');
         $('#ddlSettingType').empty().append('<option value=""></option>');
         return;
     }
@@ -1532,10 +1541,10 @@ $('#ddlStoneType').on('change', function () {
  * STONE SHAPE → STONE QUALITY
  ************************************************************/
 $('#ddlStoneShape').on('change', function () {
-    const stoneShape = $(this).find('option:selected').text().trim();
+    const stoneShape = $(this).val();
     const stoneType = $('#ddlStoneType').val();
     const growing = $('#ddlGrowing').val();
-
+    const vendor = $('#ddlStoneVendor').val();
     $.get(webRoot + 'api/sku/stonequality/' +
         stoneType + '/' + growing + '/' + stoneShape,
         function (data) {
@@ -1544,6 +1553,17 @@ $('#ddlStoneShape').on('change', function () {
 
             $.each(data, function (i, item) {
                 stoneQuality.append($('<option>').val(item.Key).text(item.Value));
+            });
+        });
+
+    $.get(webRoot + 'api/sku/stonesizerange/' +
+        stoneType + '/' + growing + '/' + stoneShape + '/' + vendor,
+        function (data) {
+            const stonesizerange = $('#ddlSizeRange');
+            stonesizerange.empty().append('<option value=""></option>');
+
+            $.each(data, function (i, item) {
+                stonesizerange.append($('<option>').val(item.Key).text(item.Value));
             });
         });
 });
@@ -1643,6 +1663,7 @@ function getStoneModel() {
 
         Shape: $('#ddlStoneShape').val(),
         ShapeText: $('#ddlStoneShape option:selected').text(),
+        SizeRange: $('#ddlSizeRange').val(),
 
         MMSize: $('#txtStoneMMSize').val(),
         Width1: $('#txtStoneWidth1').val(),
@@ -1819,6 +1840,7 @@ function editStone(index) {
     //$('#ddlLab').val(s.Lab);
     setValue('#ddlLab', s.Lab);
     setSelectedText('#ddlStoneShape', s.Shape);
+    setValue('#ddlSizeRange', s.SizeRange);
     //$('#ddlStoneShape').val(s.Shape);
     $('#txtStoneMMSize').val(s.MMSize);
     $('#txtStoneWidth1').val(s.Width1);
@@ -1892,6 +1914,7 @@ function setStoneData(index) {
         setTimeout(function () {
             $('#ddlStoneQuality').val(data.StoneQuality);
             $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat);
+            $('#ddlSizeRange').val(data.SizeRange); 
         }, 800);
     }, 800);
     //$('#ddlStoneShape').val(data.Shape);
@@ -1935,7 +1958,8 @@ function clearStoneControls() {
     $('#ddlSettingLocation').val('');
     $('#ddlLab').val('');
     $('#ddlStoneShape').val('');
-    $('#txtSizeRange').val('');
+    //$('#txtSizeRange').val('');
+    $('#ddlSizeRange').val('');
     $('#txtStoneMMSize').val('');
     $('#txtStoneWidth1').val('');
     $('#txtStoneWidth2').val('');

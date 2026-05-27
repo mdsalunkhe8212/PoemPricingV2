@@ -242,6 +242,25 @@ namespace POEMPricing.API
                 return InternalServerError(ex);
             }
         }
+
+
+        [HttpGet]
+        [Route("stonesizerange/{StoneType}/{GrowingType}/{StoneShape}/{Vendor}")]
+        public async Task<IHttpActionResult> stonesizerange([FromUri] string stonetype, string growingtype, string stoneshape, string vendor)
+        {
+            try
+            {
+                if (growingtype == "Lab - HPHT  CVD") { growingtype = "Lab - HPHT / CVD"; }
+                ;
+                var stonesizerange = _masterDataRepository.GetDropdownFromDb("SizeRange", stonetype + '|' + growingtype + '|' + stoneshape+'|'+vendor);
+                await Task.Delay(0);
+                return Ok(stonesizerange);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
         // GET api/sku/perstoneweight?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
         [HttpGet]
         [Route("perstoneweight")]

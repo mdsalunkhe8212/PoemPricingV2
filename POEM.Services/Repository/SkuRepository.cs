@@ -279,7 +279,7 @@ namespace POEM.Services.Repository
                 Growing = dto.Growing,
                 SettingLocation = dto.SettingLocation,
                 Lab = dto.Lab,
-
+                SizeRange=dto.SizeRange,
                 StoneShape = dto.Shape,
                 ShapeText = dto.ShapeText,
                 StoneMMSize = dto.MMSize,
@@ -435,8 +435,11 @@ namespace POEM.Services.Repository
                             sku.ModifiedOn,
                             sku.IsActive,
                             sku.Category,
+                            sku.CategoryCode,
                             sku.SubCategory,
+                            sku.SubCategoryCode,
                             sku.Collection,
+                            sku.CollectionCode
                         };
 
             // SKU prefix filter (min length 5)
@@ -449,13 +452,13 @@ namespace POEM.Services.Repository
                 // category/subcategory/collection filters can be applied here
                 // assuming SKUDetails has these columns
                 if (!string.IsNullOrEmpty(category))
-                    query = query.Where(s => s.Category == category);
+                    query = query.Where(s => s.CategoryCode == category);
 
                 if (!string.IsNullOrEmpty(subcategory))
-                    query = query.Where(s => s.SubCategory == subcategory);
+                    query = query.Where(s => s.SubCategoryCode == subcategory);
 
                 if (!string.IsNullOrEmpty(collection))
-                    query = query.Where(s => s.Collection == collection);
+                    query = query.Where(s => s.CollectionCode == collection);
             }
 
             var total = await query.CountAsync();
@@ -595,6 +598,7 @@ namespace POEM.Services.Repository
                     StoneVendorCode = st.StoneVendorCode,
                     StoneType = st.StoneType,
                     ShapeText = st.ShapeText,
+                    SizeRange=st.SizeRange,
                     Qty = st.StoneQty.ToString(),
                     SemiMinWt = st.SemiMinWt.ToString(),
                     CenterMinWt = st.CenterMinWt.ToString(),

@@ -384,7 +384,7 @@ namespace POEM.Services.Repository
                     items = _context.DiamondDetails
                         .Where(c => c.StoneType == stonetype
                         && c.GrowingType == growingtype
-                        && c.StoneShape == stoneshape)
+                        && c.StoneShapeCode == stoneshape)
                         .Select(f => new
                         {
                             Key = f.StoneQuality,
@@ -421,6 +421,28 @@ namespace POEM.Services.Repository
                          .ToList()
                          .Select(x => new KeyValuePair<string, string>(x.Key, x.Value))
                          .ToList();
+                    break;
+                case "SizeRange":
+                    var spstoneQualityParts = param.Split('|');
+                    var selstonetype = spstoneQualityParts[0];
+                    var selgrowingtype = spstoneQualityParts[1];
+                    var selstoneshape = spstoneQualityParts[2];
+                    var selVendor = spstoneQualityParts[3];
+
+                    items = _context.DiamondDetails
+                        .Where(c => c.StoneType == selstonetype
+                        && c.GrowingType == selgrowingtype
+                        && c.StoneShapeCode == selstoneshape
+                        && c.VendorCode == selVendor)
+                        .Select(f => new
+                        {
+                            Key = f.SizeRange,
+                            Value = f.SizeRange
+                        })
+                        .Distinct()
+                        .ToList()  // Execute SQL first
+                        .Select(x => new KeyValuePair<string, string>(x.Key, x.Value))
+                        .ToList();
                     break;
                 case "LaborLocation":
                     items = _context.VendorDetails
