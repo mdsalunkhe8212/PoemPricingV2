@@ -35,7 +35,7 @@ namespace POEM.Model.Model
         public DbSet<FindingTypeMasterDbDto> FindingTypeMaster { get; set; }
         public DbSet<MarginDetailsDbDto> MarginDetails { get; set; }
 
-
+        public DbSet<StoneQualityDetailsDbDto> StoneQualityDetails { get; set; }
 
         public ApplicationDbContext()
             : base("name=PoemPricingDbModel")
