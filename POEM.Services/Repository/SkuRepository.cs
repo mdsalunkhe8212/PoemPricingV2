@@ -275,6 +275,7 @@ namespace POEM.Services.Repository
             return new SKUStoneDbDto
             {
                 StoneVendor = dto.StoneVendor,
+                StoneVendorCode=dto.StoneVendorCode,
                 StoneType = dto.StoneType,
                 Growing = dto.Growing,
                 SettingLocation = dto.SettingLocation,
@@ -296,7 +297,9 @@ namespace POEM.Services.Repository
                 StoneTotalCost = ParseDecimal(dto.StoneTotalCost),
 
                 StoneSettingVendor = dto.SettingVendor,
+                StoneSettingVendorCode=dto.StoneVendorCode,
                 StoneSettingType = dto.SettingType,
+                StoneSettingTypeCode=dto.SettingTypeCode,
                 CostPerStone = ParseDecimal(dto.CostPerStone),
                 SettingTotalCost = ParseDecimal(dto.TotalCost),
 

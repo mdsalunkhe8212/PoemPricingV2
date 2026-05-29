@@ -1373,6 +1373,47 @@ function parseValOrText($el) {
     return ($el.find('option:selected').text() || '').trim();
 }
 
+
+$ddlSizeRange.on('change', function () {
+     const stoneType = $stoneType.val();
+    const growingType = $growingType.val();
+    const stoneShape = $stoneShape.find('option:selected').text() || '';
+    const vendor = $stoneVendor.val();
+    const sizeRange = $ddlSizeRange.val();  
+    $.ajax({
+        url: webRoot + '/api/sku/stonelengthdiameter',
+        method: 'GET',
+        data: {
+            vendor: vendor,
+            stoneType: stoneType,
+            growingType: growingType,
+            stoneShape: stoneShape,
+            sizeRange: sizeRange    
+
+        },
+        beforeSend: function () {
+            //$txtCost.prop('disabled', true);
+            $('#txtPerStoneWt').val(''); // clear weight until we get new value 
+        },
+        success: function (res) {
+            if (res && res.stonelengthdiameter !== undefined && res.stonelengthdiameter !== null) {
+                const lengthdiameter = Number(res.stonelengthdiameter).toFixed(2);
+                $mmSize.val(lengthdiameter);
+                $mmSize.change(); // trigger change to load per-stone weight
+                
+            } else {
+                $mmSize.val('0');
+            }
+        },
+        error: function () {
+            $mmSize.val('0');
+        },
+        complete: function () {
+            //$txtCost.prop('disabled', false);
+        }
+    });
+});
+
 async function fetchAndSetCost() {
     const stoneQuality = parseValOrText($ddlQuality);
     const lengthDiameter = ($mmSize.val() || '').toString().trim();
@@ -1895,9 +1936,9 @@ function deleteStone(index) {
     $('#txtSemiAdjWt').val(Number(totalSemiAdjWt).toFixed(4));//added By Mahesh
     $('#txtCenterAdjWt').val(Number(totalCenterAdjWt).toFixed(4));//added By Mahesh
 
-    calculateTotals();
+   
     stoneList.splice(index, 1);
-
+    calculateTotals();
     renderStoneTable();
 }
 
@@ -1915,6 +1956,7 @@ function setStoneData(index) {
             $('#ddlStoneQuality').val(data.StoneQuality);
             $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat);
             $('#ddlSizeRange').val(data.SizeRange); 
+
         }, 800);
     }, 800);
     //$('#ddlStoneShape').val(data.Shape);
