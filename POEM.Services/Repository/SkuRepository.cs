@@ -297,7 +297,7 @@ namespace POEM.Services.Repository
                 StoneTotalCost = ParseDecimal(dto.StoneTotalCost),
 
                 StoneSettingVendor = dto.SettingVendor,
-                StoneSettingVendorCode=dto.StoneVendorCode,
+                StoneSettingVendorCode=dto.SettingVendorCode,
                 StoneSettingType = dto.SettingType,
                 StoneSettingTypeCode=dto.SettingTypeCode,
                 CostPerStone = ParseDecimal(dto.CostPerStone),
