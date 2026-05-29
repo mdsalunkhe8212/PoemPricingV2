@@ -524,7 +524,23 @@ namespace POEM.Services.Repository
             return result;
 
         }
+        public Task<decimal?> GetStoneLengthDiameter(string vendor, string stoneType, string growingType, string stoneShape, string sizeRange)
+        {
+            
+            // query using numeric comparison against the decimal column
+            var result = _context.DiamondDetails
+                .AsNoTracking()
+                .Where(dd =>
+                    dd.VendorCode == vendor &&  
+                    dd.StoneType == stoneType &&
+                    dd.GrowingType == growingType &&
+                    dd.StoneShape == stoneShape &&
+                    dd.SizeRange == sizeRange)
+                .Select(dd => (decimal?)dd.LengthDiameter)
+                .FirstOrDefaultAsync();
 
+            return result;
+        }
         public Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality)
         {
             // normalize inputs

@@ -277,6 +277,24 @@ namespace POEMPricing.API
 
             return Ok(new { perStoneWeight = weight });
         }
+
+        // GET api/sku/stonecostpercarat?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
+        [HttpGet]
+        [Route("stonelengthdiameter")]
+        public async Task<IHttpActionResult> GetStoneLengthDiameter([FromUri] string vendor, string stoneType, [FromUri] string growingType, [FromUri] string stoneShape, [FromUri] string sizeRange)
+        {
+            if (string.IsNullOrWhiteSpace(stoneType) || string.IsNullOrWhiteSpace(vendor) || string.IsNullOrWhiteSpace(growingType) )
+                return BadRequest("Missing required parameters: vendor,stoneType,growingType, stoneShape.");
+            if (growingType == "Lab - HPHT  CVD") { growingType = "Lab - HPHT / CVD"; }
+            var lengthDiameter = await _masterDataRepository.GetStoneLengthDiameter(vendor, stoneType, growingType, stoneShape,sizeRange);
+
+            if (lengthDiameter == null) {
+                lengthDiameter = 0;
+            }
+                //return NotFound();
+
+            return Ok(new { stonelengthdiameter = lengthDiameter });
+        }
         // GET api/sku/stonecostpercarat?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
         [HttpGet]
         [Route("stonecostpercarat")]
@@ -287,8 +305,10 @@ namespace POEMPricing.API
             if (growingType == "Lab - HPHT  CVD") { growingType = "Lab - HPHT / CVD"; }
             var cost = await _masterDataRepository.GetStoneCostPerCarat(vendor, stoneType, growingType, stoneShape, lengthDiameter, stoneQuality);
 
-            if (cost == null)
-                return NotFound();
+            if (cost == null) {
+                cost = 0;
+            }
+            //    return NotFound();
 
             return Ok(new { stoneCostPerCarat = cost });
         }
