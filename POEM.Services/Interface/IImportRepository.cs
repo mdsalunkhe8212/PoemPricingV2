@@ -1,4 +1,5 @@
 ﻿using POEM.Model.Model;
+using POEM.Model.Model.Import;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace POEM.Services.Interface
 
         void BulkInsertCategories(List<CategoryDetails> categories);
 
+        void DeleteCategoryCodesDetailsByCodes(List<string> codes);
+
         #endregion
 
         #region SubCategoryMaster
@@ -23,6 +26,8 @@ namespace POEM.Services.Interface
 
         List<string> GetAllSubCategoryMasterSubCategoryNames();
         void BulkInsertSubCategoryMaster(List<SubCategoryMasterDbDto> subCategories);
+
+        void DeleteSubCategoryCodesDetailsByCodes(List<string> codes);
         #endregion
 
         #region CollectionDetails
@@ -30,6 +35,8 @@ namespace POEM.Services.Interface
 
         List<string> GetAllCollectionDetailsCollections();
         void BulkInsertCollectionDetailsMaster(List<CollectionDtl> collections);
+
+        void DeleteCollectionDetailsByCodes(List<string> codes);
         #endregion
 
         #region Company Master
@@ -37,24 +44,30 @@ namespace POEM.Services.Interface
 
         List<string> GetAllCompanyMasterNames();
         void BulkInsertCompanyMaster(List<CompanyMasterDbDto> master);
+        void DeleteCompanyMasterByCodes(List<string> codes);
         #endregion
 
         #region FindingDetails
         List<string> GetAllFindingDetailsFindingNumbers();
 
         void BulkInsertFindingDetails(List<FindingDetail> master);
+        void DeleteFindingDetailsByFindingNumbers(List<string> codes);
         #endregion
 
         #region StoneShapeDetails
         List<string> GetAllStoneShapeDetailsCodes();
 
         void BulkInsertStoneShapeDetails(List<StoneShapeDetail> master);
+
+        void DeleteStoneShapeDetailsByCodes(List<string> codes);
         #endregion
 
         #region SettingLaborDetails
         List<string> GetAllSettingLaborDetailsCodes();
 
         void BulkInsertSettingLaborDetails(List<SettingLaborDetail> master);
+
+        void DeleteSettingLaborDetailsByCodes(List<string> codes);
 
         #endregion
 
@@ -63,12 +76,25 @@ namespace POEM.Services.Interface
 
         void BulkInsertVendorDetails(List<VendorDetails> master);
 
+        void DeleteVendorDetailsByCodes(List<string> codes);
+
         #endregion
 
         #region StoneQualityDetails
         List<string> GetAllStoneQualityDetailsCodes();
 
         void BulkInsertStoneQualityDetails(List<StoneQualityDetailsDbDto> master);
+
+        void DeleteStoneQualityDetailsByCodes(List<string> codes);
+
+        #endregion
+
+        #region ProcessCostingDetails
+        List<string> GetAllProcessCostingDetailsCodes();
+
+        void BulkInsertProcessCostingDetails(List<ProcessCostingDetails> master);
+
+        void DeleteProcessCostingDetailsByCodes(List<string> codes);
 
         #endregion
     }
