@@ -74,6 +74,26 @@ namespace POEMPricing.Managers
 
                     row.ErrorMessage1 = "Code is required.";
                 }
+                else if (row.Code.Length > 10)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Code cannot exceed 10 characters.";
+                }
+                else if (row.StoneType.Length > 50)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "stone type cannot exceed 50 characters.";
+                }
+                else if (row.StoneShape.Length > 50)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "stone shape cannot exceed 50 characters.";
+                }
+                else if (row.CategoryFancyRound.Length > 50)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Code cannot exceed 50 characters.";
+                }
                 else
                 {
                     row.IsValid = true;
@@ -116,11 +136,12 @@ namespace POEMPricing.Managers
             foreach (var row in rows)
             {
                 if (!row.IsValid) continue;
+                if (row.IsDuplicate) continue;
                 if (codesInDb.Contains(row.Code.ToLower()))
                 {
-                    row.IsDuplicate = true;
+                    row.IsExistingInDb = true;
 
-                    row.ErrorMessage2 = "Code already exists in database.";
+                    row.ErrorMessage3 = "Code already exists in DB- will be replace";
                 }
 
 
@@ -138,17 +159,32 @@ namespace POEMPricing.Managers
                 .Where(x => x.IsDuplicate)
                 .ToList();
 
+            result.ExistingInDbRecords = rows.Where(x => x.IsExistingInDb).ToList();
+
+
             result.ValidRows = result.ValidRecords.Count;
 
             result.InvalidRows = result.InvalidRecords.Count;
 
             result.DuplicateRows = result.DuplicateRecords.Count;
+            result.ExistingInDbRows = result.ExistingInDbRecords.Count;
+            result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
 
             return result;
         }
 
         public int ImportStoneShapeDetails(List<StoneShapeDetailsImportRowDto> rows)
         {
+            var codesToDelete = rows
+                .Where(x => x.IsExistingInDb)
+                .Select(x => x.Code)
+                .ToList();
+
+            if (codesToDelete.Any())
+            {
+                // Delete old records from DB for these VendorCodes
+                _repository.DeleteStoneShapeDetailsByCodes(codesToDelete);
+            }
             var records = rows.Select(x => new StoneShapeDetail
             {
                 Code = x.Code,

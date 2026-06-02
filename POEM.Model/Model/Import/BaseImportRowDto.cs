@@ -12,9 +12,12 @@ namespace POEM.Model.Model.Import
         public bool IsValid { get; set; } = true;
 
         public bool IsDuplicate { get; set; }
+        public bool IsExistingInDb { get; set; }
 
         public string ErrorMessage1 { get; set; }
 
         public string ErrorMessage2 { get; set; }
+
+        public string ErrorMessage3 { get; set; }
     }
 }

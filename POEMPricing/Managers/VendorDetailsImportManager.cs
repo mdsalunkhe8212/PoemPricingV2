@@ -102,7 +102,12 @@ namespace POEMPricing.Managers
 
             result.TotalRows = rows.Count;
 
-            // VALIDATION
+            // =============================================
+            // STEP 1 — VALIDATION
+            // Check if VendorCode is present
+            // If blank → IsValid = false → goes to InvalidRecords
+            // If present → IsValid = true → continues to next checks
+            // =============================================
             foreach (var row in rows)
             {
                 if (string.IsNullOrWhiteSpace(row.VendorCode))
@@ -110,16 +115,37 @@ namespace POEMPricing.Managers
                     row.IsValid = false;
                     row.ErrorMessage1 = "Vendor Code is required.";
                 }
+                else if (row.VendorCode.Length > 10)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Code cannot exceed 10 characters.";
+                }
+                else if (row.VendorLocation.Length > 50)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "vendor location cannot exceed 50 characters.";
+                }
+                else if (row.VendorName.Length > 50)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "vendor name cannot exceed 50 characters.";
+                }
                 else
                 {
                     row.IsValid = true;
                 }
             }
 
-            // DUPLICATE INSIDE EXCEL - VENDOR CODE
+            // =============================================
+            // STEP 2 — DUPLICATE CHECK WITHIN EXCEL
+            // If same VendorCode appears more than once
+            // in the uploaded Excel sheet itself
+            // → IsDuplicate = true → goes to DuplicateRecords
+            // → REJECTED — not inserted at all
+            // =============================================
             var codesInExcel = new HashSet<string>(
                 rows
-                .Where(x => x.IsValid)
+                .Where(x => x.IsValid) // only check valid rows
                 .GroupBy(x => x.VendorCode.ToLower())
                 .Where(x => x.Count() > 1)
                 .Select(x => x.Key)
@@ -127,15 +153,24 @@ namespace POEMPricing.Managers
 
             foreach (var row in rows)
             {
-                if (!row.IsValid) continue;
+                if (!row.IsValid) continue; // skip invalid rows
+
                 if (codesInExcel.Contains(row.VendorCode.ToLower()))
                 {
+                    // Mark as duplicate — will be excluded from import
                     row.IsDuplicate = true;
                     row.ErrorMessage2 = "Duplicate Vendor Code in Excel.";
                 }
             }
 
-            // DATABASE DUPLICATE CHECK
+            // =============================================
+            // STEP 3 — DATABASE EXISTING CHECK (NEW BEHAVIOUR)
+            // If VendorCode already exists in DB
+            // → OLD BEHAVIOUR: IsDuplicate = true → rejected
+            // → NEW BEHAVIOUR: IsExistingInDb = true → still in ValidRecords
+            //   → On confirm: old record DELETED from DB, new one INSERTED
+            //   → This is a REPLACE operation, not a reject
+            // =============================================
             var codesInDb = new HashSet<string>(
                 _repository.GetAllVendorDetailsCodes()
                 .Where(x => !string.IsNullOrWhiteSpace(x))
@@ -144,26 +179,72 @@ namespace POEMPricing.Managers
 
             foreach (var row in rows)
             {
-                if (!row.IsValid) continue;
+                if (!row.IsValid) continue;  // skip invalid rows
+                if (row.IsDuplicate) continue; // skip in-sheet duplicates
+
                 if (codesInDb.Contains(row.VendorCode.ToLower()))
                 {
-                    row.IsDuplicate = true;
-                    row.ErrorMessage2 = "Vendor Code already exists in database.";
+                    // NEW: mark as existing in DB — NOT rejected
+                    // This row will still be in ValidRecords
+                    // On import: old DB record deleted, this new one inserted
+                    row.IsExistingInDb = true;
+                    row.ErrorMessage3 = "Vendor Code exists in DB — will be replaced.";
                 }
             }
 
+            // =============================================
+            // STEP 4 — SEPARATE INTO RESULT BUCKETS
+            //
+            // ValidRecords     = IsValid=true AND IsDuplicate=false
+            //                    (includes both NEW and EXISTING-IN-DB rows)
+            //
+            // InvalidRecords   = IsValid=false (blank VendorCode)
+            //
+            // DuplicateRecords = IsDuplicate=true (repeated in Excel sheet)
+            //
+            // ExistingInDbRecords = IsExistingInDb=true (will be replaced)
+            //
+            // NewRows          = valid rows that are brand new (not in DB)
+            // =============================================
             result.ValidRecords = rows.Where(x => x.IsValid && !x.IsDuplicate).ToList();
             result.InvalidRecords = rows.Where(x => !x.IsValid).ToList();
             result.DuplicateRecords = rows.Where(x => x.IsDuplicate).ToList();
+            result.ExistingInDbRecords = rows.Where(x => x.IsExistingInDb).ToList();
+
             result.ValidRows = result.ValidRecords.Count;
             result.InvalidRows = result.InvalidRecords.Count;
             result.DuplicateRows = result.DuplicateRecords.Count;
+            result.ExistingInDbRows = result.ExistingInDbRecords.Count;
+            result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
 
             return result;
         }
 
         public int ImportVendorDetails(List<VendorDetailsImportRowDto> rows)
         {
+            // =============================================
+            // STEP 1 — DELETE existing DB records
+            // Find all rows marked as IsExistingInDb = true
+            // These are rows where VendorCode already exists in DB
+            // Delete them first before inserting new data
+            // =============================================
+            var codesToDelete = rows
+                .Where(x => x.IsExistingInDb)
+                .Select(x => x.VendorCode)
+                .ToList();
+
+            if (codesToDelete.Any())
+            {
+                // Delete old records from DB for these VendorCodes
+                _repository.DeleteVendorDetailsByCodes(codesToDelete);
+            }
+
+            // =============================================
+            // STEP 2 — INSERT all valid rows
+            // This includes:
+            //   - Brand new VendorCodes (never in DB)
+            //   - Replaced VendorCodes (old deleted above, new inserted now)
+            // =============================================
             var records = rows.Select(x => new VendorDetails
             {
                 VendorLocation = x.VendorLocation,

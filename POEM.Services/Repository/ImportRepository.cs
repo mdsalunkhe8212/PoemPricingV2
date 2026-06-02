@@ -1,4 +1,5 @@
 ﻿using POEM.Model.Model;
+using POEM.Model.Model.Import;
 using POEM.Services.Interface;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,22 @@ namespace POEM.Services.Repository
                 }
             }
         }
+
+        public void DeleteCategoryCodesDetailsByCodes(List<string> codes)
+        {
+            //var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            //var existing = _context.CategoryDetails
+            //    .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+            //    .ToList();
+            var existing = _context.CategoryDetails
+                .Where(x => codes.Contains(x.Code))  // ← no ToLower inside EF query
+                .ToList();
+
+            _context.CategoryDetails.RemoveRange(existing);
+            _context.SaveChanges();
+        }
+
         #endregion
 
         #region SubCategoryMaster
@@ -89,6 +106,18 @@ namespace POEM.Services.Repository
                     throw;
                 }
             }
+        }
+
+        public void DeleteSubCategoryCodesDetailsByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.SubCategoryMasters
+                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .ToList();
+
+            _context.SubCategoryMasters.RemoveRange(existing);
+            _context.SaveChanges();
         }
         #endregion
 
@@ -128,6 +157,18 @@ namespace POEM.Services.Repository
                 }
             }
         }
+
+        public void DeleteCollectionDetailsByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.CollectionDtls
+                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .ToList();
+
+            _context.CollectionDtls.RemoveRange(existing);
+            _context.SaveChanges();
+        }
         #endregion
 
 
@@ -166,6 +207,18 @@ namespace POEM.Services.Repository
                 }
             }
         }
+
+        public void DeleteCompanyMasterByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.CompanyMaster
+                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .ToList();
+
+            _context.CompanyMaster.RemoveRange(existing);
+            _context.SaveChanges();
+        }
         #endregion
 
         #region FindingDetails
@@ -197,6 +250,18 @@ namespace POEM.Services.Repository
                 }
             }
         }
+
+        public void DeleteFindingDetailsByFindingNumbers(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.findingDetails
+                .Where(x => lowerCodes.Contains(x.FindingNumber.ToLower()))
+                .ToList();
+
+            _context.findingDetails.RemoveRange(existing);
+            _context.SaveChanges();
+        }
         #endregion
 
         #region StoneShapeDetails
@@ -227,6 +292,18 @@ namespace POEM.Services.Repository
                     throw;
                 }
             }
+        }
+
+        public void DeleteStoneShapeDetailsByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.StoneShapeDetails
+                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .ToList();
+
+            _context.StoneShapeDetails.RemoveRange(existing);
+            _context.SaveChanges();
         }
         #endregion
 
@@ -260,6 +337,18 @@ namespace POEM.Services.Repository
                 }
             }
         }
+
+        public void DeleteSettingLaborDetailsByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.SettingLaborDetails
+                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .ToList();
+
+            _context.SettingLaborDetails.RemoveRange(existing);
+            _context.SaveChanges();
+        }
         #endregion
 
         #region VendorDetails
@@ -290,6 +379,18 @@ namespace POEM.Services.Repository
                     throw;
                 }
             }
+        }
+
+        public void DeleteVendorDetailsByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.VendorDetails
+                .Where(x => lowerCodes.Contains(x.VendorCode.ToLower()))
+                .ToList();
+
+            _context.VendorDetails.RemoveRange(existing);
+            _context.SaveChanges();
         }
         #endregion
 
@@ -322,7 +423,61 @@ namespace POEM.Services.Repository
                 }
             }
         }
+        public void DeleteStoneQualityDetailsByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.StoneQualityDetails
+                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .ToList();
+
+            _context.StoneQualityDetails.RemoveRange(existing);
+            _context.SaveChanges();
+        }
+
         #endregion
 
+        #region ProcessCostingDetails
+        public List<string> GetAllProcessCostingDetailsCodes()
+        {
+            return _context.ProcessCostingDetails
+               .Select(x => x.Code)
+               .ToList();
+        }
+
+        public void BulkInsertProcessCostingDetails(List<ProcessCostingDetails> master)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.ProcessCostingDetails.AddRange(master);
+
+                    _context.SaveChanges();
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+
+                    throw;
+                }
+            }
+        }
+
+        public void DeleteProcessCostingDetailsByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.ProcessCostingDetails
+                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .ToList();
+
+            _context.ProcessCostingDetails.RemoveRange(existing);
+            _context.SaveChanges();
+        }
+
+        #endregion
     }
 }

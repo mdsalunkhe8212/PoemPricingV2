@@ -23,7 +23,8 @@ namespace POEM.Model.Model
         public string FindingType { get; set; } = string.Empty;
         public string FindingDescription { get; set; } = string.Empty;
 
-        
+        public string FindingShortDescription { get; set; } = string.Empty;
+
         public decimal PerPcFindingWeightGms { get; set; }
 
         

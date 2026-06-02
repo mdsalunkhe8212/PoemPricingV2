@@ -9,7 +9,7 @@ namespace POEM.Model.Model
 	public class CategoryDetails
     {
         [Key]
-        public long CategoryId { get; set; }
+        public int CategoryId { get; set; }
         public string Code { get; set; }
 
     
