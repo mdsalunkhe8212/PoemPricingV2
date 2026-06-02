@@ -84,6 +84,26 @@ namespace POEMPricing.Managers
                     row.IsValid = false;
                     row.ErrorMessage1 = "Code is required.";
                 }
+                else if (row.Code.Length > 10)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Code cannot exceed 10 characters.";
+                }
+                else if (row.SettingVendor.Length > 50)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "setting vendor cannot exceed 50 characters.";
+                }
+                else if (row.ShapeCode.Length > 10)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "shape code cannot exceed 10 characters.";
+                }
+                else if (row.Shape.Length > 50)
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "shape cannot exceed 50 characters.";
+                }
                 else
                 {
                     row.IsValid = true;
@@ -119,25 +139,41 @@ namespace POEMPricing.Managers
             foreach (var row in rows)
             {
                 if (!row.IsValid) continue;
+
+                if (row.IsDuplicate) continue;
                 if (codesInDb.Contains(row.Code.ToLower()))
                 {
-                    row.IsDuplicate = true;
-                    row.ErrorMessage2 = "Code already exists in database.";
+                    row.IsExistingInDb = true;
+
+                    row.ErrorMessage3 = "Code already exists in DB-- will be replce";
                 }
             }
 
             result.ValidRecords = rows.Where(x => x.IsValid && !x.IsDuplicate).ToList();
             result.InvalidRecords = rows.Where(x => !x.IsValid).ToList();
             result.DuplicateRecords = rows.Where(x => x.IsDuplicate).ToList();
+            result.ExistingInDbRecords = rows.Where(x => x.IsExistingInDb).ToList();
             result.ValidRows = result.ValidRecords.Count;
             result.InvalidRows = result.InvalidRecords.Count;
             result.DuplicateRows = result.DuplicateRecords.Count;
+            result.ExistingInDbRows = result.ExistingInDbRecords.Count;
+            result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
+
 
             return result;
         }
 
         public int ImportSettingLaborDetails(List<SettingLaborDetailsImportRowDto> rows)
         {
+            var codesToDelete = rows
+               .Where(x => x.IsExistingInDb)
+               .Select(x => x.Code)
+               .ToList();
+
+            if (codesToDelete.Any())
+            {
+                _repository.DeleteSettingLaborDetailsByCodes(codesToDelete);
+            }
             var records = rows.Select(x => new SettingLaborDetail
             {
                 Code = x.Code,

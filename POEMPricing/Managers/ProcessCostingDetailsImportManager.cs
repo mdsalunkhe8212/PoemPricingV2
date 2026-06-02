@@ -11,23 +11,24 @@ using System.Web;
 
 namespace POEMPricing.Managers
 {
-    public class CategoryDetailsImportManager
+    public class ProcessCostingDetailsImportManager
     {
         private readonly IImportRepository _repository;
 
-        public CategoryDetailsImportManager()
+        public ProcessCostingDetailsImportManager()
         {
             _repository = new ImportRepository();
         }
 
-        public ImportSummaryDto<CategoryDetailsImportRowDto> ValidateExcel(HttpPostedFileBase file)
+        public ImportSummaryDto<ProcessCostingDetailsImportRowDto> ValidateExcel(HttpPostedFileBase file)
         {
-            var result = new ImportSummaryDto<CategoryDetailsImportRowDto>();
-            var rows = new List<CategoryDetailsImportRowDto>();
+            var result = new ImportSummaryDto<ProcessCostingDetailsImportRowDto>();
+            var rows = new List<ProcessCostingDetailsImportRowDto>();
 
             using (var stream = new MemoryStream())
             {
                 file.InputStream.CopyTo(stream);
+
                 using (var workbook = new XLWorkbook(stream))
                 {
                     var worksheet = workbook.Worksheet(1);
@@ -36,18 +37,39 @@ namespace POEMPricing.Managers
                     for (int row = 2; row <= rowCount; row++)
                     {
                         var code = worksheet.Cell(row, 1).GetValue<string>().Trim();
-                        var categoryName = worksheet.Cell(row, 2).GetValue<string>().Trim();
+                        var vendorCode = worksheet.Cell(row, 2).GetValue<string>().Trim();
+                        var category = worksheet.Cell(row, 3).GetValue<string>().Trim();
+                        var type = worksheet.Cell(row, 4).GetValue<string>().Trim();
+                        var unit = worksheet.Cell(row, 5).GetValue<string>().Trim();
+                        var goldChargesStr = worksheet.Cell(row, 6).GetValue<string>().Trim();
+                        var platinumChargesStr = worksheet.Cell(row, 7).GetValue<string>().Trim();
+                        var silverChargesStr = worksheet.Cell(row, 8).GetValue<string>().Trim();
+                        var isOptionalStr = worksheet.Cell(row, 9).GetValue<string>().Trim();
 
                         // Skip fully blank rows
                         if (string.IsNullOrWhiteSpace(code)
-                            && string.IsNullOrWhiteSpace(categoryName))
+                            && string.IsNullOrWhiteSpace(vendorCode)
+                            && string.IsNullOrWhiteSpace(category)
+                            && string.IsNullOrWhiteSpace(type)
+                            && string.IsNullOrWhiteSpace(unit)
+                            && string.IsNullOrWhiteSpace(goldChargesStr)
+                            && string.IsNullOrWhiteSpace(platinumChargesStr)
+                            && string.IsNullOrWhiteSpace(silverChargesStr))
                             continue;
 
-                        rows.Add(new CategoryDetailsImportRowDto
+                        rows.Add(new ProcessCostingDetailsImportRowDto
                         {
                             RowNumber = row,
                             Code = code,
-                            CategoryName = categoryName
+                            VendorCode = vendorCode,
+                            Category = category,
+                            Type = type,
+                            Unit = unit,
+                            GoldCharges = decimal.TryParse(goldChargesStr, out var gc) ? gc : 0,
+                            PlatinumCharges = decimal.TryParse(platinumChargesStr, out var pc) ? pc : 0,
+                            SilverCharges = decimal.TryParse(silverChargesStr, out var sc) ? sc : 0,
+                            IsOptional = isOptionalStr.Equals("true", StringComparison.OrdinalIgnoreCase)
+                                               || isOptionalStr == "1"
                         });
                     }
                 }
@@ -57,6 +79,7 @@ namespace POEMPricing.Managers
 
             // =============================================
             // STEP 1 — VALIDATION
+            // Code is the unique key — required
             // =============================================
             foreach (var row in rows)
             {
@@ -70,10 +93,25 @@ namespace POEMPricing.Managers
                     row.IsValid = false;
                     row.ErrorMessage1 = "Code cannot exceed 10 characters.";
                 }
-                else if (row.CategoryName.Length > 100) 
+                else if (string.IsNullOrWhiteSpace(row.VendorCode))
                 {
                     row.IsValid = false;
-                    row.ErrorMessage1 = "Category Name cannot exceed 100 characters.";
+                    row.ErrorMessage1 = "Vendor Code is required.";
+                }
+                else if (string.IsNullOrWhiteSpace(row.Category))
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Category is required.";
+                }
+                else if (string.IsNullOrWhiteSpace(row.Type))
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Type is required.";
+                }
+                else if (string.IsNullOrWhiteSpace(row.Unit))
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Unit is required.";
                 }
                 else
                 {
@@ -83,33 +121,24 @@ namespace POEMPricing.Managers
 
             // =============================================
             // STEP 2 — DUPLICATE CHECK WITHIN EXCEL
-            // Same Code or CategoryName more than once → REJECTED
+            // Same Code more than once in sheet → REJECTED
             // =============================================
-            var duplicateCodes = new HashSet<string>(
-                rows.Where(x => x.IsValid)
+            var codesInExcel = new HashSet<string>(
+                rows
+                .Where(x => x.IsValid)
                 .GroupBy(x => x.Code.ToLower())
                 .Where(x => x.Count() > 1)
-                .Select(x => x.Key));
-
-            var duplicateNames = new HashSet<string>(
-                rows.Where(x => x.IsValid)
-                .GroupBy(x => x.CategoryName.ToLower())
-                .Where(x => x.Count() > 1)
-                .Select(x => x.Key));
+                .Select(x => x.Key)
+            );
 
             foreach (var row in rows)
             {
                 if (!row.IsValid) continue;
 
-                if (duplicateCodes.Contains(row.Code.ToLower()))
+                if (codesInExcel.Contains(row.Code.ToLower()))
                 {
                     row.IsDuplicate = true;
                     row.ErrorMessage2 = "Duplicate Code in Excel.";
-                }
-                if (duplicateNames.Contains(row.CategoryName.ToLower()))
-                {
-                    row.IsDuplicate = true;
-                    row.ErrorMessage2 = "Duplicate Category Name in Excel.";
                 }
             }
 
@@ -118,17 +147,18 @@ namespace POEMPricing.Managers
             // Code exists in DB → IsExistingInDb = true
             // → stays in ValidRecords → REPLACE on confirm
             // =============================================
-            var existingCodes = new HashSet<string>(
-                _repository.GetAllCategoryCodes()
+            var codesInDb = new HashSet<string>(
+                _repository.GetAllProcessCostingDetailsCodes()
                 .Where(x => !string.IsNullOrWhiteSpace(x))
-                .Select(x => x.ToLower()));
+                .Select(x => x.ToLower())
+            );
 
             foreach (var row in rows)
             {
                 if (!row.IsValid) continue;
                 if (row.IsDuplicate) continue;
 
-                if (existingCodes.Contains(row.Code.ToLower()))
+                if (codesInDb.Contains(row.Code.ToLower()))
                 {
                     row.IsExistingInDb = true;
                     row.ErrorMessage3 = "Code already exists in DB — will be replaced.";
@@ -152,7 +182,7 @@ namespace POEMPricing.Managers
             return result;
         }
 
-        public int ImportCategories(List<CategoryDetailsImportRowDto> rows)
+        public int ImportProcessCostingDetails(List<ProcessCostingDetailsImportRowDto> rows)
         {
             // Step 1 — Delete existing DB records being replaced
             var codesToDelete = rows
@@ -161,17 +191,24 @@ namespace POEMPricing.Managers
                 .ToList();
 
             if (codesToDelete.Any())
-                _repository.DeleteCategoryCodesDetailsByCodes(codesToDelete);
+                _repository.DeleteProcessCostingDetailsByCodes(codesToDelete);
 
             // Step 2 — Insert all valid rows (new + replaced)
-            var categories = rows.Select(x => new CategoryDetails
+            var records = rows.Select(x => new ProcessCostingDetails
             {
                 Code = x.Code,
-                CategoryName = x.CategoryName
+                VendorCode = x.VendorCode,
+                Category = x.Category,
+                Type = x.Type,
+                Unit = x.Unit,
+                GoldCharges = x.GoldCharges,
+                PlatinumCharges = x.PlatinumCharges,
+                SilverCharges = x.SilverCharges,
+                IsOptional = x.IsOptional
             }).ToList();
 
-            _repository.BulkInsertCategories(categories);
-            return categories.Count;
+            _repository.BulkInsertProcessCostingDetails(records);
+            return records.Count;
         }
     }
 }

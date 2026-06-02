@@ -145,6 +145,19 @@ namespace POEMPricing.Controllers
                 return View("Summary", result);
             }
 
+            if (model.MasterType == "ProcessCostingDetails")
+            {
+                TempData["master"] = "Process Costing Details";
+                var manager = new ProcessCostingDetailsImportManager();
+
+                var result = manager.ValidateExcel(model.File);
+                Session["ImportMasterType"] = model.MasterType;
+                Session["ProcessCostingDetailsImportData"] =
+                    JsonConvert.SerializeObject(result.ValidRecords);
+
+                return View("Summary", result);
+            }
+
             TempData["Error"] = "Invalid master type.";
 
             return RedirectToAction("Index");
@@ -456,6 +469,39 @@ namespace POEMPricing.Controllers
 
                 TempData["Success"] =
                     insertedCount + " stone quality details details records imported successfully.";
+
+                return RedirectToAction("Upload");
+            }
+
+            //ProcessCostingDetails
+            if (masterType == "ProcessCostingDetails")
+            {
+                var sessionData =
+                    Session["ProcessCostingDetailsImportData"];
+
+                if (sessionData == null)
+                {
+                    TempData["Error"] = "Session expired.";
+
+                    return RedirectToAction("Upload");
+                }
+
+                var rows = JsonConvert.DeserializeObject
+                    <List<ProcessCostingDetailsImportRowDto>>
+                    (sessionData.ToString());
+
+                var manager =
+                    new ProcessCostingDetailsImportManager();
+
+                var insertedCount =
+                    manager.ImportProcessCostingDetails(rows);
+
+                Session.Remove("ProcessCostingDetailsImportData");
+
+                Session.Remove("ImportMasterType");
+
+                TempData["Success"] =
+                    insertedCount + " process costing details details records imported successfully.";
 
                 return RedirectToAction("Upload");
             }

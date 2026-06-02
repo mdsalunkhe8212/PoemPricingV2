@@ -22,6 +22,8 @@ namespace POEM.Model.Model.Import
         public string FindingType { get; set; }
         public string FindingDescription { get; set; }
 
+        public string FindingShortDescription { get; set; }
+
         public decimal PerPcFindingWeightGms { get; set; }
         public decimal Increment { get; set; }
         public decimal Decrement { get; set; }
@@ -29,5 +31,8 @@ namespace POEM.Model.Model.Import
         public int MetalLock { get; set; }
 
         public decimal FindingCost { get; set; }
+
+        
+
     }
 }
