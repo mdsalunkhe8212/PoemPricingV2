@@ -14,6 +14,7 @@ namespace POEM.Model.Model.Import
         public bool IsDuplicate { get; set; }
         public bool IsExistingInDb { get; set; }
 
+        public bool IsNew { get; set; }
         public string ErrorMessage1 { get; set; }
 
         public string ErrorMessage2 { get; set; }

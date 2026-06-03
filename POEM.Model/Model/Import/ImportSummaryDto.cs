@@ -26,6 +26,7 @@ namespace POEM.Model.Model.Import
         public List<T> InvalidRecords { get; set; }
         public List<T> ExistingInDbRecords { get; set; }
 
+        public List<T> NewRecords { get; set; }
         public ImportSummaryDto()
         {
             ValidRecords = new List<T>();
@@ -34,6 +35,8 @@ namespace POEM.Model.Model.Import
             
             InvalidRecords = new List<T>();
             ExistingInDbRecords = new List<T>();
+
+            NewRecords = new List<T>();
         }
     }
 }

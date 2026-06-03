@@ -133,7 +133,14 @@ namespace POEMPricing.Managers
                     row.IsExistingInDb = true;
                     row.ErrorMessage3 = "Code already exists in DB — will be replaced.";
                 }
+                else
+                {
+                    // Not in DB  new record
+                    row.IsNew = true; // ← NEW
+                }
             }
+
+
 
             // =============================================
             // STEP 4 — SEPARATE INTO RESULT BUCKETS
@@ -142,12 +149,14 @@ namespace POEMPricing.Managers
             result.InvalidRecords = rows.Where(x => !x.IsValid).ToList();
             result.DuplicateRecords = rows.Where(x => x.IsDuplicate).ToList();
             result.ExistingInDbRecords = rows.Where(x => x.IsExistingInDb).ToList();
+            result.NewRecords = rows.Where(x => x.IsNew).ToList();
 
             result.ValidRows = result.ValidRecords.Count;
             result.InvalidRows = result.InvalidRecords.Count;
             result.DuplicateRows = result.DuplicateRecords.Count;
             result.ExistingInDbRows = result.ExistingInDbRecords.Count;
-            result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
+            //result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
+            result.NewRows = result.NewRecords.Count;
 
             return result;
         }
