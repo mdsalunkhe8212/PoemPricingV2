@@ -70,6 +70,14 @@ namespace POEM.Services.Repository
             _context.SaveChanges();
         }
 
+        public int GetCategoryDetailsCount()
+        {
+            return _context.CategoryDetails.Count();
+        }
+        public List<CategoryDetails> GetAllCategoryRecords()
+        {
+            return _context.CategoryDetails.ToList();
+        }
         #endregion
 
         #region SubCategoryMaster
@@ -118,6 +126,15 @@ namespace POEM.Services.Repository
 
             _context.SubCategoryMasters.RemoveRange(existing);
             _context.SaveChanges();
+        }
+
+        public int GetSubCategoryDetailsCount()
+        {
+            return _context.SubCategoryMasters.Count();
+        }
+        public List<SubCategoryMasterDbDto> GetAllSubCategoryRecords()
+        {
+            return _context.SubCategoryMasters.ToList();
         }
         #endregion
 
@@ -169,6 +186,14 @@ namespace POEM.Services.Repository
             _context.CollectionDtls.RemoveRange(existing);
             _context.SaveChanges();
         }
+        public int  GetCollectionDetailsCount()
+        {
+            return _context.CollectionDtls.Count();
+        }
+        public List<CollectionDtl> GetAllCollectionDetailsRecords()
+        {
+            return _context.CollectionDtls.ToList();
+        }
         #endregion
 
 
@@ -219,6 +244,14 @@ namespace POEM.Services.Repository
             _context.CompanyMaster.RemoveRange(existing);
             _context.SaveChanges();
         }
+        public int GetCompanyMasterCount()
+        {
+            return _context.CompanyMaster.Count();
+        }
+        public List<CompanyMasterDbDto> GetAllCompanyMasterRecords()
+        {
+            return _context.CompanyMaster.ToList();
+        }
         #endregion
 
         #region FindingDetails
@@ -262,6 +295,14 @@ namespace POEM.Services.Repository
             _context.findingDetails.RemoveRange(existing);
             _context.SaveChanges();
         }
+        public int GetFindingDetailsCount()
+        {
+            return _context.findingDetails.Count();
+        }
+        public List<FindingDetail> GetAllFindingDetailsRecords()
+        {
+            return _context.findingDetails.ToList();
+        }
         #endregion
 
         #region StoneShapeDetails
@@ -304,6 +345,15 @@ namespace POEM.Services.Repository
 
             _context.StoneShapeDetails.RemoveRange(existing);
             _context.SaveChanges();
+        }
+
+        public int GetStoneShapeDetailsCount()
+        {
+            return _context.StoneShapeDetails.Count();
+        }
+        public List<StoneShapeDetail> GetAllStoneShapeDetailsRecords()
+        {
+            return _context.StoneShapeDetails.ToList();
         }
         #endregion
 
@@ -349,6 +399,15 @@ namespace POEM.Services.Repository
             _context.SettingLaborDetails.RemoveRange(existing);
             _context.SaveChanges();
         }
+
+        public int GetSettingLaborDetailsCount()
+        {
+            return _context.SettingLaborDetails.Count();
+        }
+        public List<SettingLaborDetail> GetAllSettingLaborDetailsRecords()
+        {
+            return _context.SettingLaborDetails.ToList();
+        }
         #endregion
 
         #region VendorDetails
@@ -392,13 +451,22 @@ namespace POEM.Services.Repository
             _context.VendorDetails.RemoveRange(existing);
             _context.SaveChanges();
         }
+
+        public int GetVendorDetailsCount()
+        {
+            return _context.VendorDetails.Count();
+        }
+        public List<VendorDetails> GetAllVendorDetailsRecords()
+        {
+            return _context.VendorDetails.ToList();
+        }
         #endregion
 
         #region StoneQualityDetails
         public List<string> GetAllStoneQualityDetailsCodes()
         {
             return _context.StoneQualityDetails
-                .Select(x => x.Code)
+                .Select(x => x.StoneQualityCode)
                 .ToList();
         }
 
@@ -428,13 +496,21 @@ namespace POEM.Services.Repository
             var lowerCodes = codes.Select(x => x.ToLower()).ToList();
 
             var existing = _context.StoneQualityDetails
-                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .Where(x => lowerCodes.Contains(x.StoneQualityCode.ToLower()))
                 .ToList();
 
             _context.StoneQualityDetails.RemoveRange(existing);
             _context.SaveChanges();
         }
 
+        public int GetStoneQualityDetailsCount()
+        {
+            return _context.StoneQualityDetails.Count();
+        }
+        public List<StoneQualityDetailsDbDto> GetAllStoneQualityDetailsRecords()
+        {
+            return _context.StoneQualityDetails.ToList();
+        }
         #endregion
 
         #region ProcessCostingDetails
@@ -477,7 +553,14 @@ namespace POEM.Services.Repository
             _context.ProcessCostingDetails.RemoveRange(existing);
             _context.SaveChanges();
         }
-
+        public int GetProcessCostingDetailsCount()
+        {
+            return _context.ProcessCostingDetails.Count();
+        }
+        public List<ProcessCostingDetails> GetAllProcessCostingDetailsRecords()
+        {
+            return _context.ProcessCostingDetails.ToList();
+        }
         #endregion
     }
 }
