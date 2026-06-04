@@ -1765,6 +1765,7 @@ $('#btnStoneAddUpdate').on('click', function () {
         totalCenterWt += parseFloat(model.TotalStoneWt) || 0;
         totalCenterSettingCost += parseFloat(model.TotalCost) || 0;
         totalCenterAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;//added By Mahesh
+        $('#txtCenterAdjWt').prop('disabled', false);
 
     }
     else {
@@ -1772,6 +1773,7 @@ $('#btnStoneAddUpdate').on('click', function () {
         totalSemiWt += parseFloat(model.TotalStoneWt) || 0;
         totalSemiSettingCost += parseFloat(model.TotalCost) || 0;
         totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
+        $('#txtSemiAdjWt').prop('disabled', false);
     }
     $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(4));
     $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(4));
@@ -1799,6 +1801,8 @@ function renderStoneTable() {
     totalTotalStoneWt = 0;
     totalTotalAdjStoneWt = 0;
     totalCosttotal = 0;
+    $('#txtCenterAdjWt').prop('disabled', true);
+    $('#txtSemiAdjWt').prop('disabled', true);
     stoneList.sort(function (a, b) {
 
         // 1. SettingLocation (string)
@@ -1815,6 +1819,11 @@ function renderStoneTable() {
         return (parseFloat(a.PerStoneWt) || 0) - (parseFloat(b.PerStoneWt) || 0);
     });
     stoneList.forEach((s, i) => {
+        if (s.SettingLocation === 'Center') {
+            $('#txtCenterAdjWt').prop('disabled', false);
+        }else{
+            $('#txtSemiAdjWt').prop('disabled', false);
+        }
         html += `
             <tr>
                 <td>${s.StoneVendor}</td>
@@ -2306,7 +2315,7 @@ function calculateTotalLabor() {
     else {
         // Total calculation
         totalLabor = model + giftBox + cfp + rhodium + diaHandle + finHandle + stamping + cam + other1 + other2 + other3;
-        totalLaborCostWTDuty = model + giftBox + stamping + cam + other1 + other2 + other3;
+        totalLaborCostWTDuty = model + giftBox + cam; // + other1 + other2 + other3;
     }
     // Fill into txtTotalLabor
 
