@@ -143,7 +143,11 @@ namespace POEMPricing.Managers
 
                     row.ErrorMessage3 = "Code already exists in DB- will be replace";
                 }
-
+                else
+                {
+                    // Not in DB  new record
+                    row.IsNew = true; // ← NEW
+                }
 
             }
 
@@ -168,7 +172,9 @@ namespace POEMPricing.Managers
 
             result.DuplicateRows = result.DuplicateRecords.Count;
             result.ExistingInDbRows = result.ExistingInDbRecords.Count;
-            result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
+            //result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
+            result.NewRecords = rows.Where(x => x.IsNew).ToList();
+            result.NewRows = result.NewRecords.Count;
 
             return result;
         }

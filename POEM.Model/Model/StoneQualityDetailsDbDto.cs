@@ -14,7 +14,7 @@ namespace POEM.Model.Model
         public long StoneQualityId { get; set; }
 
         [StringLength(50)]
-        public string Code { get; set; }
+        public string StoneQualityCode { get; set; }
 
         [StringLength(50)]
         public string Company { get; set; }

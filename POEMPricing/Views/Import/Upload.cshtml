@@ -6,7 +6,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-light text-dark">
                     <h4 class="mb-0">
                         Bulk Excel Import
                     </h4>
@@ -18,12 +18,40 @@
                             @TempData["Error"]
                         </div>
                     }
-                    @if (TempData["Success"] != null)
+                    @*@if (TempData["Success"] != null)
                     {
                         <div class="alert alert-success">
-                            @TempData["Success"]
+                        @TempData["Success"]
+                        </div>
+                    }*@
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="modal fade" id="successModal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title text-success">Success</h5>
+                                        <button type="button"
+                                                class="btn-close"
+                                                data-bs-dismiss="modal">
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        @TempData["Success"]
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button"
+                                                class="btn btn-primary"
+                                                data-bs-dismiss="modal">
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     }
+
                     <form id="uploadForm"
                           method="post"
                           action="@Url.Action("ValidateImport","Import")"
@@ -34,44 +62,30 @@
                                 Select Master
                             </label>
 
-                            <select id="masterType"
-                                    name="MasterType"
-                                    class="form-control">
-                                <option value="">
-                                    -- Select Master --
-                                </option>
-                                <option value="CategoryDetails">
-                                    Category Details
-                                </option>
-                                <option value="SubCategoryMaster">
-                                    Sub Category Master
-                                </option>
-                                <option value="CollectionDetails">
-                                    Collection Details
-                                </option>
-                                <option value="CompanyMaster">
-                                    Company Master
-                                </option>
-                                <option value="FindingDetails">
-                                    Finding Details
-                                </option>
-                                <option value="StoneShapeDetails">
-                                    Stone Shape Details
-                                </option>
-                                <option value="StoneQualityDetails">
-                                    Stone Quality Details
-                                </option>
-                                <option value="SettingLaborDetails">
-                                    Setting Labor Details
-                                </option>
-                                <option value="VendorDetails">
-                                    Vendor Details
-                                </option>
-                                <option value="ProcessCostingDetails">
-                                    Process Costing Details
-                                </option>
-                            </select>
+                            <div class="d-flex align-items-center">
+                                <select id="masterType"
+                                        name="MasterType"
+                                        class="form-control">
+                                    <option value="">-- Select Master --</option>
+                                    <option value="CategoryDetails">Category Details</option>
+                                    <option value="SubCategoryMaster">Sub Category Master</option>
+                                    <option value="CollectionDetails">Collection Details</option>
+                                    <option value="CompanyMaster">Company Master</option>
+                                    <option value="FindingDetails">Finding Details</option>
+                                    <option value="StoneShapeDetails">Stone Shape Details</option>
+                                    <option value="StoneQualityDetails">Stone Quality Details</option>
+                                    @*<option value="SettingLaborDetails">Setting Labor Details</option>*@
+                                    <option value="VendorDetails">Vendor Details</option>
+                                    <option value="ProcessCostingDetails">Process Costing Details</option>
+                                </select>
+
+                                <span id="masterInfo"
+                                      class="form-label ms-2 d-none m-lg-auto text-dark">
+                                </span>
+                            </div>
                         </div>
+
+
 
                         <div class="form-group mb-4">
                             <label class="form-label fw-bold">
@@ -89,6 +103,13 @@
                         </div>
 
                         <div class="text-end">
+                            <button type="button"
+                                    id="exportExcelBtn"
+                                    class="btn btn-primary ms-2"
+                                    disabled>
+                                <i class="fa fa-file-excel-o"></i>
+                                Export
+                            </button>
                             <button type="submit"
                                     id="submitBtn"
                                     class="btn btn-success"
@@ -96,7 +117,9 @@
                                 <i class="fa fa-upload"></i>
                                 Validate Import
                             </button>
+
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -123,11 +146,21 @@
     const excelFile = document.getElementById('excelFile');
     const submitBtn = document.getElementById('submitBtn');
 
+    //function toggleButton() {
+    //    const isMasterSelected = masterType.value !== '';
+    //    const isFileChosen = excelFile.files.length > 0;
+
+    //    submitBtn.disabled = !(isMasterSelected && isFileChosen);
+    //}
     function toggleButton() {
         const isMasterSelected = masterType.value !== '';
         const isFileChosen = excelFile.files.length > 0;
 
         submitBtn.disabled = !(isMasterSelected && isFileChosen);
+
+        // Export only requires master selection
+        document.getElementById('exportExcelBtn').disabled =
+            !isMasterSelected;
     }
 
     masterType.addEventListener('change', toggleButton);
@@ -144,6 +177,127 @@
 
         overlay.classList.remove('d-none');
         overlay.classList.add('d-flex');
+    });
+
+    //new
+    document.getElementById('exportExcelBtn').addEventListener('click', function () {
+
+    const selected = masterType.value;
+
+    if (!selected) {
+        alert('Please select a Master Type.');
+        return;
+    }
+
+    window.location.href =
+        '@Url.Action("ExportToExcel", "Import")?masterType=' +
+        encodeURIComponent(selected);
+    });
+
+    masterType.addEventListener('change', function () {
+
+    const selected = this.value;
+
+    const exportBtn = document.getElementById('exportExcelBtn');
+
+    if (!selected) {
+        exportBtn.classList.add('d-none');
+        return;
+    }
+
+    fetch('@Url.Action("GetExportCount", "Import")?masterType=' + selected)
+        .then(response => response.json())
+        .then(data => {
+
+            //exportBtn.innerHTML =
+            //    '<i class="fa fa-file-excel-o"></i> Export Existing Records (' +
+            //    data.count +
+            //    ')';
+            exportBtn.innerHTML = Export;
+
+            exportBtn.classList.remove('d-none');
+        });
+    });
+
+    @*masterType.addEventListener('change', function () {
+
+    const selected = this.value;
+    const exportBtn = document.getElementById('exportExcelBtn');
+
+    if (!selected) {
+        exportBtn.disabled = true;
+        exportBtn.innerHTML =
+            '<i class="fa fa-file-excel-o"></i> Export Existing Records';
+        return;
+    }
+
+    // Disable while fetching count
+    exportBtn.disabled = true;
+    exportBtn.innerHTML =
+        '<i class="fa fa-spinner fa-spin"></i> Loading count...';
+
+    fetch('@Url.Action("GetExportCount", "Import")?masterType=' + selected)
+        .then(response => response.json())
+        .then(data => {
+
+            exportBtn.innerHTML =
+                '<i class="fa fa-file-excel-o"></i> Export Existing Records (' +
+                data.count +
+                ')';
+
+            exportBtn.disabled = false;
+        })
+        .catch(() => {
+
+            exportBtn.innerHTML =
+                '<i class="fa fa-file-excel-o"></i> Export Existing Records';
+
+            exportBtn.disabled = true;
+        });
+});*@
+
+    masterType.addEventListener('change', function () {
+
+    const selected = this.value;
+    const exportBtn = document.getElementById('exportExcelBtn');
+    const masterInfo = document.getElementById('masterInfo');
+
+    if (!selected) {
+
+        exportBtn.disabled = true;
+
+        masterInfo.classList.add('d-none');
+        masterInfo.innerHTML = '';
+
+        return;
+    }
+
+    exportBtn.disabled = true;
+
+    fetch('@Url.Action("GetExportCount", "Import")?masterType=' + selected)
+        .then(response => response.json())
+        .then(data => {
+
+            exportBtn.disabled = false;
+
+            const selectedText =
+                this.options[this.selectedIndex].text;
+
+            masterInfo.innerHTML =
+               '-In DB ' + selectedText + ' Count is '+ ' (' + data.count + ')';
+
+            masterInfo.classList.remove('d-none');
+        })
+        .catch(() => {
+
+            masterInfo.classList.add('d-none');
+            exportBtn.disabled = true;
+        });
+    });
+
+    //modal
+    document.addEventListener("DOMContentLoaded", function () {
+        new bootstrap.Modal(document.getElementById('successModal')).show();
     });
 </script>
 

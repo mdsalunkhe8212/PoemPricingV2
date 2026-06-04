@@ -127,6 +127,7 @@ namespace POEMPricing.Managers
                     row.IsDuplicate = true;
                     row.ErrorMessage2 = "Duplicate Code in Excel.";
                 }
+                
             }
 
             // DATABASE DUPLICATE CHECK
@@ -147,6 +148,11 @@ namespace POEMPricing.Managers
 
                     row.ErrorMessage3 = "Code already exists in DB-- will be replce";
                 }
+                else
+                {
+                    // Not in DB  new record
+                    row.IsNew = true; // ← NEW
+                }
             }
 
             result.ValidRecords = rows.Where(x => x.IsValid && !x.IsDuplicate).ToList();
@@ -157,8 +163,9 @@ namespace POEMPricing.Managers
             result.InvalidRows = result.InvalidRecords.Count;
             result.DuplicateRows = result.DuplicateRecords.Count;
             result.ExistingInDbRows = result.ExistingInDbRecords.Count;
-            result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
-
+            //result.NewRows = rows.Count(x => x.IsValid && !x.IsDuplicate && !x.IsExistingInDb);
+            result.NewRecords = rows.Where(x => x.IsNew).ToList();
+            result.NewRows = result.NewRecords.Count;
 
             return result;
         }

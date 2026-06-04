@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using ClosedXML.Excel;
+using Newtonsoft.Json;
 using POEM.Model.Model;
-using POEMPricing.Managers;
 using POEM.Model.Model.Import;
+using POEMPricing.Managers;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -12,6 +14,8 @@ namespace POEMPricing.Controllers
 {
     public class ImportController : Controller
     {
+        private readonly ExportManager _exportManager = new ExportManager();//for export to excel
+
         [HttpGet]
         public ActionResult Upload()
         {
@@ -511,5 +515,32 @@ namespace POEMPricing.Controllers
 
             return RedirectToAction("Upload");
         }
+
+
+        #region excelexport
+        [HttpGet]
+        public ActionResult ExportToExcel(string masterType)
+        {
+            if (string.IsNullOrEmpty(masterType))
+            {
+                TempData["Error"] = "Please select a master.";
+                return RedirectToAction("Upload");
+            }
+
+            var fileBytes = _exportManager.ExportToExcel(masterType);
+
+            return File(
+                fileBytes,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                $"{masterType}.xlsx");
+        }
+
+        [HttpGet]
+        public JsonResult GetExportCount(string masterType)
+        {
+            var count = _exportManager.GetCount(masterType);
+            return Json(new { count }, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
     }
 }
