@@ -23,6 +23,7 @@ let totalSemiWt = 0;
 let totalCenterWt = 0;
 let totalLaborCost = 0;
 // Mahesh Start
+let totalLaborCostWTDuty = 0;
 let totalSemiAdjWt = 0;
 let totalCenterAdjWt = 0;
 let totalStoneQty = 0;
@@ -681,6 +682,13 @@ $('#ddlProcessType').on('change', function () {
     var vendor = encodeURIComponent($('#ddlLaborLocation').val());
     var type = encodeURIComponent($(this).val().trim());
     var category = encodeURIComponent($('#ddlCategory  option:selected').text().trim());
+    if (type === 'Flat Labour per piece') {
+        txtboxDisEna('disabled');
+        $('#txtTotalLabor').val(0.001);
+        $('#txtTotalLabor').prop('disabled', false).prop('readonly', false);
+        return;
+    }
+
     var url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + type + '/' + category;
     $.getJSON(url, function (data) {
         if (!data) {
@@ -1721,7 +1729,7 @@ function getStoneModel() {
 
         SettingVendorCode: $('#ddlSettingVendor').val(),
         SettingVendor: $('#ddlSettingVendor option:selected').text(),
-        SettingType: $('#ddlSettingType').val(),
+        SettingType: $('#ddlSettingType option:selected').text(),
         SettingTypeCode: $('#ddlSettingType').val(),
         CostPerStone: $('#txtCostPerStone').val(),
         TotalCost: $('#txtTotalCost').val(),
@@ -1757,6 +1765,7 @@ $('#btnStoneAddUpdate').on('click', function () {
         totalCenterWt += parseFloat(model.TotalStoneWt) || 0;
         totalCenterSettingCost += parseFloat(model.TotalCost) || 0;
         totalCenterAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;//added By Mahesh
+        $('#txtCenterAdjWt').prop('disabled', false);
 
     }
     else {
@@ -1764,6 +1773,7 @@ $('#btnStoneAddUpdate').on('click', function () {
         totalSemiWt += parseFloat(model.TotalStoneWt) || 0;
         totalSemiSettingCost += parseFloat(model.TotalCost) || 0;
         totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
+        $('#txtSemiAdjWt').prop('disabled', false);
     }
     $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(4));
     $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(4));
@@ -1791,6 +1801,8 @@ function renderStoneTable() {
     totalTotalStoneWt = 0;
     totalTotalAdjStoneWt = 0;
     totalCosttotal = 0;
+    $('#txtCenterAdjWt').prop('disabled', true);
+    $('#txtSemiAdjWt').prop('disabled', true);
     stoneList.sort(function (a, b) {
 
         // 1. SettingLocation (string)
@@ -1807,6 +1819,11 @@ function renderStoneTable() {
         return (parseFloat(a.PerStoneWt) || 0) - (parseFloat(b.PerStoneWt) || 0);
     });
     stoneList.forEach((s, i) => {
+        if (s.SettingLocation === 'Center') {
+            $('#txtCenterAdjWt').prop('disabled', false);
+        }else{
+            $('#txtSemiAdjWt').prop('disabled', false);
+        }
         html += `
             <tr>
                 <td>${s.StoneVendor}</td>
@@ -1880,7 +1897,8 @@ function editStone(index) {
     setValue('#ddlSettingLocation', s.SettingLocation);
     //$('#ddlLab').val(s.Lab);
     setValue('#ddlLab', s.Lab);
-    setSelectedText('#ddlStoneShape', s.Shape);
+    //setSelectedText('#ddlStoneShape', s.Shape);
+    setValue('#ddlStoneShape', s.Shape);
     setValue('#ddlSizeRange', s.SizeRange);
     //$('#ddlStoneShape').val(s.Shape);
     $('#txtStoneMMSize').val(s.MMSize);
@@ -2108,7 +2126,7 @@ function fillLaborFOBValues() {
         + parseFloat(totalFindingCost)
         + parseFloat(totalSemiStoneCost)
         + parseFloat(totalSemiSettingCost)
-        + parseFloat(totalLaborCost);
+        + (parseFloat(totalLaborCost) - parseFloat(totalLaborCostWTDuty));
 
     const semiFOB = roundUpToQuarter(semiFOBNRound);
 
@@ -2146,15 +2164,15 @@ function fillLaborFOBValues() {
 
 
 
-    const semiPrice1 = (parseFloat(semiFOB) / (1 - semiPrice1Per)) + parseFloat(semiDuty);
-    const semiPrice2 = (parseFloat(semiFOB) / (1 - semiPrice2Per)) + parseFloat(semiDuty);
-    const semiPrice3 = (parseFloat(semiFOB) / (1 - semiPrice3Per)) + parseFloat(semiDuty);
-    const semiPrice4 = (parseFloat(semiFOB) / (1 - semiPrice4Per)) + parseFloat(semiDuty);
+    const semiPrice1 = (parseFloat(semiFOB) / (1 - semiPrice1Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
+    const semiPrice2 = (parseFloat(semiFOB) / (1 - semiPrice2Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
+    const semiPrice3 = (parseFloat(semiFOB) / (1 - semiPrice3Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
+    const semiPrice4 = (parseFloat(semiFOB) / (1 - semiPrice4Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
 
-    const centerPrice1 = (parseFloat(completeFOB) / (1 - centerPrice1Per)) + parseFloat(centerDuty);
-    const centerPrice2 = (parseFloat(completeFOB) / (1 - centerPrice2Per)) + parseFloat(centerDuty);
-    const centerPrice3 = (parseFloat(completeFOB) / (1 - centerPrice3Per)) + parseFloat(centerDuty);
-    const centerPrice4 = (parseFloat(completeFOB) / (1 - centerPrice4Per)) + parseFloat(centerDuty);
+    const centerPrice1 = (parseFloat(completeFOB) / (1 - centerPrice1Per)) + parseFloat(centerDuty) + parseFloat(totalLaborCostWTDuty);
+    const centerPrice2 = (parseFloat(completeFOB) / (1 - centerPrice2Per)) + parseFloat(centerDuty) + parseFloat(totalLaborCostWTDuty);
+    const centerPrice3 = (parseFloat(completeFOB) / (1 - centerPrice3Per)) + parseFloat(centerDuty) + parseFloat(totalLaborCostWTDuty);
+    const centerPrice4 = (parseFloat(completeFOB) / (1 - centerPrice4Per)) + parseFloat(centerDuty) + parseFloat(totalLaborCostWTDuty);
 
     const semiMargin1 = ((semiPrice1 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice1) * 100;
     const semiMargin2 = ((semiPrice2 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice2) * 100;
@@ -2292,10 +2310,12 @@ function calculateTotalLabor() {
     var totalLabor = 0;
     if ($('#ddlProcessType').val() == 'Flat Labour per gm' || $('#ddlProcessType').val() == 'Flat Labour per piece') {
         totalLabor = totalLaborEl.value;
+        totalLaborCostWTDuty = parseFloat(totalLaborEl.value);
     }
     else {
         // Total calculation
         totalLabor = model + giftBox + cfp + rhodium + diaHandle + finHandle + stamping + cam + other1 + other2 + other3;
+        totalLaborCostWTDuty = model + giftBox + cam; // + other1 + other2 + other3;
     }
     // Fill into txtTotalLabor
 
@@ -3177,7 +3197,8 @@ const el = document.getElementById('txtTotalLabor');
 if (el) {
     el.addEventListener("input", function () {
         if ($('#ddlProcessType').val() === 'Flat Labour per piece') {
-            totalLaborCost = parseFloat( $(this).val()) || 0;
+            totalLaborCost = parseFloat($(this).val()) || 0;
+            totalLaborCostWTDuty = parseFloat($(this).val()) || 0;
             fillLaborFOBValues(); // always recalc labor
         }
     });
