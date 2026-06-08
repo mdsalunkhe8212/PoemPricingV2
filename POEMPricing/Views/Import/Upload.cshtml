@@ -2,29 +2,27 @@
 @{
     ViewBag.Title = "Bulk Import";
 }
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card shadow">
+
                 <div class="card-header bg-light text-dark">
-                    <h4 class="mb-0">
-                        Bulk Excel Import
-                    </h4>
+                    <h4 class="mb-0">Bulk Excel Import</h4>
                 </div>
+
                 <div class="card-body">
+
+                    @* ERROR ALERT *@
                     @if (TempData["Error"] != null)
                     {
                         <div class="alert alert-danger">
                             @TempData["Error"]
                         </div>
                     }
-                    @*@if (TempData["Success"] != null)
-                    {
-                        <div class="alert alert-success">
-                        @TempData["Success"]
-                        </div>
-                    }*@
 
+                    @* SUCCESS MODAL *@
                     @if (TempData["Success"] != null)
                     {
                         <div class="modal fade" id="successModal" tabindex="-1">
@@ -54,15 +52,13 @@
 
                     <form id="uploadForm"
                           method="post"
-                          action="@Url.Action("ValidateImport","Import")"
+                          action="@Url.Action("ValidateImport", "Import")"
                           enctype="multipart/form-data">
 
+                        @* MASTER DROPDOWN *@
                         <div class="form-group mb-3">
-                            <label class="form-label fw-bold">
-                                Select Master
-                            </label>
-
-                            <div class="d-flex align-items-center">
+                            <label class="form-label fw-bold">Select Master</label>
+                            <div class="d-flex align-items-center gap-2">
                                 <select id="masterType"
                                         name="MasterType"
                                         class="form-control">
@@ -74,42 +70,37 @@
                                     <option value="FindingDetails">Finding Details</option>
                                     <option value="StoneShapeDetails">Stone Shape Details</option>
                                     <option value="StoneQualityDetails">Stone Quality Details</option>
-                                    @*<option value="SettingLaborDetails">Setting Labor Details</option>*@
                                     <option value="VendorDetails">Vendor Details</option>
                                     <option value="ProcessCostingDetails">Process Costing Details</option>
                                 </select>
 
+                                @* DB COUNT INFO *@
                                 <span id="masterInfo"
-                                      class="form-label ms-2 d-none m-lg-auto text-dark">
+                                      class="text-muted small text-nowrap d-none">
                                 </span>
                             </div>
                         </div>
 
-
-
+                        @* FILE INPUT *@
                         <div class="form-group mb-4">
-                            <label class="form-label fw-bold">
-                                Select Excel File
-                            </label>
-
+                            <label class="form-label fw-bold">Select Excel File</label>
                             <input type="file"
                                    id="excelFile"
                                    name="File"
                                    class="form-control" />
-
-                            <small class="text-muted">
-                                Upload .xlsx file only
-                            </small>
+                            <small class="text-muted">Upload .xlsx file only</small>
                         </div>
 
-                        <div class="text-end">
+                        @* ACTION BUTTONS *@
+                        <div class="text-end d-flex justify-content-end gap-2">
                             <button type="button"
                                     id="exportExcelBtn"
-                                    class="btn btn-primary ms-2"
+                                    class="btn btn-primary"
                                     disabled>
                                 <i class="fa fa-file-excel-o"></i>
                                 Export
                             </button>
+
                             <button type="submit"
                                     id="submitBtn"
                                     class="btn btn-success"
@@ -117,23 +108,25 @@
                                 <i class="fa fa-upload"></i>
                                 Validate Import
                             </button>
-
                         </div>
 
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+@* LOADER OVERLAY *@
 <div id="loaderOverlay"
      class="position-fixed top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center"
      style="background:rgba(0,0,0,0.55);z-index:9999;">
     <div class="bg-white rounded-3 p-4 d-flex flex-column align-items-center gap-3"
          style="min-width:220px;">
         <div class="spinner-border text-primary"
-             style="width:3rem;height:3rem;" role="status">
+             style="width:3rem;height:3rem;"
+             role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
         <div id="loaderLabel" class="fw-medium fs-6 text-dark"></div>
@@ -142,162 +135,100 @@
 </div>
 
 <script>
+
     const masterType = document.getElementById('masterType');
-    const excelFile = document.getElementById('excelFile');
-    const submitBtn = document.getElementById('submitBtn');
+    const excelFile  = document.getElementById('excelFile');
+    const submitBtn  = document.getElementById('submitBtn');
+    const exportBtn  = document.getElementById('exportExcelBtn');
+    const masterInfo = document.getElementById('masterInfo');
 
-    //function toggleButton() {
-    //    const isMasterSelected = masterType.value !== '';
-    //    const isFileChosen = excelFile.files.length > 0;
-
-    //    submitBtn.disabled = !(isMasterSelected && isFileChosen);
-    //}
-    function toggleButton() {
+    // ============================
+    // Toggle submit button —
+    // needs both master + file selected
+    // ============================
+    function toggleSubmit() {
         const isMasterSelected = masterType.value !== '';
-        const isFileChosen = excelFile.files.length > 0;
-
+        const isFileChosen     = excelFile.files.length > 0;
         submitBtn.disabled = !(isMasterSelected && isFileChosen);
-
-        // Export only requires master selection
-        document.getElementById('exportExcelBtn').disabled =
-            !isMasterSelected;
     }
 
-    masterType.addEventListener('change', toggleButton);
-    excelFile.addEventListener('change', toggleButton);
+    excelFile.addEventListener('change', toggleSubmit);
 
+    // ============================
+    // Master dropdown change —
+    // ONE listener handles everything:
+    // toggle submit, fetch count, show/hide export + info
+    // ============================
+    masterType.addEventListener('change', function () {
+
+        const selected     = this.value;
+        const selectedText = this.options[this.selectedIndex].text;
+
+        // Toggle submit button
+        toggleSubmit();
+
+        // Reset export + info
+        exportBtn.disabled = true;
+        exportBtn.innerHTML = '<i class="fa fa-file-excel-o"></i> Export';
+        masterInfo.classList.add('d-none');
+        masterInfo.innerHTML = '';
+
+        // Nothing selected — stop here
+        if (!selected) return;
+
+        // Fetch count for info label only
+        fetch('@Url.Action("GetExportCount", "Import")?masterType='
+              + encodeURIComponent(selected))
+            .then(response => response.json())
+            .then(data => {
+
+                // Enable export button — no count on button
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = '<i class="fa fa-file-excel-o"></i> Export';
+
+                // Show count info next to dropdown only
+                masterInfo.innerHTML =
+                    'DB Count: <strong>' + data.count + '</strong> ' + selectedText + ' records';
+                masterInfo.classList.remove('d-none');
+            })
+            .catch(() => {
+                // On error — still enable export, hide info
+                exportBtn.disabled = false;
+                exportBtn.innerHTML = '<i class="fa fa-file-excel-o"></i> Export';
+                masterInfo.classList.add('d-none');
+            });
+    });
+
+    // ============================
+    // Export button click
+    // ============================
+    exportBtn.addEventListener('click', function () {
+        const selected = masterType.value;
+        if (!selected) return;
+        window.location.href =
+            '@Url.Action("ExportToExcel", "Import")?masterType='
+            + encodeURIComponent(selected);
+    });
+
+    // ============================
+    // Upload form loader
+    // ============================
     document.getElementById('uploadForm').addEventListener('submit', function () {
-
         var overlay = document.getElementById('loaderOverlay');
-
         document.getElementById('loaderLabel').textContent = 'Validating file...';
-
-        document.getElementById('loaderSub').textContent =
-            'Reading and checking your Excel data';
-
+        document.getElementById('loaderSub').textContent   = 'Reading and checking your Excel data';
         overlay.classList.remove('d-none');
         overlay.classList.add('d-flex');
     });
 
-    //new
-    document.getElementById('exportExcelBtn').addEventListener('click', function () {
-
-    const selected = masterType.value;
-
-    if (!selected) {
-        alert('Please select a Master Type.');
-        return;
-    }
-
-    window.location.href =
-        '@Url.Action("ExportToExcel", "Import")?masterType=' +
-        encodeURIComponent(selected);
+    // ============================
+    // Show success modal if present
+    // ============================
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = document.getElementById('successModal');
+        if (modal) {
+            new bootstrap.Modal(modal).show();
+        }
     });
 
-    masterType.addEventListener('change', function () {
-
-    const selected = this.value;
-
-    const exportBtn = document.getElementById('exportExcelBtn');
-
-    if (!selected) {
-        exportBtn.classList.add('d-none');
-        return;
-    }
-
-    fetch('@Url.Action("GetExportCount", "Import")?masterType=' + selected)
-        .then(response => response.json())
-        .then(data => {
-
-            //exportBtn.innerHTML =
-            //    '<i class="fa fa-file-excel-o"></i> Export Existing Records (' +
-            //    data.count +
-            //    ')';
-            exportBtn.innerHTML = Export;
-
-            exportBtn.classList.remove('d-none');
-        });
-    });
-
-    @*masterType.addEventListener('change', function () {
-
-    const selected = this.value;
-    const exportBtn = document.getElementById('exportExcelBtn');
-
-    if (!selected) {
-        exportBtn.disabled = true;
-        exportBtn.innerHTML =
-            '<i class="fa fa-file-excel-o"></i> Export Existing Records';
-        return;
-    }
-
-    // Disable while fetching count
-    exportBtn.disabled = true;
-    exportBtn.innerHTML =
-        '<i class="fa fa-spinner fa-spin"></i> Loading count...';
-
-    fetch('@Url.Action("GetExportCount", "Import")?masterType=' + selected)
-        .then(response => response.json())
-        .then(data => {
-
-            exportBtn.innerHTML =
-                '<i class="fa fa-file-excel-o"></i> Export Existing Records (' +
-                data.count +
-                ')';
-
-            exportBtn.disabled = false;
-        })
-        .catch(() => {
-
-            exportBtn.innerHTML =
-                '<i class="fa fa-file-excel-o"></i> Export Existing Records';
-
-            exportBtn.disabled = true;
-        });
-});*@
-
-    masterType.addEventListener('change', function () {
-
-    const selected = this.value;
-    const exportBtn = document.getElementById('exportExcelBtn');
-    const masterInfo = document.getElementById('masterInfo');
-
-    if (!selected) {
-
-        exportBtn.disabled = true;
-
-        masterInfo.classList.add('d-none');
-        masterInfo.innerHTML = '';
-
-        return;
-    }
-
-    exportBtn.disabled = true;
-
-    fetch('@Url.Action("GetExportCount", "Import")?masterType=' + selected)
-        .then(response => response.json())
-        .then(data => {
-
-            exportBtn.disabled = false;
-
-            const selectedText =
-                this.options[this.selectedIndex].text;
-
-            masterInfo.innerHTML =
-               '-In DB ' + selectedText + ' Count is '+ ' (' + data.count + ')';
-
-            masterInfo.classList.remove('d-none');
-        })
-        .catch(() => {
-
-            masterInfo.classList.add('d-none');
-            exportBtn.disabled = true;
-        });
-    });
-
-    //modal
-    document.addEventListener("DOMContentLoaded", function () {
-        new bootstrap.Modal(document.getElementById('successModal')).show();
-    });
 </script>
-
