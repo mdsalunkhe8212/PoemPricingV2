@@ -3,6 +3,15 @@
 
 @model dynamic
 
+@if (Model.IsValidTemplate == false)
+{
+    <div class="alert alert-danger">
+        <i class="fa fa-times-circle"></i>
+        <strong>Wrong Excel Template!</strong>
+        @Model.TemplateError
+    </div>
+}
+
 @{
     ViewBag.Title = "Import Summary";
 
@@ -81,15 +90,15 @@
         overflow-x: auto;
     }
 
-    .custom-scroll-grid table {
-        margin-bottom: 0;
-    }
+        .custom-scroll-grid table {
+            margin-bottom: 0;
+        }
 
-    .custom-scroll-grid thead th {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-    }
+        .custom-scroll-grid thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
 </style>
 
 <div class="container mt-4">
@@ -110,8 +119,8 @@
         <div class="card-body">
 
             @* ============================
-               SUMMARY CARDS — always 6 cards for all masters
-               ============================ *@
+                SUMMARY CARDS — always 6 cards for all masters
+                ============================ *@
             <div class="row text-center mb-4">
 
                 <div class="col-md-2">
@@ -171,9 +180,9 @@
             </div>
 
             @* ============================
-               NEW RECORDS TABLE
-                new records not in DB — will be inserted
-               ============================ *@
+                NEW RECORDS TABLE
+                 new records not in DB — will be inserted
+                ============================ *@
             @if (Model.NewRecords != null && Model.NewRecords.Count > 0)
             {
                 <div class="card mb-4 border-success">
@@ -206,18 +215,18 @@
                                             New Record
                                         </td>
                                     </tr>
-                                
-                            }
-                                </tbody>
-                            </table>
+
+                                }
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             }
 
             @* ============================
-               EXISTING IN DB RECORDS TABLE
-               Code found in DB — old deleted, new inserted on confirm
-               ============================ *@
+                EXISTING IN DB RECORDS TABLE
+                Code found in DB — old deleted, new inserted on confirm
+                ============================ *@
             @if (Model.ExistingInDbRecords != null && Model.ExistingInDbRecords.Count > 0)
             {
                 <div class="card mb-4 border-info">
@@ -258,9 +267,9 @@
             }
 
             @* ============================
-               DUPLICATE RECORDS TABLE
-               Repeated in Excel sheet — REJECTED
-               ============================ *@
+                DUPLICATE RECORDS TABLE
+                Repeated in Excel sheet — REJECTED
+                ============================ *@
             @if (Model.DuplicateRecords.Count > 0)
             {
                 <div class="card mb-4 border-warning">
@@ -301,9 +310,9 @@
             }
 
             @* ============================
-               INVALID RECORDS TABLE
-               Blank / missing / validation errors
-               ============================ *@
+                INVALID RECORDS TABLE
+                Blank / missing / validation errors
+                ============================ *@
             @if (Model.InvalidRecords.Count > 0)
             {
                 <div class="card mb-4 border-danger">
@@ -341,8 +350,8 @@
             }
 
             @* ============================
-               CONFIRM IMPORT BUTTON
-               ============================ *@
+                CONFIRM IMPORT BUTTON
+                ============================ *@
             @if (Model.ValidRows > 0)
             {
                 <div class="alert alert-success">

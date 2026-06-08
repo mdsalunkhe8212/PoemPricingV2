@@ -33,6 +33,26 @@ namespace POEMPricing.Managers
                     var worksheet = workbook.Worksheet(1);
                     var rowCount = worksheet.LastRowUsed().RowNumber();
 
+                    // STEP 0 — VALIDATE COLUMN HEADERS
+                    // Must be first check before reading any rows
+                    // =============================================
+                    var expectedHeaders = new List<string> { "Code", "CategoryName" };
+
+                    for (int i = 0; i < expectedHeaders.Count; i++)
+                    {
+                        var actualHeader = worksheet.Cell(1, i + 1).GetValue<string>().Trim();
+
+                        if (!actualHeader.Equals(expectedHeaders[i], StringComparison.OrdinalIgnoreCase))
+                        {
+                            result.IsValidTemplate = false;
+                            result.TemplateError = $"Invalid Excel template. " +
+                                $"Expected column '{expectedHeaders[i]}' at position {i + 1} " +
+                                $"but found '{(string.IsNullOrWhiteSpace(actualHeader) ? "empty" : actualHeader)}'.";
+                            return result; // ← stop immediately, no further processing
+                        }
+                    }
+                    //
+
                     for (int row = 2; row <= rowCount; row++)
                     {
                         var code = worksheet.Cell(row, 1).GetValue<string>().Trim();
@@ -54,6 +74,10 @@ namespace POEMPricing.Managers
             }
 
             result.TotalRows = rows.Count;
+
+
+
+
 
             // =============================================
             // STEP 1 — VALIDATION

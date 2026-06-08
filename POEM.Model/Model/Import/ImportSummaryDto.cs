@@ -8,6 +8,8 @@ namespace POEM.Model.Model.Import
     public class ImportSummaryDto<T>
         where T : BaseImportRowDto
     {
+        public bool IsValidTemplate { get; set; } = true; // ← NEW
+        public string TemplateError { get; set; }
         public int TotalRows { get; set; }
 
         public int ValidRows { get; set; }
