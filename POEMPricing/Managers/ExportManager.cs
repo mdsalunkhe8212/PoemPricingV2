@@ -121,7 +121,7 @@ namespace POEMPricing.Managers
                 var ws = wb.Worksheets.Add("SubCategoryMaster");
                 var data = _repository.GetAllSubCategoryRecords();
                 ws.Cell(1, 1).Value = "Code";
-                ws.Cell(1, 2).Value = "CategoryName";
+                ws.Cell(1, 2).Value = "SubCategoryName";
 
                 for (int i = 0; i < data.Count; i++)
                 {
@@ -401,14 +401,14 @@ namespace POEMPricing.Managers
             {
                 var ws = wb.Worksheets.Add("StoneQualityDetails");
                 var data = _repository.GetAllStoneQualityDetailsRecords();
-                ws.Cell(1, 1).Value = "Company";
+                ws.Cell(1, 1).Value = "CompanyCode";
                 ws.Cell(1, 2).Value = "StoneVendorCode";
                 ws.Cell(1, 3).Value = "StoneType";
                 ws.Cell(1, 4).Value = "StoneShapeCode";
                 ws.Cell(1, 5).Value = "StoneShape";
                 ws.Cell(1, 6).Value = "StoneQualityCode";
                 ws.Cell(1, 7).Value = "StoneQuality";
-                ws.Cell(1, 8).Value = "IntertionalGrading";
+                ws.Cell(1, 8).Value = "InternationalGrading";
 
 
                 for (int i = 0; i < data.Count; i++)
@@ -451,7 +451,7 @@ namespace POEMPricing.Managers
                 ws.Cell(1, 6).Value = "GoldCharges";
                 ws.Cell(1, 7).Value = "PlatinumCharges";
                 ws.Cell(1, 8).Value = "SilverCharges";
-
+                ws.Cell(1, 9).Value = "IsOptional";
 
                 for (int i = 0; i < data.Count; i++)
                 {
@@ -463,6 +463,7 @@ namespace POEMPricing.Managers
                     ws.Cell(i + 2, 6).Value = data[i].GoldCharges;
                     ws.Cell(i + 2, 7).Value = data[i].PlatinumCharges;
                     ws.Cell(i + 2, 8).Value = data[i].SilverCharges;
+                    ws.Cell(i + 2, 9).Value = data[i].IsOptional;
 
                 }
 

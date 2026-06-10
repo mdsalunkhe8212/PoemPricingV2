@@ -38,6 +38,26 @@ namespace POEMPricing.Managers
                         var code = worksheet.Cell(row, 1).GetValue<string>().Trim();
                         var companyName = worksheet.Cell(row, 2).GetValue<string>().Trim();
 
+                        // STEP 0 — VALIDATE COLUMN HEADERS
+                        // Must be first check before reading any rows
+                        // =============================================
+                        var expectedHeaders = new List<string> { "Code", "CompanyName" };
+
+                        for (int i = 0; i < expectedHeaders.Count; i++)
+                        {
+                            var actualHeader = worksheet.Cell(1, i + 1).GetValue<string>().Trim();
+
+                            if (!actualHeader.Equals(expectedHeaders[i], StringComparison.OrdinalIgnoreCase))
+                            {
+                                result.IsValidTemplate = false;
+                                result.TemplateError = $"Invalid Excel template. " +
+                                    $"Expected column '{expectedHeaders[i]}' at position {i + 1} " +
+                                    $"but found '{(string.IsNullOrWhiteSpace(actualHeader) ? "empty" : actualHeader)}'.";
+                                return result; // ← stop immediately, no further processing
+                            }
+                        }
+                        //
+
                         // Skip fully blank rows
                         if (string.IsNullOrWhiteSpace(code)
                             && string.IsNullOrWhiteSpace(companyName))
