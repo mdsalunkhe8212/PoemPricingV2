@@ -141,12 +141,20 @@ namespace POEM.Services.Repository
                     if (model.skuInfo.VendorProduct.skuId > 0)
                     {
                         // ✅ Update existing
-                        skuId = UpdateSkuDetails(MapSkuDetails(model.skuInfo.VendorProduct));
+                        SKUDetailsDbDto savemode = MapSkuDetails(model.skuInfo.VendorProduct);
+                        savemode.CreatedBy = model.skuInfo.VendorProduct.createdBy;
+                        savemode.CreatedOn = model.skuInfo.VendorProduct.createdOn;
+                        savemode.ModifiedBy = 1;
+                        savemode.ModifiedOn = DateTime.Now;
+                        skuId = UpdateSkuDetails(savemode);
                     }
                     else
                     {
                         // ✅ Insert new
-                        skuId = SaveSkuDetails(MapSkuDetails(model.skuInfo.VendorProduct));
+                        SKUDetailsDbDto savemode = MapSkuDetails(model.skuInfo.VendorProduct);
+                        savemode.CreatedBy = 1;
+                        savemode.CreatedOn=DateTime.Now;
+                        skuId = SaveSkuDetails(savemode);
                     }
 
 
@@ -210,9 +218,9 @@ namespace POEM.Services.Repository
                 semiMinWt = ParseDecimal(dto.semiMinWt),
                 centerMinWt = ParseDecimal(dto.centerMinWt),
                 SemiAdjWt = ParseDecimal(dto.SemiAdjWt),
-                CenterAdjWt = ParseDecimal(dto.CenterAdjWt),
-                CreatedBy = 1,
-                CreatedOn = DateTime.Now
+                CenterAdjWt = ParseDecimal(dto.CenterAdjWt)
+                //CreatedBy = 1,
+                //CreatedOn = DateTime.Now
             };
         }
 
@@ -664,6 +672,9 @@ namespace POEM.Services.Repository
                         categoryCode=skuEntity.CategoryCode,
                         subCategoryCode=skuEntity.SubCategoryCode,
                         collectionCode=skuEntity.CollectionCode,
+                        createdBy=skuEntity.CreatedBy,
+                        createdOn=skuEntity.CreatedOn
+                        
                     },
                     Metals = metals,
                     Findings = findings
