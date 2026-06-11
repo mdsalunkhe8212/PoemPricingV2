@@ -2499,15 +2499,19 @@ $('#btnSubmit').on('click', function () {
  ************************************************************/
 function collectSkuInfo() {
     var skuID = 0;
+    var createdby = 1;
+    var createdon = new Date();
     // ✅ Skip updating VendorProduct if on /SKU/Edit
     if (window.location.pathname.toLowerCase().includes("/sku/edit")) {
         // return; // exit early
         skuID = parseInt(skuModule.skuInfo.VendorProduct.skuId);
+        createdby = parseInt(skuModule.skuInfo.VendorProduct.createdBy);
+        createdon = skuModule.skuInfo.VendorProduct.createdOn;
 
     }
-    else {
+    //else {
         skuModule.skuInfo.VendorProduct = {
-            skuId: 0,
+            skuId: skuID,
             company: $('#ddlCompany').val(),
             vendor: $('#ddlVendor').val(),
             orderType: $('#ddlOrderType').val(),
@@ -2525,10 +2529,13 @@ function collectSkuInfo() {
             semiMinWt: 0,
             centerMinWt: 0,
             SemiAdjWt: $('#SemiAdjWt').val(),//Added By Mahesh
-            CenterAdjWt: $('#txtCenterAdjWt').val()//Added By Mahesh
+            CenterAdjWt: $('#txtCenterAdjWt').val(),//Added By Mahesh
+            createdBy: createdby,
+            createdOn: createdon,
+
 
         };
-    }
+    //}
     // Sync global arrays with module aliases
     findings = findingLines;
     metals = metalLines;
@@ -2974,6 +2981,7 @@ function bindFormData(skuModel) {
 
     // Labor
     setSelectedText("ddlLaborLocation", labor.VendorName);
+    setValue("ddlProcessType", labor.ProcessType);
     setValue("txtCastPcs", labor.CastPcs);
     setValue("txtGiftBox", labor.GiftBox);
     /*Added by Mahesh Start*/
@@ -2985,7 +2993,7 @@ function bindFormData(skuModel) {
     //setValue("ddlLaborLocation", labor.LaborLocation);
     setValue("txtCastingLabor", labor.CastingLabor);
     setValue("txtModel", labor.Model);
-    setValue("ddlProcessType", labor.ProcessType);
+
 
 
     totalSemiAdjWt = parseFloat(vp.SemiAdjWt) || 0;
@@ -3169,7 +3177,7 @@ function GetCFP() {
     // Need business rules for Dia. Handling lookup
 }
 // Attach event listeners to trigger calculation on change
-["txtCFP", "txtCAM", "txtModel", "txtGiftBox", "txtOtherCost1", "txtOtherCost2", "txtOtherCost3", "txtDiaHandling", 'txtFinHandling', 'txtStamping', 'txtOtherCost1', 'txtOtherCost2', 'txtOtherCost3'].forEach(id => {
+["txtCFP", "txtCAM", "txtModel", "txtGiftBox", "txtOtherCost1", "txtOtherCost2", "txtOtherCost3",'txtRhodium', "txtDiaHandling", 'txtFinHandling', 'txtStamping'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
         el.addEventListener("input", function () {
