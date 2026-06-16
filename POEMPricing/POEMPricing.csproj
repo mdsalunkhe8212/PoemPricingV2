@@ -63,6 +63,9 @@
       <HintPath>packages\ExcelNumberFormat.1.0.10\lib\net20\ExcelNumberFormat.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Rotativa, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Rotativa.1.7.4-rc\lib\net45\Rotativa.dll</HintPath>
+    </Reference>
     <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
       <HintPath>packages\Swashbuckle.Core.5.6.0\lib\net40\Swashbuckle.Core.dll</HintPath>
     </Reference>
@@ -164,6 +167,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImportController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SKUController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -203,6 +207,11 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Images\SKUImages\ring.png" />
+    <Content Include="Rotativa\help-wkhtmltoimage.txt" />
+    <Content Include="Rotativa\help-wkhtmltopdf.txt" />
+    <Content Include="Rotativa\wkhtmltoimage.exe" />
+    <Content Include="Rotativa\wkhtmltopdf.exe" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -211,6 +220,7 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Config\CFPLaborDetails.json" />
     <Content Include="Config\DutyDetails.json" />
+    <Content Include="App_Browsers\qt.browser" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\html2canvas.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
@@ -246,6 +256,8 @@
     <Content Include="Views\Shared\_Layout-Login.cshtml" />
     <Content Include="Views\Import\Upload.cshtml" />
     <Content Include="Views\Import\Summary.cshtml" />
+    <Content Include="Views\Report\SKUReport.cshtml" />
+    <Content Include="Views\Report\SKUReportPdf.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

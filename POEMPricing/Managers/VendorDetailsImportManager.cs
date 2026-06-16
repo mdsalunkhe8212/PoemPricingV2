@@ -101,30 +101,92 @@ namespace POEMPricing.Managers
                         rows.Add(new VendorDetailsImportRowDto
                         {
                             RowNumber = row,
-                            VendorLocation = vendorLocation,
-                            VendorName = vendorName,
-                            VendorCode = vendorCode,
-                            DiamondHandlingLab = decimal.TryParse(diaHndLabStr, out var v1) ? v1 : (decimal?)null,
-                            DiaHndLabLow = decimal.TryParse(diaHndLabLowStr, out var v2) ? v2 : (decimal?)null,
-                            DiaHndLabHigh = decimal.TryParse(diaHndLabHiStr, out var v3) ? v3 : (decimal?)null,
-                            DiamondHandlingMined = decimal.TryParse(diaHndMinStr, out var v4) ? v4 : (decimal?)null,
-                            DiaHndMinedLow = decimal.TryParse(diaHndMinLowStr, out var v5) ? v5 : (decimal?)null,
-                            DiaHndMinedHigh = decimal.TryParse(diaHndMinHiStr, out var v6) ? v6 : (decimal?)null,
-                            FindingHndGold = decimal.TryParse(fndHndGoldStr, out var v7) ? v7 : (decimal?)null,
-                            FindingHndPlatinum = decimal.TryParse(fndHndPlatStr, out var v8) ? v8 : (decimal?)null,
-                            FindingHndSilver = decimal.TryParse(fndHndSilvStr, out var v9) ? v9 : (decimal?)null,
-                            ModelMkgGold = decimal.TryParse(mdlMkgGoldStr, out var v10) ? v10 : (decimal?)null,
-                            ModelMkgPlatinum = decimal.TryParse(mdlMkgPlatStr, out var v11) ? v11 : (decimal?)null,
-                            ModelMkgSilver = decimal.TryParse(mdlMkgSilvStr, out var v12) ? v12 : (decimal?)null,
-                            CAMGold = decimal.TryParse(camGoldStr, out var v13) ? v13 : (decimal?)null,
-                            CAMPlatinum = decimal.TryParse(camPlatStr, out var v14) ? v14 : (decimal?)null,
-                            CAMSilver = decimal.TryParse(camSilvStr, out var v15) ? v15 : (decimal?)null,
-                            ProductVendor = productVendor.Equals("true", StringComparison.OrdinalIgnoreCase) || productVendor == "1",
-                            FindingsSupplier = findingsSupp.Equals("true", StringComparison.OrdinalIgnoreCase) || findingsSupp == "1",
-                            FindingsAssembly = findingsAssem.Equals("true", StringComparison.OrdinalIgnoreCase) || findingsAssem == "1",
-                            StoneVendor = stoneVendor.Equals("true", StringComparison.OrdinalIgnoreCase) || stoneVendor == "1",
-                            SettingVendor = settingVendor.Equals("true", StringComparison.OrdinalIgnoreCase) || settingVendor == "1",
-                            LabourLocation = labourLocation.Equals("true", StringComparison.OrdinalIgnoreCase) || labourLocation == "1",
+
+                            // string values - if cell empty pass empty string
+                            VendorLocation = vendorLocation ?? "",
+                            VendorName = vendorName ?? "",
+                            VendorCode = vendorCode ?? "",
+
+                            // value types - if cell empty pass 0
+                            DiamondHandlingLab = worksheet.Cell(row, 4).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 4).GetValue<decimal>(),
+
+                            DiaHndLabLow = worksheet.Cell(row, 5).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 5).GetValue<decimal>(),
+
+                            DiaHndLabHigh = worksheet.Cell(row, 6).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 6).GetValue<decimal>(),
+
+                            DiamondHandlingMined = worksheet.Cell(row, 7).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 7).GetValue<decimal>(),
+
+                            DiaHndMinedLow = worksheet.Cell(row, 8).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 8).GetValue<decimal>(),
+
+                            DiaHndMinedHigh = worksheet.Cell(row, 9).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 9).GetValue<decimal>(),
+
+                            FindingHndGold = worksheet.Cell(row, 10).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 10).GetValue<decimal>(),
+
+                            FindingHndPlatinum = worksheet.Cell(row, 11).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 11).GetValue<decimal>(),
+
+                            FindingHndSilver = worksheet.Cell(row, 12).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 12).GetValue<decimal>(),
+
+                            ModelMkgGold = worksheet.Cell(row, 13).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 13).GetValue<decimal>(),
+
+                            ModelMkgPlatinum = worksheet.Cell(row, 14).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 14).GetValue<decimal>(),
+
+                            ModelMkgSilver = worksheet.Cell(row, 15).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 15).GetValue<decimal>(),
+
+                             CAMGold = worksheet.Cell(row, 16).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 16).GetValue<decimal>(),
+
+                             CAMPlatinum = worksheet.Cell(row, 17).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 17).GetValue<decimal>(),
+
+                             CAMSilver = worksheet.Cell(row, 18).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 18).GetValue<decimal>(),
+
+
+                            // bool values - empty cell automatically false
+                            ProductVendor = productVendor.Equals("true", StringComparison.OrdinalIgnoreCase)
+                        || productVendor == "1",
+
+                            FindingsSupplier = findingsSupp.Equals("true", StringComparison.OrdinalIgnoreCase)
+                        || findingsSupp == "1",
+
+                            FindingsAssembly = findingsAssem.Equals("true", StringComparison.OrdinalIgnoreCase)
+                        || findingsAssem == "1",
+
+                            StoneVendor = stoneVendor.Equals("true", StringComparison.OrdinalIgnoreCase)
+                        || stoneVendor == "1",
+
+                            SettingVendor = settingVendor.Equals("true", StringComparison.OrdinalIgnoreCase)
+                        || settingVendor == "1",
+
+                            LabourLocation = labourLocation.Equals("true", StringComparison.OrdinalIgnoreCase)
+                        || labourLocation == "1"
                         });
                     }
                 }
@@ -150,10 +212,20 @@ namespace POEMPricing.Managers
                     row.IsValid = false;
                     row.ErrorMessage1 = "Code cannot exceed 10 characters.";
                 }
+                else if (string.IsNullOrWhiteSpace(row.VendorLocation))
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Vendor Location is required.";
+                }
                 else if (row.VendorLocation.Length > 50)
                 {
                     row.IsValid = false;
                     row.ErrorMessage1 = "vendor location cannot exceed 50 characters.";
+                }
+                else if (string.IsNullOrWhiteSpace(row.VendorName))
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "Vendor Name is required.";
                 }
                 else if (row.VendorName.Length > 50)
                 {

@@ -110,6 +110,7 @@
     <Compile Include="Model\MetalKtDetails.cs" />
     <Compile Include="Model\MetalLossDetails.cs" />
     <Compile Include="Model\MetelColorDtls.cs" />
+    <Compile Include="Model\Report\SKUReportDto.cs" />
     <Compile Include="Model\SettingLaborDetail.cs" />
     <Compile Include="Model\SkuCalculation.cs" />
     <Compile Include="Model\SkuCalculationDto.cs" />
@@ -139,6 +140,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

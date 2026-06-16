@@ -89,22 +89,40 @@ namespace POEMPricing.Managers
                         rows.Add(new FindingDetailsImportRowDto
                         {
                             RowNumber = row,
-                            FindingSupplier = findingSupplier,
-                            FindingVendorName = findingVendorName,
-                            FindingVendorCode = findingVendorCode,
-                            Company = company,
-                            FindingNumber = findingNumber,
-                            FindingMetalType = findingMetalType,
-                            FindingMetalKt = findingMetalKt,
-                            FindingMetalColor = findingMetalColor,
-                            FindingType = findingType,
-                            FindingDescription = findingDescription,
-                            FindingShortDescription = findingShortDescription,
-                            PerPcFindingWeightGms = worksheet.Cell(row, 12).GetValue<decimal>(),
-                            Increment = worksheet.Cell(row, 13).GetValue<decimal>(),
-                            Decrement = worksheet.Cell(row, 14).GetValue<decimal>(),
-                            MetalLock = worksheet.Cell(row, 15).GetValue<int>(),
-                            FindingCost = worksheet.Cell(row, 16).GetValue<decimal>()
+
+                            // string values - if cell empty pass empty string
+                            FindingSupplier = findingSupplier ?? "",
+                            FindingVendorName = findingVendorName ?? "",
+                            FindingVendorCode = findingVendorCode ?? "",
+                            Company = company ?? "",
+                            FindingNumber = findingNumber ?? "",
+                            FindingMetalType = findingMetalType ?? "",
+                            FindingMetalKt = findingMetalKt ?? "",
+                            FindingMetalColor = findingMetalColor ?? "",
+                            FindingType = findingType ?? "",
+                            FindingDescription = findingDescription ?? "",
+                            FindingShortDescription = findingShortDescription ?? "",
+
+                            // value types - if cell empty pass 0
+                            PerPcFindingWeightGms = worksheet.Cell(row, 12).IsEmpty()
+                                 ? 0
+                                 : worksheet.Cell(row, 12).GetValue<decimal>(),
+
+                            Increment = worksheet.Cell(row, 13).IsEmpty()
+                                 ? 0
+                                 : worksheet.Cell(row, 13).GetValue<decimal>(),
+
+                            Decrement = worksheet.Cell(row, 14).IsEmpty()
+                                 ? 0
+                                 : worksheet.Cell(row, 14).GetValue<decimal>(),
+
+                             MetalLock = worksheet.Cell(row, 15).IsEmpty()
+                                 ? 0
+                                 : worksheet.Cell(row, 15).GetValue<int>(),
+
+                             FindingCost = worksheet.Cell(row, 16).IsEmpty()
+                                 ? 0
+                                 : worksheet.Cell(row, 16).GetValue<decimal>()
                         });
                     }
                 }

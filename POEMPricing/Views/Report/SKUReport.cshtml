@@ -1,0 +1,505 @@
+﻿@using POEM.Model.Model.Report
+@using System.Globalization
+@model List<SKUReportDto>
+
+@{
+    ViewBag.Title = "SKU Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h3>SKU Report</h3>
+
+
+<div class="card">
+
+    <div class="card-header">
+        Report Filter
+    </div>
+
+
+    <div class="card-body">
+
+
+        <form method="get"
+              action="@Url.Action("SKUReportSearch","Report")">
+
+
+            <div class="row">
+
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Company
+                    </label>
+
+                    @Html.DropDownList(
+                                                           "company",
+                                                           new SelectList(ViewBag.Companies, "Key", "Value"),
+                                                           " ",
+                                                           new { @class = "form-select", id = "ddlCompany" })
+
+                </div>
+
+
+
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Category
+                    </label>
+
+                    @Html.DropDownList(
+                                                           "category",
+                                                           new SelectList(ViewBag.Categories, "Key", "Value"),
+                                                           " ",
+                                                           new { @class = "form-select", id = "ddlCategory" })
+
+                </div>
+
+
+
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Sub Category
+                    </label>
+
+                    @Html.DropDownList(
+                                                           "subCategory",
+                                                           new SelectList(ViewBag.SubCategories, "Key", "Value"),
+                                                           " ",
+                                                           new { @class = "form-select", id = "ddlSubCategory" })
+
+                </div>
+
+
+
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Collection
+                    </label>
+
+                    @Html.DropDownList(
+                                                           "collection",
+                                                           new SelectList(ViewBag.Collections, "Key", "Value"),
+                                                           " ",
+                                                           new { @class = "form-select", id = "ddlCollection" })
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <label class="form-label">
+                        Price
+                    </label>
+
+                    <select id="ddlPrice"
+                            name="price"
+                            class="form-select">
+
+                        <option value=""> </option>
+
+                        <option value="1" @(Request["price"] == "1" ? "selected" : "")>
+                            1
+                        </option>
+
+                        <option value="2" @(Request["price"] == "2" ? "selected" : "")>
+                            2
+                        </option>
+
+                        <option value="3" @(Request["price"] == "3" ? "selected" : "")>
+                            3
+                        </option>
+
+                        <option value="4" @(Request["price"] == "4" ? "selected" : "")>
+                            4
+                        </option>
+
+                    </select>
+
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <div class="d-flex gap-2 w-100">
+                        <button type="submit"
+                                id="btnSearch"
+                                class="btn btn-primary"
+                                disabled>
+                            Search
+                        </button>
+
+                        <a href="@Url.Action("SKUReport","Report")"
+                           class="btn btn-secondary">
+                            Clear
+                        </a>
+
+                        <a id="btnPdf"
+                           class="btn btn-danger disabled"
+                           target="_blank"
+                           href="@Url.Action("DownloadSKUReportPdf","Report",
+                            new {
+                                 company=Request["company"],
+                                 category=Request["category"],
+                                 subCategory=Request["subCategory"],
+                                 collection=Request["collection"],
+                                 price=Request["price"]
+                            })">
+                            PDF
+                        </a>
+                    </div>
+                </div>
+
+
+                </div>
+
+
+
+
+</form>
+
+
+    </div>
+
+</div>
+
+
+@if (ViewContext.RouteData.Values["action"].ToString() == "SKUReportSearch"
+    && Model != null
+    && Model.Any())
+{
+    <div class="row mt-3 mb-2">
+
+        <div class="col-md-6">
+            <h5>
+                Company :
+                @Model.FirstOrDefault().CompanyName
+            </h5>
+        </div>
+
+        <div class="col-md-6 text-end">
+            <h5>
+                Date :
+                @DateTime.Now.ToString("dd-MM-yyyy")
+            </h5>
+        </div>
+
+    </div>
+}
+<div class="row mt-3">
+
+
+    @if (!string.IsNullOrEmpty(Request["company"])
+        && !string.IsNullOrEmpty(Request["price"])
+        && Model != null
+        && Model.Any())
+    {
+
+        foreach (var item in Model)
+        {
+
+
+            <div class="col-md-4">
+
+                <div class="card mb-3 shadow-sm">
+
+
+                    <!-- Image -->
+                    <div class="text-center p-2">
+
+                        <img src="~/Images/SKUImages/ring.png"
+                             style="width:200px;height:200px;object-fit:contain;" />
+
+                    </div>
+
+
+
+                    <table class="table table-bordered mb-0">
+
+
+                        <tr>
+                            <th>Sku</th>
+                            <td colspan="2">
+                                @item.SKUNumber
+                            </td>
+                        </tr>
+
+
+                        <tr>
+                            <th>Metal</th>
+
+                            <td colspan="2">
+                                @item.Metal
+                            </td>
+                        </tr>
+
+
+
+                        <tr>
+
+                            <th>Semi Mount</th>
+
+                            <td>
+                                @item.SemiMount
+                            </td>
+
+                            <td>
+
+                                <span class="price-1">
+                                    $@item.SemiPrice1
+                                </span>
+
+                                <span class="price-2">
+                                    $@item.SemiPrice2
+                                </span>
+
+                                <span class="price-3">
+                                    $@item.SemiPrice3
+                                </span>
+
+                                <span class="price-4">
+                                    $@item.SemiPrice4
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+
+
+                        <tr>
+
+                            <th>
+                                Center Shape | Size
+                            </th>
+
+
+                            <td>
+                                @item.CenterShapeSize
+                            </td>
+
+
+                            <td>
+
+                                <span class="price-1">
+                                    $@item.CenterPrice1
+                                </span>
+
+                                <span class="price-2">
+                                    $@item.CenterPrice2
+                                </span>
+
+                                <span class="price-3">
+                                    $@item.CenterPrice3
+                                </span>
+
+                                <span class="price-4">
+                                    $@item.CenterPrice4
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+
+
+                        <tr>
+
+                            <th>Total Weight</th>
+
+
+                            <td>
+                                @item.TotalWeight
+                            </td>
+
+
+                            <td>
+
+                                <span class="price-1">
+                                    @((item.SemiPrice1 + item.CenterPrice1)
+                                    ?.ToString("C", new CultureInfo("en-US")))
+                                </span>
+
+
+                                <span class="price-2">
+                                    @((item.SemiPrice1 + item.CenterPrice1)
+                                    ?.ToString("C", new CultureInfo("en-US")))
+                                </span>
+
+
+                                <span class="price-3">
+                                    @((item.SemiPrice1 + item.CenterPrice1)
+                                    ?.ToString("C", new CultureInfo("en-US")))
+                                </span>
+
+
+                                <span class="price-4">
+                                    @((item.SemiPrice1 + item.CenterPrice1)
+                                    ?.ToString("C", new CultureInfo("en-US")))
+                                </span>
+
+
+                            </td>
+
+
+                        </tr>
+
+
+
+
+                        <tr>
+
+                            <th>Finding</th>
+
+                            <td colspan="2"
+                                style="word-break:break-word;">
+
+
+                                @if (!string.IsNullOrEmpty(item.Findings))
+                                {
+
+                                    var findings = item.Findings.Split('#');
+
+
+                                    if (findings.Length > 1)
+                                    {
+
+                                        <ul class="mb-0 ps-3">
+
+                                            @foreach (var f in findings)
+                                            {
+                                                <li>
+                                                    @f
+                                                </li>
+                                            }
+
+                                        </ul>
+
+                                    }
+                                    else
+                                    {
+                                        @item.Findings
+                                    }
+
+                                }
+
+
+                            </td>
+
+
+                        </tr>
+
+
+
+                        <tr>
+
+                            <th>Collection</th>
+
+
+                            <td colspan="2">
+                                @item.Collection
+                            </td>
+
+
+                        </tr>
+
+
+                    </table>
+
+
+                </div>
+
+            </div>
+
+        }
+
+    }
+    else if (!string.IsNullOrEmpty(Request["company"])
+        && !string.IsNullOrEmpty(Request["price"]))
+    {
+        <div class="col-12">
+
+            <div class="alert alert-warning">
+                No Records Found
+            </div>
+
+        </div>
+    }
+
+
+</div>
+
+@section scripts
+{
+
+    <script>
+
+        function applyPriceFilter() {
+
+            var price = $("#ddlPrice").val();
+
+
+            $(".price-1,.price-2,.price-3,.price-4")
+                .hide();
+
+
+            if (price == "") {
+                $(".price-1,.price-2,.price-3,.price-4")
+                    .show();
+            }
+            else {
+                $(".price-" + price)
+                    .show();
+            }
+        }
+
+
+        $("#ddlPrice").change(function () {
+
+            applyPriceFilter();
+
+        });
+
+
+        function checkSearchButton() {
+
+            $("#btnSearch").prop(
+                "disabled",
+                $("#ddlCompany").val() == "" || $("#ddlPrice").val() == ""
+            );
+
+        }
+
+
+        $("#ddlCompany,#ddlPrice").change(function () {
+
+            checkSearchButton();
+
+        });
+
+
+        $(document).ready(function () {
+
+            applyPriceFilter();
+
+            checkSearchButton();
+
+            if ($("#ddlCompany").val() != ""
+                && $("#ddlPrice").val() != ""
+                && $(".card").length > 1) {
+
+                $("#btnPdf").removeClass("disabled");
+
+            }
+
+        });
+
+    </script>
+
+}

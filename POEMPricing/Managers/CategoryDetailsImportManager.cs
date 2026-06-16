@@ -66,8 +66,10 @@ namespace POEMPricing.Managers
                         rows.Add(new CategoryDetailsImportRowDto
                         {
                             RowNumber = row,
-                            Code = code,
-                            CategoryName = categoryName
+
+                            // string values - if cell empty pass empty string
+                            Code = code ?? "",
+                            CategoryName = categoryName ?? ""
                         });
                     }
                 }

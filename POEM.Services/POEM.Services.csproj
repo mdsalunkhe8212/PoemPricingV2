@@ -100,11 +100,13 @@
   <ItemGroup>
     <Compile Include="Interface\IImportRepository.cs" />
     <Compile Include="Interface\IMasterDataRepository.cs" />
+    <Compile Include="Interface\IReportRepository.cs" />
     <Compile Include="Interface\ISkuRepository.cs" />
     <Compile Include="Interface\IUserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\ImportRepository.cs" />
     <Compile Include="Repository\MasterDataRepository.cs" />
+    <Compile Include="Repository\ReportRepository.cs" />
     <Compile Include="Repository\SkuRepository.cs" />
     <Compile Include="Repository\UserRepository.cs" />
   </ItemGroup>
