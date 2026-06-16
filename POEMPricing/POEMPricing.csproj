@@ -177,6 +177,7 @@
     <Compile Include="Managers\CompanyMasterImportManager.cs" />
     <Compile Include="Managers\ExportManager.cs" />
     <Compile Include="Managers\FindingDetailsImportManager.cs" />
+    <Compile Include="Managers\MarginDetailsImportManager.cs" />
     <Compile Include="Managers\ProcessCostingDetailsImportManager.cs" />
     <Compile Include="Managers\SettingLaborDetailsImportManager.cs" />
     <Compile Include="Managers\StoneQualityDetailsImportManager.cs" />

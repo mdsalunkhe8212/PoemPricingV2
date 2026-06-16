@@ -162,6 +162,19 @@ namespace POEMPricing.Controllers
                 return View("Summary", result);
             }
 
+            if (model.MasterType == "MarginDetails")
+            {
+                TempData["master"] = "Margin Details";
+                var manager = new MarginDetailsImportManager();
+
+                var result = manager.ValidateExcel(model.File);
+                Session["ImportMasterType"] = model.MasterType;
+                Session["MarginDetailsImportData"] =
+                    JsonConvert.SerializeObject(result.ValidRecords);
+
+                return View("Summary", result);
+            }
+
             TempData["Error"] = "Invalid master type.";
 
             return RedirectToAction("Index");
@@ -506,6 +519,39 @@ namespace POEMPricing.Controllers
 
                 TempData["Success"] =
                     insertedCount + " process costing details details records imported successfully.";
+
+                return RedirectToAction("Upload");
+            }
+
+            //MarginDetails
+            if (masterType == "MarginDetails")
+            {
+                var sessionData =
+                    Session["MarginDetailsImportData"];
+
+                if (sessionData == null)
+                {
+                    TempData["Error"] = "Session expired.";
+
+                    return RedirectToAction("Upload");
+                }
+
+                var rows = JsonConvert.DeserializeObject
+                    <List<MarginDetailsImportRowDto>>
+                    (sessionData.ToString());
+
+                var manager =
+                    new MarginDetailsImportManager();
+
+                var insertedCount =
+                    manager.ImportMarginDetails(rows);
+
+                Session.Remove("MarginDetailsImportData");
+
+                Session.Remove("ImportMasterType");
+
+                TempData["Success"] =
+                    insertedCount + " margin details details records imported successfully.";
 
                 return RedirectToAction("Upload");
             }

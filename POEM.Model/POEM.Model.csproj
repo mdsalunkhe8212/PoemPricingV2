@@ -88,6 +88,7 @@
     <Compile Include="Model\Import\FindingDetailsImportRowDto.cs" />
     <Compile Include="Model\Import\ImportRequestDto.cs" />
     <Compile Include="Model\Import\ImportSummaryDto.cs" />
+    <Compile Include="Model\Import\MarginDetailsImportRowDto.cs" />
     <Compile Include="Model\Import\ProcessCostingDetailsImportRowDto.cs" />
     <Compile Include="Model\Import\SettingLaborDetailsImportRowDto.cs" />
     <Compile Include="Model\Import\StoneQualityDetailsImportRowDto.cs" />
