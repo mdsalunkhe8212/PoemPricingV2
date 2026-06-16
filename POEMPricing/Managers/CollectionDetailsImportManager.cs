@@ -66,8 +66,8 @@ namespace POEMPricing.Managers
                         rows.Add(new CollectionDetailsImportRowDto
                         {
                             RowNumber = row,
-                            Code = code,
-                            Collection = collection
+                            Code = code ?? "",
+                            Collection = collection ?? ""
                         });
                     }
                 }

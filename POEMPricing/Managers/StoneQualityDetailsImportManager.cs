@@ -82,14 +82,14 @@ namespace POEMPricing.Managers
                         rows.Add(new StoneQualityDetailsImportRowDto
                         {
                             RowNumber = row,
-                            CompanyCode = companyCode,
-                            StoneVendorCode = stoneVendorCode,
-                            StoneType = stoneType,
-                            StoneShapeCode = stoneShapeCode,
-                            StoneShape = stoneShape,
-                            StoneQualityCode = stoneQualityCode,
-                            StoneQuality = stoneQuality,
-                            InternationalGrading = internationalGrading
+                            CompanyCode = companyCode ?? "",
+                            StoneVendorCode = stoneVendorCode ?? "",
+                            StoneType = stoneType ?? "",
+                            StoneShapeCode = stoneShapeCode ?? "",
+                            StoneShape = stoneShape ?? "",
+                            StoneQualityCode = stoneQualityCode ?? "",
+                            StoneQuality = stoneQuality ?? "",
+                            InternationalGrading = internationalGrading ?? ""
                         });
                     }
                 }

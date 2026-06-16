@@ -66,8 +66,8 @@ namespace POEMPricing.Managers
                         rows.Add(new SubCategoryMasterRowDto
                         {
                             RowNumber = row,
-                            Code = code,
-                            SubCategoryName = subCategoryName
+                            Code = code ?? "",
+                            SubCategoryName = subCategoryName ?? ""
                         });
                     }
                 }

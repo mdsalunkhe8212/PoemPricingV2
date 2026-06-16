@@ -81,18 +81,34 @@ namespace POEMPricing.Managers
                         rows.Add(new SettingLaborDetailsImportRowDto
                         {
                             RowNumber = row,
-                            Code = code,
-                            SettingVendor = settingVendor,
-                            SettingType = settingType,
-                            ShapeCode = shapeCode,
-                            Shape = shape,
-                            DiamondPSWtFrom = decimal.TryParse(wtFromStr, out var wtFrom)
-                                                ? wtFrom : (decimal?)null,
-                            DiamondPSWtTo = decimal.TryParse(wtToStr, out var wtTo)
-                                                ? wtTo : (decimal?)null,
-                            GoldCostPS = worksheet.Cell(row, 8).GetValue<decimal>(),
-                            PlatinumCostPS = worksheet.Cell(row, 9).GetValue<decimal>(),
-                            SilverCostPS = worksheet.Cell(row, 10).GetValue<decimal>()
+
+                            // string values - if cell empty pass empty string
+                            Code = code ?? "",
+                            SettingVendor = settingVendor ?? "",
+                            SettingType = settingType ?? "",
+                            ShapeCode = shapeCode ?? "",
+                            Shape = shape ?? "",
+
+                            // value types - if cell empty pass 0
+                            DiamondPSWtFrom = worksheet.Cell(row, 6).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 6).GetValue<decimal>(),
+
+                                DiamondPSWtTo = worksheet.Cell(row, 7).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 7).GetValue<decimal>(),
+
+                                GoldCostPS = worksheet.Cell(row, 8).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 8).GetValue<decimal>(),
+
+                                PlatinumCostPS = worksheet.Cell(row, 9).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 9).GetValue<decimal>(),
+
+                                SilverCostPS = worksheet.Cell(row, 10).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 10).GetValue<decimal>()
                         });
                     }
                 }

@@ -562,5 +562,56 @@ namespace POEM.Services.Repository
             return _context.ProcessCostingDetails.ToList();
         }
         #endregion
+
+        #region MarginDetails
+        public List<string> GetAllMarginDetailsCodes()
+        {
+            return _context.MarginDetails
+               .Select(x => x.Code)
+               .ToList();
+        }
+
+        public void BulkInsertMarginDetails(List<MarginDetailsDbDto> master)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    _context.MarginDetails.AddRange(master);
+
+                    _context.SaveChanges();
+
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
+
+                    throw;
+                }
+            }
+        }
+
+        public void DeleteMarginDetailsByCodes(List<string> codes)
+        {
+            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
+
+            var existing = _context.MarginDetails
+                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
+                .ToList();
+
+            _context.MarginDetails.RemoveRange(existing);
+            _context.SaveChanges();
+        }
+        public int GetMarginDetailsCount()
+        {
+            return _context.MarginDetails.Count();
+        }
+        public List<MarginDetailsDbDto> GetAllMarginDetailsRecords()
+        {
+            return _context.MarginDetails.ToList();
+        }
+        #endregion
+
     }
 }

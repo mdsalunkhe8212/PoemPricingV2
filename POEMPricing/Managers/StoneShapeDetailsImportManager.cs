@@ -77,10 +77,10 @@ namespace POEMPricing.Managers
                         rows.Add(new StoneShapeDetailsImportRowDto
                         {
                             RowNumber = row,
-                            Code = code,
-                            StoneType = stoneType,
-                            StoneShape = stoneShape,
-                            CategoryFancyRound = categoryFancyRound
+                            Code = code ?? "",
+                            StoneType = stoneType ?? "",
+                            StoneShape = stoneShape ?? "",
+                            CategoryFancyRound = categoryFancyRound ?? ""
                         });
                     }
                 }
@@ -117,6 +117,24 @@ namespace POEMPricing.Managers
                 {
                     row.IsValid = false;
                     row.ErrorMessage1 = "Code cannot exceed 50 characters.";
+                }
+                else if (string.IsNullOrWhiteSpace(row.StoneType))
+                {
+                    row.IsValid = false;
+
+                    row.ErrorMessage1 = "StoneType is required.";
+                }
+                else if (string.IsNullOrWhiteSpace(row.StoneShape))
+                {
+                    row.IsValid = false;
+
+                    row.ErrorMessage1 = "StoneShape is required.";
+                }
+                else if (string.IsNullOrWhiteSpace(row.CategoryFancyRound))
+                {
+                    row.IsValid = false;
+
+                    row.ErrorMessage1 = "CategoryFancyRound is required.";
                 }
                 else
                 {
