@@ -45,8 +45,13 @@ namespace POEMPricing.Managers
 
                 case "StoneQualityDetails":
                     return ExportStoneQualityDetails();
+
                 case "ProcessCostingDetails":
                     return ExportProcessCostingDetails();
+
+                case "MarginDetails":
+                    return ExportProcessMarginDetails();
+
                 default:
                     throw new Exception("Invalid master type");
             }
@@ -80,6 +85,8 @@ namespace POEMPricing.Managers
                     return _repository.GetStoneQualityDetailsCount();
                 case "ProcessCostingDetails":
                     return _repository.GetProcessCostingDetailsCount();
+                case "MarginDetails":
+                    return _repository.GetMarginDetailsCount();
                 default:
                     return 0;
             }
@@ -478,6 +485,55 @@ namespace POEMPricing.Managers
 
 
         }
+
+
+
+        private byte[] ExportProcessMarginDetails()
+        {
+
+            using (var wb = new XLWorkbook())
+            {
+                var ws = wb.Worksheets.Add("MarginDetails");
+                var data = _repository.GetAllMarginDetailsRecords();
+                ws.Cell(1, 1).Value = "Code";
+                ws.Cell(1, 2).Value = "Vendor";
+                ws.Cell(1, 3).Value = "CategoryCode";
+                ws.Cell(1, 4).Value = "Category";
+                ws.Cell(1, 5).Value = "SubCategoryCode";
+                ws.Cell(1, 6).Value = "SubCategory";
+                ws.Cell(1, 7).Value = "Metal";
+                ws.Cell(1, 8).Value = "PMargin1";
+                ws.Cell(1, 9).Value = "PMargin2";
+                ws.Cell(1, 10).Value = "PMargin3";
+                ws.Cell(1, 11).Value = "PMargin4";
+
+                for (int i = 0; i < data.Count; i++)
+                {
+                    ws.Cell(i + 2, 1).Value = data[i].Code;
+                    ws.Cell(i + 2, 2).Value = data[i].Vendor;
+                    ws.Cell(i + 2, 3).Value = data[i].CategoryCode;
+                    ws.Cell(i + 2, 4).Value = data[i].Category;
+                    ws.Cell(i + 2, 5).Value = data[i].SubCategoryCode;
+                    ws.Cell(i + 2, 6).Value = data[i].SubCategory;
+                    ws.Cell(i + 2, 7).Value = data[i].Metal;
+                    ws.Cell(i + 2, 8).Value = data[i].PMargin1;
+                    ws.Cell(i + 2, 9).Value = data[i].PMargin2;
+                    ws.Cell(i + 2, 10).Value = data[i].PMargin3;
+                    ws.Cell(i + 2, 11).Value = data[i].PMargin4;
+                }
+
+                ws.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    return stream.ToArray();
+                }
+            }
+
+
+        }
+
 
     }
 }

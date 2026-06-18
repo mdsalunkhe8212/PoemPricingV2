@@ -66,8 +66,8 @@ namespace POEMPricing.Managers
                         rows.Add(new CompanyMasterImportRowDto
                         {
                             RowNumber = row,
-                            Code = code,
-                            CompanyName = companyName
+                            Code = code ?? "",
+                            CompanyName = companyName ?? ""
                         });
                     }
                 }

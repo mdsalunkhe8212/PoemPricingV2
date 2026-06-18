@@ -88,6 +88,7 @@
     <Compile Include="Model\Import\FindingDetailsImportRowDto.cs" />
     <Compile Include="Model\Import\ImportRequestDto.cs" />
     <Compile Include="Model\Import\ImportSummaryDto.cs" />
+    <Compile Include="Model\Import\MarginDetailsImportRowDto.cs" />
     <Compile Include="Model\Import\ProcessCostingDetailsImportRowDto.cs" />
     <Compile Include="Model\Import\SettingLaborDetailsImportRowDto.cs" />
     <Compile Include="Model\Import\StoneQualityDetailsImportRowDto.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Model\MetalKtDetails.cs" />
     <Compile Include="Model\MetalLossDetails.cs" />
     <Compile Include="Model\MetelColorDtls.cs" />
+    <Compile Include="Model\Report\SKUReportDto.cs" />
     <Compile Include="Model\SettingLaborDetail.cs" />
     <Compile Include="Model\SkuCalculation.cs" />
     <Compile Include="Model\SkuCalculationDto.cs" />
@@ -139,6 +141,7 @@
       <DependentUpon>Web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

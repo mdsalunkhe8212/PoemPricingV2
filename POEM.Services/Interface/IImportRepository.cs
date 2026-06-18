@@ -124,5 +124,16 @@ namespace POEM.Services.Interface
         int GetProcessCostingDetailsCount();
         List<ProcessCostingDetails> GetAllProcessCostingDetailsRecords();
         #endregion
+
+        #region MarginDetails
+        List<string> GetAllMarginDetailsCodes();
+
+        void BulkInsertMarginDetails(List<MarginDetailsDbDto> master);
+
+        void DeleteMarginDetailsByCodes(List<string> codes);
+
+        int GetMarginDetailsCount();
+        List<MarginDetailsDbDto> GetAllMarginDetailsRecords();
+        #endregion
     }
 }

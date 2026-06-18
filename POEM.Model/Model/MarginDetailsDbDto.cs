@@ -14,6 +14,7 @@ namespace POEM.Model.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long MarginId { get; set; }
 
+        public string Code { get; set; }
         public string Vendor { get; set; }
 
         public string CategoryCode { get; set; }
@@ -43,7 +44,7 @@ namespace POEM.Model.Model
 
         public int CreatedBy { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+        //public DateTime CreatedOn { get; set; }
 
         public int? ModifiedBy { get; set; }
 

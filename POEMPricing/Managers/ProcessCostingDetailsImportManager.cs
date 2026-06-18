@@ -83,16 +83,29 @@ namespace POEMPricing.Managers
                         rows.Add(new ProcessCostingDetailsImportRowDto
                         {
                             RowNumber = row,
-                            Code = code,
-                            VendorCode = vendorCode,
-                            Category = category,
-                            Type = type,
-                            Unit = unit,
-                            GoldCharges = decimal.TryParse(goldChargesStr, out var gc) ? gc : 0,
-                            PlatinumCharges = decimal.TryParse(platinumChargesStr, out var pc) ? pc : 0,
-                            SilverCharges = decimal.TryParse(silverChargesStr, out var sc) ? sc : 0,
+
+                            // string values - if cell empty pass empty string
+                            Code = code ?? "",
+                            VendorCode = vendorCode ?? "",
+                            Category = category ?? "",
+                            Type = type ?? "",
+                            Unit = unit ?? "",
+
+                            // value types - if cell empty pass 0
+                            GoldCharges = worksheet.Cell(row, 6).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 6).GetValue<decimal>(),
+
+                            PlatinumCharges = worksheet.Cell(row, 7).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 7).GetValue<decimal>(),
+
+                            SilverCharges = worksheet.Cell(row, 8).IsEmpty()
+                                ? 0
+                                : worksheet.Cell(row, 8).GetValue<decimal>(),
+
                             IsOptional = isOptionalStr.Equals("true", StringComparison.OrdinalIgnoreCase)
-                                               || isOptionalStr == "1"
+                    || isOptionalStr == "1"
                         });
                     }
                 }
