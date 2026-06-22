@@ -387,7 +387,7 @@ namespace POEM.Services.Repository
                         && c.StoneShapeCode == stoneshape)
                         .Select(f => new
                         {
-                            Key = f.StoneQuality,
+                            Key = f.StoneQualityCode,
                             Value = f.StoneQuality
                         })
                         .Distinct()
@@ -568,19 +568,19 @@ namespace POEM.Services.Repository
 
             return result;
         }
-        public Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shape, string category, string subCategory)
+        public Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shape, string category, string subCategory, string metal )
         {
             var costps= null as decimal?;
             var rows = _context.SettingLaborDetails
                 .AsNoTracking()
                 .Where(s => s.SettingVendor == vendor &&
                             s.SettingType == settingType &&
-                            (s.Shape == shape || s.Shape == "All Shape" || s.Shape.ToLower() == "all Fancy") &&
+                            (s.ShapeCode == shape || s.Shape == "All Shape" || s.Shape.ToLower() == "all Fancy") &&
                             //(s.Category == category || s.Category == "") &&
                             //(s.SubCategory == subCategory || s.SubCategory == "") &&
                             (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
                 .FirstOrDefault();
-                //.ToList();   // <-- IMPORTANT: Split only works after this
+            //.ToList();   // <-- IMPORTANT: Split only works after this
 
             //foreach (var row in rows)
             //{
@@ -601,11 +601,34 @@ namespace POEM.Services.Repository
             //        }
             //    }
             //}
+            if (rows == null) {
 
-                if (rows != null) {
-                costps = rows.GoldCostPS;
-                return Task.FromResult(costps);
+                 rows = _context.SettingLaborDetails
+                   .AsNoTracking()
+                   .Where(s => s.SettingVendor == vendor &&
+                               s.SettingType == settingType &&
+                               (s.Shape.ToLower() == "all shape" || s.Shape.ToLower() == "all fancy") &&
+                               //(s.Category == category || s.Category == "") &&
+                               //(s.SubCategory == subCategory || s.SubCategory == "") &&
+                               (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
+                   .FirstOrDefault();
             }
+                if (rows != null) {
+                if (metal.ToLower() == "gold")
+                {
+                    costps = rows.GoldCostPS;
+                }
+                else if (metal.ToLower() == "platinum") { 
+                costps= rows.PlatinumCostPS;
+                }
+                else if (metal.ToLower() == "silver")
+                 {
+                    costps = rows.SilverCostPS;
+                }
+                return Task.FromResult(costps);
+
+            }
+
 
             return null;
 

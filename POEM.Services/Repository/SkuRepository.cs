@@ -535,9 +535,10 @@ namespace POEM.Services.Repository
 
             return result;
         }
-        public async Task<bool> ExistsAsync(string skuNumber)
+        public async Task<bool> ExistsAsync(string skuNumber, int skuid)
         {
-            return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber);
+                return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber && s.SKUId != skuid);
+            
         }
 
         public SkuModuleDto GetSkuByNumber(string skuNumber)

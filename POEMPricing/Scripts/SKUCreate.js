@@ -1523,6 +1523,10 @@ $('#ddlSettingType').on('change', function () {
     const category = $('#ddlCategory option:selected').text().trim();
     const subCategory = $('#ddlSubCategory option:selected').text().trim();
     const errormsg = "Cost for given Vendor/Type not found.";
+    var metal = 'Gold';
+    if (metalLines.length > 0) {
+        metal = metalLines[0].metalText;
+    }
     $('#txtCostPerStone').val('');
 
 
@@ -1537,7 +1541,8 @@ $('#ddlSettingType').on('change', function () {
         perStoneWt: perStoneWt,
         shape: stoneShape,
         category: category,
-        subCategory: subCategory
+        subCategory: subCategory,
+        metal: metal    
     }, function (data) {
         if (data && data.costPerStone !== undefined) {
             $('#txtCostPerStone').val(Number(data.costPerStone).toFixed(2));
@@ -3261,7 +3266,7 @@ function validateTabs(tabname, newTab) {
     var ValidateField = ["#", "#"];
 
     if (tabname === "nav-sku-information-tab") {
-        ValidateField = ["ddlCompany", "ddlVendor", "ddlOrderType", "txtSKUNumber", "ddlCategory", "ddlSubCategory"];
+        ValidateField = ["ddlCompany", "ddlVendor", "ddlOrderType", "ddlCategory", "ddlSubCategory", , "txtSKUNumber"];
     } else if (tabname === "nav-stone-information-tab") {
         //ValidateField = ["ddlStoneVendor", "ddlStoneType", "ddlGrowing", "ddlSettingLocation", "ddlStoneShape", "txtStoneMMSize", "txtStoneQty", "txtTotalAdjStoneWt","ddlStoneQuality"]
         var stoneAdded = $("#tblStone tr").length;

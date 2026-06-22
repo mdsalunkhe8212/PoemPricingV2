@@ -27,6 +27,8 @@ namespace POEM.Model.Model
         public string StoneShape { get; set; } = string.Empty;
 
         [Required, MaxLength(50)]
+        public string StoneQualityCode { get; set; } = string.Empty;
+        [Required, MaxLength(50)]
         public string StoneQuality { get; set; } = string.Empty;
 
         [MaxLength(50)]
