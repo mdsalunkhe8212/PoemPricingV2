@@ -54,7 +54,7 @@ namespace POEM.Services.Interface
 
         Task<PagedResult<SkuListItemDto>> GetPagedAsync(string company,string skuPrefix,string category,string subcategory,string collection,int page,int pageSize);
         Task<SkuListItemDto> GetByIdAsync(int id);
-        Task<bool> ExistsAsync(string skuNumber);
+        Task<bool> ExistsAsync(string skuNumber,int skuid);
         SkuModuleDto GetSkuByNumber(string skuNumber);
 
     }

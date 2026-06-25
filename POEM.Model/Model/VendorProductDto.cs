@@ -26,6 +26,8 @@ namespace POEM.Model.Model
         public string centerMinWt { get; set; }
         public string SemiAdjWt { get; set; }
         public string CenterAdjWt { get; set; }
+        public int createdBy { get; set; }
+        public DateTime createdOn { get; set; }
 
     }
 }

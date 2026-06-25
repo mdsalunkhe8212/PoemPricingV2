@@ -22,6 +22,7 @@ namespace POEM.Model.Model
 
         public string StoneShape { get; set; }
         public string ShapeText { get; set; }
+        public string SizeRange { get; set; }
         public string StoneMMSize { get; set; }
         public string StoneWidth1 { get; set; }
         public string StoneWidth2 { get; set; }
