@@ -10,6 +10,8 @@ using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Services.Description;
+using Azure.Identity;
+using Microsoft.Graph;
 
 namespace POEM.Services.Repository
 {
@@ -540,6 +542,12 @@ namespace POEM.Services.Repository
                 return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber && s.SKUId != skuid);
             
         }
+
+        //public async Task<bool> GetImage(string skuNumber, int skuid)
+        //{
+        //    return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber && s.SKUId != skuid);
+
+        //}
 
         public SkuModuleDto GetSkuByNumber(string skuNumber)
         {

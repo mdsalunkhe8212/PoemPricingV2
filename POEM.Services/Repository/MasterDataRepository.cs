@@ -560,9 +560,9 @@ namespace POEM.Services.Repository
                 .Where(dd =>
                     dd.StoneType == stoneType &&
                     dd.GrowingType == growingType &&
-                    dd.StoneShape == stoneShape &&
+                    dd.StoneShapeCode == stoneShape &&
                     dd.LengthDiameter == ldDecimal &&
-                    dd.StoneQuality == stoneQuality)
+                    dd.StoneQualityCode == stoneQuality)
                 .Select(dd => (decimal?)dd.CostPerCt)
                 .FirstOrDefaultAsync();
 

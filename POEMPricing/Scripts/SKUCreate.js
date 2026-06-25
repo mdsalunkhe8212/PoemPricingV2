@@ -1433,7 +1433,8 @@ async function fetchAndSetCost() {
 
     const stoneType = $stoneType.val();
     const growingType = $growingType.val();
-    const stoneShape = $stoneShape.find('option:selected').text() || '';
+    //const stoneShape = $stoneShape.find('option:selected').text() || '';
+    const stoneShapeCpde = $stoneShape.val() || '';
     const vendor = $stoneVendor.val();
     $.ajax({
         url: webRoot + '/api/sku/stonecostpercarat',
@@ -1442,7 +1443,7 @@ async function fetchAndSetCost() {
             vendor: vendor,
             stoneType: stoneType,
             growingType: growingType,
-            stoneShape: stoneShape,
+            stoneShape: stoneShapeCpde,
             lengthDiameter: lengthDiameter,
             stoneQuality: stoneQuality
         },
