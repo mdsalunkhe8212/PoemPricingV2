@@ -98,7 +98,7 @@ namespace POEMPricing.Controllers
                 {
                     new KeyValuePair<string, string>("", "")
                 },
-                LaborLocations = _masterDataRepository.GetDropdownFromDb("LaborLocation"),
+                LaborLocations = _masterDataRepository.GetDropdownFromDb("LabourLocation"),
                 ProcessType = _masterDataRepository.GetDropdown("ProcessType"),
                 OtherOption1 = _masterDataRepository.GetDropdownFromDb("OtherOption"),
                 OtherOption2 = _masterDataRepository.GetDropdownFromDb("OtherOption"),

@@ -1,0 +1,463 @@
+﻿@using System.Reflection
+@using System.Collections
+
+@model dynamic
+
+@if (Model.IsValidTemplate == false)
+{
+    <div class="alert alert-danger">
+        <i class="fa fa-times-circle"></i>
+        <strong>Wrong Excel Template!</strong>
+        @Model.TemplateError
+    </div>
+}
+
+@{
+    ViewBag.Title = "Import Summary";
+
+    object firstItem = null;
+
+    foreach (var item in Model.InvalidRecords)
+    {
+        firstItem = item;
+        break;
+    }
+
+    if (firstItem == null)
+    {
+        foreach (var item in Model.DuplicateRecords)
+        {
+            firstItem = item;
+            break;
+        }
+    }
+
+    if (firstItem == null)
+    {
+        foreach (var item in Model.ExistingInDbRecords)
+        {
+            firstItem = item;
+            break;
+        }
+    }
+
+    if (firstItem == null)
+    {
+        if (Model.NewRecords != null)
+        {
+            foreach (var item in Model.NewRecords)
+            {
+                firstItem = item;
+                break;
+            }
+        }
+    }
+
+    if (firstItem == null)
+    {
+        foreach (var item in Model.ValidRecords)
+        {
+            firstItem = item;
+            break;
+        }
+    }
+
+    List<PropertyInfo> properties = new List<PropertyInfo>();
+
+    if (firstItem != null)
+    {
+        properties = firstItem.GetType()
+            .GetProperties()
+            .Where(delegate (PropertyInfo p)
+            {
+                return
+                    p.Name != "IsValid" &&
+                    p.Name != "IsDuplicate" &&
+                    p.Name != "IsExistingInDb" &&
+                    p.Name != "IsNew" &&
+                    p.Name != "ErrorMessage1" &&
+                    p.Name != "ErrorMessage2" &&
+                    p.Name != "ErrorMessage3";
+            })
+            .ToList();
+    }
+}
+
+<style>
+    .custom-scroll-grid {
+        max-height: 350px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+        .custom-scroll-grid table {
+            margin-bottom: 0;
+        }
+
+        .custom-scroll-grid thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+</style>
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">
+                Import Summary of :
+                <span class="fw-bold">@TempData["master"]</span>
+            </h4>
+            <a href="@Url.Action("Upload", "Import")"
+               class="btn btn-sm btn-light">
+                <i class="fa fa-arrow-left"></i> Back
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            @* ============================
+                SUMMARY CARDS — always 6 cards for all masters
+                ============================ *@
+            <div class="row text-center mb-4">
+
+                <div class="col-md-2">
+                    <div class="card border-primary">
+                        <div class="card-body">
+                            <h6>Total Rows</h6>
+                            <h5 class="text-primary">@Model.TotalRows</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <h6>Valid Rows</h6>
+                            <h5 class="text-success">@Model.ValidRows</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <h6>New Rows</h6>
+                            <h5 class="text-success">@Model.NewRows</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="card border-info">
+                        <div class="card-body">
+                            <h6>Will Replace</h6>
+                            <h5 class="text-info">@Model.ExistingInDbRows</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <h6>Duplicate Rows</h6>
+                            <h5 class="text-warning">@Model.DuplicateRows</h5>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="card border-danger">
+                        <div class="card-body">
+                            <h6>Invalid Rows</h6>
+                            <h5 class="text-danger">@Model.InvalidRows</h5>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            @* ============================
+                NEW RECORDS TABLE
+                 new records not in DB — will be inserted
+                ============================ *@
+            @if (Model.NewRecords != null && Model.NewRecords.Count > 0)
+            {
+                <div class="card mb-4 border-success">
+                    <div class="card-header bg-success text-white">
+                        New Records — Will Be Inserted
+                        <small class="ms-2 fw-normal">
+                            (new records not in DB)
+                        </small>
+                    </div>
+                    <div class="card-body table-responsive custom-scroll-grid">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    @foreach (var prop in properties)
+                                    {
+                                        <th>@prop.Name</th>
+                                    }
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.NewRecords)
+                                {
+                                    <tr>
+                                        @foreach (var prop in properties)
+                                        {
+                                            <td>@prop.GetValue(item)</td>
+                                        }
+                                        <td class="text-success fw-bold">
+                                            New Record
+                                        </td>
+                                    </tr>
+
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @* ============================
+                EXISTING IN DB RECORDS TABLE
+                Code found in DB — old deleted, new inserted on confirm
+                ============================ *@
+            @if (Model.ExistingInDbRecords != null && Model.ExistingInDbRecords.Count > 0)
+            {
+                <div class="card mb-4 border-info">
+                    <div class="card-header bg-info text-dark">
+                        Already Existing in DB — Will Be Replaced
+                        <small class="ms-2 fw-normal">
+                            (Old record deleted, new one inserted on confirm)
+                        </small>
+                    </div>
+                    <div class="card-body table-responsive custom-scroll-grid">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    @foreach (var prop in properties)
+                                    {
+                                        <th>@prop.Name</th>
+                                    }
+                                    <th>Note</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.ExistingInDbRecords)
+                                {
+                                    <tr>
+                                        @foreach (var prop in properties)
+                                        {
+                                            <td>@prop.GetValue(item)</td>
+                                        }
+                                        <td class="text-info fw-bold">
+                                            @item.ErrorMessage3
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @* ============================
+                DUPLICATE RECORDS TABLE
+                Repeated in Excel sheet — REJECTED
+                ============================ *@
+            @if (Model.DuplicateRecords.Count > 0)
+            {
+                <div class="card mb-4 border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        Duplicate Records (Duplicate Codes in Sheet)
+                        <small class="ms-2 fw-normal">
+                            (Repeated in Excel — will NOT be imported)
+                        </small>
+                    </div>
+                    <div class="card-body table-responsive custom-scroll-grid">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    @foreach (var prop in properties)
+                                    {
+                                        <th>@prop.Name</th>
+                                    }
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.DuplicateRecords)
+                                {
+                                    <tr>
+                                        @foreach (var prop in properties)
+                                        {
+                                            <td>@prop.GetValue(item)</td>
+                                        }
+                                        <td class="text-warning fw-bold">
+                                            @item.ErrorMessage2
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @* ============================
+                INVALID RECORDS TABLE
+                Blank / missing / validation errors
+                ============================ *@
+            @if (Model.InvalidRecords.Count > 0)
+            {
+                <div class="card mb-4 border-danger">
+                    <div class="card-header bg-danger text-white">
+                        Invalid Records (Empty / Missing Codes / Validation Errors)
+                    </div>
+                    <div class="card-body table-responsive custom-scroll-grid">
+                        <table class="table table-bordered table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    @foreach (var prop in properties)
+                                    {
+                                        <th>@prop.Name</th>
+                                    }
+                                    <th>Error</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.InvalidRecords)
+                                {
+                                    <tr>
+                                        @foreach (var prop in properties)
+                                        {
+                                            <td>@prop.GetValue(item)</td>
+                                        }
+                                        <td class="text-danger fw-bold">
+                                            @item.ErrorMessage1
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            @* ============================
+                CONFIRM IMPORT BUTTON
+                ============================ *@
+            @if (Model.ValidRows > 0)
+            {
+                <div class="alert alert-success">
+
+                    <h5 class="mb-3">Records are ready for import.</h5>
+
+                    <p class="mb-3 text-muted">
+                        <strong>@Model.NewRows</strong> new records will be inserted.
+                        <strong>@Model.ExistingInDbRows</strong> existing records will be replaced.
+                    </p>
+
+                    <form id="confirmForm"
+                          method="post"
+                          action="@Url.Action("ConfirmImport", "Import")">
+
+                        <button type="button"
+                                class="btn btn-success"
+                                data-bs-toggle="modal"
+                                data-bs-target="#confirmImportModal">
+                            <i class="fa fa-check"></i>
+                            Continue
+                        </button>
+
+                        <a href="@Url.Action("Upload", "Import")"
+                           class="btn btn-secondary">
+                            Cancel
+                        </a>
+
+                    </form>
+
+                </div>
+
+                @* CONFIRM MODAL *@
+                <div class="modal fade" id="confirmImportModal" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title text-warning">Confirm Import!</h5>
+                                <button type="button"
+                                        class="btn-close"
+                                        data-bs-dismiss="modal">
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p>Are you sure you want to continue?</p>
+                                <ul class="mb-0">
+                                    <li>New Rows: <strong>@Model.NewRows</strong></li>
+                                    <li>Will Replace: <strong>@Model.ExistingInDbRows</strong></li>
+                                    <li>Total Valid Rows: <strong>@Model.ValidRows</strong></li>
+                                </ul>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button"
+                                        class="btn btn-secondary"
+                                        data-bs-dismiss="modal">
+                                    No
+                                </button>
+                                <button type="button"
+                                        class="btn btn-success"
+                                        onclick="submitConfirm()">
+                                    Yes, Continue
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+@* LOADER OVERLAY *@
+<div id="loaderOverlay"
+     class="position-fixed top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center"
+     style="background:rgba(0,0,0,0.55);z-index:9999;">
+
+    <div class="bg-white rounded-3 p-4 d-flex flex-column align-items-center gap-3"
+         style="min-width:220px;">
+
+        <div class="spinner-border text-primary"
+             style="width:3rem;height:3rem;"
+             role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+
+        <div id="loaderLabel" class="fw-medium fs-6 text-dark"></div>
+        <div id="loaderSub" class="text-muted small"></div>
+
+    </div>
+
+</div>
+
+<script>
+    function submitConfirm() {
+        var overlay = document.getElementById('loaderOverlay');
+        document.getElementById('loaderLabel').textContent = 'Importing records...';
+        document.getElementById('loaderSub').textContent = 'Saving valid records to the database';
+        overlay.classList.remove('d-none');
+        overlay.classList.add('d-flex');
+        document.getElementById('confirmForm').submit();
+    }
+</script>

@@ -12,6 +12,8 @@ namespace POEM.Model.Model
         [Key]
         public long ID { get; set; }
 
+        public string Code { get; set; }
+
         public string VendorCode { get; set; }
 
         public string Category { get; set; }
@@ -28,7 +30,7 @@ namespace POEM.Model.Model
 
         public bool IsOptional { get; set; }
 
-        public DateTime CreatedOn { get; set; }
+       // public DateTime CreatedOn { get; set; }
 
         public int? CreatedBy { get; set; }
 
