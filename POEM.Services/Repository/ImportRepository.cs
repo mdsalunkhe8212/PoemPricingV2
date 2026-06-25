@@ -32,42 +32,31 @@ namespace POEM.Services.Repository
                 .ToList();
         }
 
-
-
-        public void BulkInsertCategories(List<CategoryDetails> categories)
+        public void ReplaceCategories(List<string> codesToDelete, List<CategoryDetails> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.CategoryDetails.AddRange(categories);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.CategoryDetails
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.CategoryDetails.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.CategoryDetails.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
-        }
-
-        public void DeleteCategoryCodesDetailsByCodes(List<string> codes)
-        {
-            //var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            //var existing = _context.CategoryDetails
-            //    .Where(x => lowerCodes.Contains(x.Code.ToLower()))
-            //    .ToList();
-            var existing = _context.CategoryDetails
-                .Where(x => codes.Contains(x.Code))  // ← no ToLower inside EF query
-                .ToList();
-
-            _context.CategoryDetails.RemoveRange(existing);
-            _context.SaveChanges();
         }
 
         public int GetCategoryDetailsCount()
@@ -95,37 +84,31 @@ namespace POEM.Services.Repository
                 .ToList();
         }
 
-        public void BulkInsertSubCategoryMaster(List<SubCategoryMasterDbDto> subCategories)
+        public void ReplaceSubCategoryDetails(List<string> codesToDelete, List<SubCategoryMasterDbDto> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.SubCategoryMasters.AddRange(subCategories);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.SubCategoryMasters
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.SubCategoryMasters.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.SubCategoryMasters.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
-        }
-
-        public void DeleteSubCategoryCodesDetailsByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.SubCategoryMasters
-                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
-                .ToList();
-
-            _context.SubCategoryMasters.RemoveRange(existing);
-            _context.SaveChanges();
         }
 
         public int GetSubCategoryDetailsCount()
@@ -154,37 +137,32 @@ namespace POEM.Services.Repository
                 .ToList();
         }
 
-        public void BulkInsertCollectionDetailsMaster(List<CollectionDtl> collections)
+
+        public void ReplaceCollectionDetails(List<string> codesToDelete, List<CollectionDtl> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.CollectionDtls.AddRange(collections);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.CollectionDtls
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.CollectionDtls.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.CollectionDtls.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
-        }
-
-        public void DeleteCollectionDetailsByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.CollectionDtls
-                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
-                .ToList();
-
-            _context.CollectionDtls.RemoveRange(existing);
-            _context.SaveChanges();
         }
         public int  GetCollectionDetailsCount()
         {
@@ -212,38 +190,33 @@ namespace POEM.Services.Repository
                 .ToList();
         }
 
-        public void BulkInsertCompanyMaster(List<CompanyMasterDbDto> master)
+        public void ReplaceCompanyMaster(List<string> codesToDelete, List<CompanyMasterDbDto> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.CompanyMaster.AddRange(master);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.CompanyMaster
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.CompanyMaster.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.CompanyMaster.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
         }
 
-        public void DeleteCompanyMasterByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.CompanyMaster
-                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
-                .ToList();
-
-            _context.CompanyMaster.RemoveRange(existing);
-            _context.SaveChanges();
-        }
         public int GetCompanyMasterCount()
         {
             return _context.CompanyMaster.Count();
@@ -263,38 +236,34 @@ namespace POEM.Services.Repository
         }
 
 
-        public void BulkInsertFindingDetails(List<FindingDetail> master)
+
+        public void ReplaceFindingDetails(List<string> codesToDelete, List<FindingDetail> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.findingDetails.AddRange(master);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.findingDetails
+                            .Where(x => codesToDelete.Contains(x.FindingNumber))
+                            .ToList();
+                        _context.findingDetails.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.findingDetails.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
         }
 
-        public void DeleteFindingDetailsByFindingNumbers(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.findingDetails
-                .Where(x => lowerCodes.Contains(x.FindingNumber.ToLower()))
-                .ToList();
-
-            _context.findingDetails.RemoveRange(existing);
-            _context.SaveChanges();
-        }
         public int GetFindingDetailsCount()
         {
             return _context.findingDetails.Count();
@@ -314,39 +283,33 @@ namespace POEM.Services.Repository
         }
 
 
-        public void BulkInsertStoneShapeDetails(List<StoneShapeDetail> master)
+
+        public void ReplaceStoneShapeDetails(List<string> codesToDelete, List<StoneShapeDetail> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.StoneShapeDetails.AddRange(master);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.StoneShapeDetails
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.StoneShapeDetails.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.StoneShapeDetails.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
         }
-
-        public void DeleteStoneShapeDetailsByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.StoneShapeDetails
-                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
-                .ToList();
-
-            _context.StoneShapeDetails.RemoveRange(existing);
-            _context.SaveChanges();
-        }
-
         public int GetStoneShapeDetailsCount()
         {
             return _context.StoneShapeDetails.Count();
@@ -367,37 +330,33 @@ namespace POEM.Services.Repository
         }
 
 
-        public void BulkInsertSettingLaborDetails(List<SettingLaborDetail> master)
+        
+
+        public void ReplaceSettingLaborDetails(List<string> codesToDelete, List<SettingLaborDetail> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.SettingLaborDetails.AddRange(master);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.SettingLaborDetails
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.SettingLaborDetails.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.SettingLaborDetails.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
-        }
-
-        public void DeleteSettingLaborDetailsByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.SettingLaborDetails
-                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
-                .ToList();
-
-            _context.SettingLaborDetails.RemoveRange(existing);
-            _context.SaveChanges();
         }
 
         public int GetSettingLaborDetailsCount()
@@ -419,38 +378,33 @@ namespace POEM.Services.Repository
         }
 
 
-        public void BulkInsertVendorDetails(List<VendorDetails> master)
+        public void ReplaceVendorDetails(List<string> codesToDelete, List<VendorDetails> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.VendorDetails.AddRange(master);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.VendorDetails
+                            .Where(x => codesToDelete.Contains(x.VendorCode))
+                            .ToList();
+                        _context.VendorDetails.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.VendorDetails.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
         }
 
-        public void DeleteVendorDetailsByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.VendorDetails
-                .Where(x => lowerCodes.Contains(x.VendorCode.ToLower()))
-                .ToList();
-
-            _context.VendorDetails.RemoveRange(existing);
-            _context.SaveChanges();
-        }
 
         public int GetVendorDetailsCount()
         {
@@ -471,36 +425,31 @@ namespace POEM.Services.Repository
         }
 
 
-        public void BulkInsertStoneQualityDetails(List<StoneQualityDetailsDbDto> master)
+        public void ReplaceStoneQualityDetails(List<string> codesToDelete, List<StoneQualityDetailsDbDto> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.StoneQualityDetails.AddRange(master);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.StoneQualityDetails
+                            .Where(x => codesToDelete.Contains(x.StoneQualityCode))
+                            .ToList();
+                        _context.StoneQualityDetails.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.StoneQualityDetails.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
-        }
-        public void DeleteStoneQualityDetailsByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.StoneQualityDetails
-                .Where(x => lowerCodes.Contains(x.StoneQualityCode.ToLower()))
-                .ToList();
-
-            _context.StoneQualityDetails.RemoveRange(existing);
-            _context.SaveChanges();
         }
 
         public int GetStoneQualityDetailsCount()
@@ -521,38 +470,34 @@ namespace POEM.Services.Repository
                .ToList();
         }
 
-        public void BulkInsertProcessCostingDetails(List<ProcessCostingDetails> master)
+
+        public void ReplaceProcessCostingDetails(List<string> codesToDelete, List<ProcessCostingDetails> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.ProcessCostingDetails.AddRange(master);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.ProcessCostingDetails
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.ProcessCostingDetails.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.ProcessCostingDetails.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
         }
 
-        public void DeleteProcessCostingDetailsByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.ProcessCostingDetails
-                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
-                .ToList();
-
-            _context.ProcessCostingDetails.RemoveRange(existing);
-            _context.SaveChanges();
-        }
         public int GetProcessCostingDetailsCount()
         {
             return _context.ProcessCostingDetails.Count();
@@ -571,38 +516,35 @@ namespace POEM.Services.Repository
                .ToList();
         }
 
-        public void BulkInsertMarginDetails(List<MarginDetailsDbDto> master)
+      
+
+        public void ReplaceMarginDetails(List<string> codesToDelete, List<MarginDetailsDbDto> recordsToInsert)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    _context.MarginDetails.AddRange(master);
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.MarginDetails
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.MarginDetails.RemoveRange(existing);
+                    }
 
-                    _context.SaveChanges();
+                    _context.MarginDetails.AddRange(recordsToInsert);
 
-                    transaction.Commit();
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
                 }
                 catch
                 {
-                    transaction.Rollback();
-
+                    transaction.Rollback(); // ← undoes delete too if insert fails
                     throw;
                 }
             }
         }
 
-        public void DeleteMarginDetailsByCodes(List<string> codes)
-        {
-            var lowerCodes = codes.Select(x => x.ToLower()).ToList();
-
-            var existing = _context.MarginDetails
-                .Where(x => lowerCodes.Contains(x.Code.ToLower()))
-                .ToList();
-
-            _context.MarginDetails.RemoveRange(existing);
-            _context.SaveChanges();
-        }
         public int GetMarginDetailsCount()
         {
             return _context.MarginDetails.Count();

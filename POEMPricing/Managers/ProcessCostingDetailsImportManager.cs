@@ -233,8 +233,6 @@ namespace POEMPricing.Managers
                 .Select(x => x.Code)
                 .ToList();
 
-            if (codesToDelete.Any())
-                _repository.DeleteProcessCostingDetailsByCodes(codesToDelete);
 
             // Step 2 — Insert all valid rows (new + replaced)
             var records = rows.Select(x => new ProcessCostingDetails
@@ -250,7 +248,7 @@ namespace POEMPricing.Managers
                 IsOptional = x.IsOptional
             }).ToList();
 
-            _repository.BulkInsertProcessCostingDetails(records);
+            _repository.ReplaceProcessCostingDetails(codesToDelete,records);
             return records.Count;
         }
     }

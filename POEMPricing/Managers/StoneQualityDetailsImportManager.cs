@@ -185,11 +185,6 @@ namespace POEMPricing.Managers
                 .Select(x => x.StoneQualityCode)
                 .ToList();
 
-            if (codesToDelete.Any())
-            {
-                // Delete old records from DB for these VendorCodes
-                _repository.DeleteStoneQualityDetailsByCodes(codesToDelete);
-            }
 
             var records = rows.Select(x => new StoneQualityDetailsDbDto
             {
@@ -203,7 +198,7 @@ namespace POEMPricing.Managers
                 IntertionalGrading = x.InternationalGrading
             }).ToList();
 
-            _repository.BulkInsertStoneQualityDetails(records);
+            _repository.ReplaceStoneQualityDetails(codesToDelete,records);
             return records.Count;
         }
     }

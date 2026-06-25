@@ -189,8 +189,6 @@ namespace POEMPricing.Managers
                 .Select(x => x.Code)
                 .ToList();
 
-            if (codesToDelete.Any())
-                _repository.DeleteCollectionDetailsByCodes(codesToDelete);
 
             // Step 2 — Insert all valid rows (new + replaced)
             var collections = rows.Select(x => new CollectionDtl
@@ -199,7 +197,8 @@ namespace POEMPricing.Managers
                 Collection = x.Collection
             }).ToList();
 
-            _repository.BulkInsertCollectionDetailsMaster(collections);
+            _repository.ReplaceCollectionDetails(codesToDelete,collections);
+
             return collections.Count;
         }
     }

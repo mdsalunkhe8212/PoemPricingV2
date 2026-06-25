@@ -260,8 +260,8 @@ namespace POEMPricing.Managers
                 .Select(x => x.Code)
                 .ToList();
 
-            if (codesToDelete.Any())
-                _repository.DeleteMarginDetailsByCodes(codesToDelete);
+            //if (codesToDelete.Any())
+            //    _repository.DeleteMarginDetailsByCodes(codesToDelete);
 
             // Step 2 — Insert all valid rows (new + replaced)
             var records = rows.Select(x => new MarginDetailsDbDto
@@ -279,7 +279,8 @@ namespace POEMPricing.Managers
                 PMargin4 = x.PMargin4
             }).ToList();
 
-            _repository.BulkInsertMarginDetails(records);
+            _repository.ReplaceMarginDetails(codesToDelete, records);
+            //_repository.BulkInsertMarginDetails(records);
             return records.Count;
         }
     }

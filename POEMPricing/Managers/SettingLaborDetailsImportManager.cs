@@ -217,10 +217,6 @@ namespace POEMPricing.Managers
                .Select(x => x.Code)
                .ToList();
 
-            if (codesToDelete.Any())
-            {
-                _repository.DeleteSettingLaborDetailsByCodes(codesToDelete);
-            }
             var records = rows.Select(x => new SettingLaborDetail
             {
                 Code = x.Code,
@@ -235,7 +231,7 @@ namespace POEMPricing.Managers
                 SilverCostPS = x.SilverCostPS
             }).ToList();
 
-            _repository.BulkInsertSettingLaborDetails(records);
+            _repository.ReplaceSettingLaborDetails(codesToDelete,records);
             return records.Count;
         }
     }
