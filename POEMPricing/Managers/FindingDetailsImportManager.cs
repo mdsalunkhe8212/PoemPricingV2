@@ -281,8 +281,6 @@ namespace POEMPricing.Managers
                 .Select(x => x.FindingNumber)
                 .ToList();
 
-            if (numbersToDelete.Any())
-                _repository.DeleteFindingDetailsByFindingNumbers(numbersToDelete);
 
             // Step 2 — Insert all valid rows (new + replaced)
             var records = rows.Select(x => new FindingDetail
@@ -305,7 +303,7 @@ namespace POEMPricing.Managers
                 FindingCost = x.FindingCost
             }).ToList();
 
-            _repository.BulkInsertFindingDetails(records);
+            _repository.ReplaceFindingDetails(numbersToDelete,records);
             return records.Count;
         }
     }
