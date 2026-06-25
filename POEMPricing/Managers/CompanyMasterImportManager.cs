@@ -190,8 +190,6 @@ namespace POEMPricing.Managers
                 .Select(x => x.Code)
                 .ToList();
 
-            if (codesToDelete.Any())
-                _repository.DeleteCompanyMasterByCodes(codesToDelete);
 
             // Step 2 — Insert all valid rows (new + replaced)
             var records = rows.Select(x => new CompanyMasterDbDto
@@ -200,7 +198,7 @@ namespace POEMPricing.Managers
                 CompanyName = x.CompanyName
             }).ToList();
 
-            _repository.BulkInsertCompanyMaster(records);
+            _repository.ReplaceCompanyMaster(codesToDelete,records);
             return records.Count;
         }
     }

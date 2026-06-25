@@ -195,8 +195,6 @@ namespace POEMPricing.Managers
                 .Select(x => x.Code)
                 .ToList();
 
-            if (codesToDelete.Any())
-                _repository.DeleteCategoryCodesDetailsByCodes(codesToDelete);
 
             // Step 2 — Insert all valid rows (new + replaced)
             var categories = rows.Select(x => new CategoryDetails
@@ -205,7 +203,7 @@ namespace POEMPricing.Managers
                 CategoryName = x.CategoryName
             }).ToList();
 
-            _repository.BulkInsertCategories(categories);
+            _repository.ReplaceCategories(codesToDelete,categories);
             return categories.Count;
         }
     }

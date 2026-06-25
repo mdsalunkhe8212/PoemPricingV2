@@ -228,11 +228,7 @@ namespace POEMPricing.Managers
                 .Select(x => x.Code)
                 .ToList();
 
-            if (codesToDelete.Any())
-            {
-                // Delete old records from DB for these VendorCodes
-                _repository.DeleteStoneShapeDetailsByCodes(codesToDelete);
-            }
+           
             var records = rows.Select(x => new StoneShapeDetail
             {
                 Code = x.Code,
@@ -242,7 +238,7 @@ namespace POEMPricing.Managers
 
             }).ToList();
 
-            _repository.BulkInsertStoneShapeDetails(records);
+            _repository.ReplaceStoneShapeDetails(codesToDelete,records);
 
             return records.Count;
         }

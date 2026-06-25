@@ -342,11 +342,6 @@ namespace POEMPricing.Managers
                 .Select(x => x.VendorCode)
                 .ToList();
 
-            if (codesToDelete.Any())
-            {
-                // Delete old records from DB for these VendorCodes
-                _repository.DeleteVendorDetailsByCodes(codesToDelete);
-            }
 
             // =============================================
             // STEP 2 — INSERT all valid rows
@@ -382,7 +377,7 @@ namespace POEMPricing.Managers
                 LabourLocation = x.LabourLocation
             }).ToList();
 
-            _repository.BulkInsertVendorDetails(records);
+            _repository.ReplaceVendorDetails(codesToDelete,records);
             return records.Count;
         }
     }

@@ -190,8 +190,6 @@ namespace POEMPricing.Managers
                 .Select(x => x.Code)
                 .ToList();
 
-            if (codesToDelete.Any())
-                _repository.DeleteSubCategoryCodesDetailsByCodes(codesToDelete);
 
             // Step 2 — Insert all valid rows (new + replaced)
             var subCategories = rows.Select(x => new SubCategoryMasterDbDto
@@ -200,7 +198,7 @@ namespace POEMPricing.Managers
                 SubCategoryName = x.SubCategoryName
             }).ToList();
 
-            _repository.BulkInsertSubCategoryMaster(subCategories);
+            _repository.ReplaceSubCategoryDetails(codesToDelete,subCategories);
             return subCategories.Count;
         }
     }
