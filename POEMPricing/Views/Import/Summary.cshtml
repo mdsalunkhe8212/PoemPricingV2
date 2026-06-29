@@ -81,6 +81,18 @@
             })
             .ToList();
     }
+
+    @* Calculate total records being rendered in tables *@
+    int totalRecordsToRender = 0;
+
+    if (Model.NewRecords != null)
+    {
+        totalRecordsToRender += (int)Model.NewRows;
+    }
+
+    totalRecordsToRender += (int)Model.ExistingInDbRows;
+    totalRecordsToRender += (int)Model.DuplicateRows;
+    totalRecordsToRender += (int)Model.InvalidRows;
 }
 
 <style>
@@ -99,7 +111,52 @@
             top: 0;
             z-index: 2;
         }
+
+    #pageLoadOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.97);
+        z-index: 9998;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+    }
 </style>
+
+@* ============================
+    PAGE LOAD OVERLAY
+    Shows while large record tables are rendering
+    Hides automatically when window.load fires
+    Only shown when total records > 500
+    ============================ *@
+@if (totalRecordsToRender > 500)
+{
+    <div id="pageLoadOverlay">
+        <div class="spinner-border text-primary"
+             style="width:3.5rem;height:3.5rem;"
+             role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="text-center px-3">
+            <h5 class="text-primary mb-2">
+                <i class="fa fa-hourglass-half me-1"></i>
+                Please Wait...
+            </h5>
+            <p class="text-muted mb-1">
+                This sheet contains <strong>@totalRecordsToRender</strong> records.
+                Building summary view, this may take a moment.
+            </p>
+            <small class="text-danger fw-bold">
+                Please do not close or refresh this page.
+            </small>
+        </div>
+    </div>
+}
 
 <div class="container mt-4">
 
@@ -119,7 +176,7 @@
         <div class="card-body">
 
             @* ============================
-                SUMMARY CARDS — always 6 cards for all masters
+                SUMMARY CARDS
                 ============================ *@
             <div class="row text-center mb-4">
 
@@ -181,7 +238,6 @@
 
             @* ============================
                 NEW RECORDS TABLE
-                 new records not in DB — will be inserted
                 ============================ *@
             @if (Model.NewRecords != null && Model.NewRecords.Count > 0)
             {
@@ -215,7 +271,6 @@
                                             New Record
                                         </td>
                                     </tr>
-
                                 }
                             </tbody>
                         </table>
@@ -225,7 +280,6 @@
 
             @* ============================
                 EXISTING IN DB RECORDS TABLE
-                Code found in DB — old deleted, new inserted on confirm
                 ============================ *@
             @if (Model.ExistingInDbRecords != null && Model.ExistingInDbRecords.Count > 0)
             {
@@ -268,7 +322,6 @@
 
             @* ============================
                 DUPLICATE RECORDS TABLE
-                Repeated in Excel sheet — REJECTED
                 ============================ *@
             @if (Model.DuplicateRecords.Count > 0)
             {
@@ -311,7 +364,6 @@
 
             @* ============================
                 INVALID RECORDS TABLE
-                Blank / missing / validation errors
                 ============================ *@
             @if (Model.InvalidRecords.Count > 0)
             {
@@ -414,6 +466,7 @@
                                 </button>
                                 <button type="button"
                                         class="btn btn-success"
+                                        data-bs-dismiss="modal"
                                         onclick="submitConfirm()">
                                     Yes, Continue
                                 </button>
@@ -430,7 +483,7 @@
 
 </div>
 
-@* LOADER OVERLAY *@
+@* LOADER OVERLAY — for confirm import action *@
 <div id="loaderOverlay"
      class="position-fixed top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center"
      style="background:rgba(0,0,0,0.55);z-index:9999;">
@@ -452,6 +505,21 @@
 </div>
 
 <script>
+    // ============================
+    // Hide page load overlay once browser
+    // finishes rendering all tables
+    // window.load fires AFTER all DOM is painted
+    // ============================
+    window.addEventListener('load', function () {
+        var overlay = document.getElementById('pageLoadOverlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    });
+
+    // ============================
+    // Confirm import — show loader then submit form
+    // ============================
     function submitConfirm() {
         var overlay = document.getElementById('loaderOverlay');
         document.getElementById('loaderLabel').textContent = 'Importing records...';

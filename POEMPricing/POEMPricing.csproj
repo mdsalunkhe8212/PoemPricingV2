@@ -175,6 +175,7 @@
     <Compile Include="Managers\CategoryDetailsImportManager.cs" />
     <Compile Include="Managers\CollectionDetailsImportManager.cs" />
     <Compile Include="Managers\CompanyMasterImportManager.cs" />
+    <Compile Include="Managers\DiamondDetailsImportManager.cs" />
     <Compile Include="Managers\ExportManager.cs" />
     <Compile Include="Managers\FindingDetailsImportManager.cs" />
     <Compile Include="Managers\MarginDetailsImportManager.cs" />
@@ -259,6 +260,8 @@
     <Content Include="Views\Import\Summary.cshtml" />
     <Content Include="Views\Report\SKUReport.cshtml" />
     <Content Include="Views\Report\SKUReportPdf.cshtml" />
+    <Content Include="Views\Report\CollectionProposal.cshtml" />
+    <Content Include="Views\Report\CollectionProposalPdf.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -3,12 +3,12 @@
 @model List<SKUReportDto>
 
 @{
-    ViewBag.Title = "SKU Report";
+    ViewBag.Title = "Thumbnail Proposal Report";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
-<h3>SKU Report</h3>
+<h3>Thumbnail Proposal</h3>
 
 
 <div class="card">
@@ -22,7 +22,7 @@
 
 
         <form method="get"
-              action="@Url.Action("SKUReportSearch","Report")">
+              action="@Url.Action("ThumbnailProposalReportSearch","Report")">
 
 
             <div class="row">
@@ -133,7 +133,7 @@
                             Search
                         </button>
 
-                        <a href="@Url.Action("SKUReport","Report")"
+                        <a href="@Url.Action("ThumbnailProposal","Report")"
                            class="btn btn-secondary">
                             Clear
                         </a>
@@ -141,7 +141,7 @@
                         <a id="btnPdf"
                            class="btn btn-danger disabled"
                            target="_blank"
-                           href="@Url.Action("DownloadSKUReportPdf","Report",
+                           href="@Url.Action("ThumbnailProposalReportPdf","Report",
                             new {
                                  company=Request["company"],
                                  category=Request["category"],
@@ -168,7 +168,7 @@
 </div>
 
 
-@if (ViewContext.RouteData.Values["action"].ToString() == "SKUReportSearch"
+@if (ViewContext.RouteData.Values["action"].ToString() == "ThumbnailProposalReportSearch"
     && Model != null
     && Model.Any())
 {
@@ -464,6 +464,19 @@
 
             applyPriceFilter();
 
+            checkSearchButton();
+
+            // Update PDF button href with new price
+            var currentHref = $("#btnPdf").attr("href");
+
+            if (currentHref) {
+
+                var updatedHref = currentHref.replace(/price=[^&]*/, "price=" + $(this).val());
+
+                $("#btnPdf").attr("href", updatedHref);
+
+            }
+
         });
 
 
@@ -489,6 +502,16 @@
             applyPriceFilter();
 
             checkSearchButton();
+
+            var currentHref = $("#btnPdf").attr("href");
+
+            if (currentHref) {
+
+                var updatedHref = currentHref.replace(/price=[^&]*/, "price=" + $("#ddlPrice").val());
+
+                $("#btnPdf").attr("href", updatedHref);
+
+            }
 
             if ($("#ddlCompany").val() != ""
                 && $("#ddlPrice").val() != ""
