@@ -112,5 +112,13 @@ namespace POEM.Services.Interface
         int GetMarginDetailsCount();
         List<MarginDetailsDbDto> GetAllMarginDetailsRecords();
         #endregion
+
+        #region DiamondDetails
+        List<string> GetAllDiamondDetailsCodes();
+        void ReplaceDiamondDetails(List<string> codesToDelete, List<DiamondDetail> recordsToInsert);
+
+        int GetDiamondDetailsCount();
+        List<DiamondDetail> GetAllDiamondDetailssRecords();
+        #endregion
     }
 }

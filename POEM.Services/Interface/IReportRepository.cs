@@ -14,5 +14,10 @@ namespace POEM.Services.Interface
         string category,
         string subCategory,
         string collection);
+
+        List<CollectionProposalDto> GetCollectionProposalReport(
+           string company,
+           string collection);
     }
+
 }

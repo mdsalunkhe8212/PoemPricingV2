@@ -41,8 +41,10 @@ namespace POEMPricing.Controllers
         }
 
 
+        #region ThumbnailProposal
+        // Open ThumbnailProposal Report Page
 
-        // Open Report Page
+        [ActionName("ThumbnailProposal")]
         public ActionResult SKUReport()
         {
             LoadDropdowns();
@@ -56,14 +58,14 @@ namespace POEMPricing.Controllers
             );
 
 
-            return View(data);
+            return View("SKUReport",data);
         }
 
 
 
         // Search
         [HttpGet]
-        public ActionResult SKUReportSearch(
+        public ActionResult ThumbnailProposalReportSearch(
             string company,
             string category,
             string subCategory,
@@ -84,7 +86,7 @@ namespace POEMPricing.Controllers
             return View("SKUReport", data);
         }
 
-        public ActionResult DownloadSKUReportPdf(
+        public ActionResult ThumbnailProposalReportPdf(
         string company,
         string category,
         string subCategory,
@@ -110,5 +112,69 @@ namespace POEMPricing.Controllers
                 "--footer-spacing 5"
             };
         }
+        #endregion
+
+
+        #region CollectionProposal
+        // Open CollectionProposal Report Page
+
+        [ActionName("CollectionProposal")]
+        public ActionResult CollectionProposal()
+        {
+            LoadDropdowns();
+
+
+            var data = _repo.GetCollectionProposalReport(
+                null,
+                null
+            );
+
+
+            return View("CollectionProposal", data);
+        }
+
+        // Search
+        [HttpGet]
+        public ActionResult CollectionProposalReportSearch(
+            string company,
+            string collection)
+        {
+
+            LoadDropdowns();
+
+
+            var data = _repo.GetCollectionProposalReport(
+                company,
+                collection
+            );
+
+
+            return View("CollectionProposal", data);
+        }
+
+        public ActionResult CollectionProposalReportPdf(
+           string company,
+           string collection,
+           string price)
+        {
+            var data = _repo.GetCollectionProposalReport(
+                company,
+                collection
+            );
+
+
+            ViewBag.Price = price;
+
+
+            return new ViewAsPdf("CollectionProposalPdf", data)
+            {
+                CustomSwitches =
+                "--footer-center \"Page No- [page] of [topage]\" " +
+                "--footer-font-size 10 " +
+                "--footer-spacing 5"
+            };
+        }
+
+        #endregion
     }
 }

@@ -555,5 +555,65 @@ namespace POEM.Services.Repository
         }
         #endregion
 
+        #region DiamondDetails
+        public List<string> GetAllDiamondDetailsCodes()
+        {
+            return _context.DiamondDetails
+               .Select(x => x.Code)
+               .ToList();
+        }
+
+
+
+        public void ReplaceDiamondDetails(List<string> codesToDelete, List<DiamondDetail> recordsToInsert)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    if (codesToDelete.Any())
+                    {
+                        var existing = _context.DiamondDetails
+                            .Where(x => codesToDelete.Contains(x.Code))
+                            .ToList();
+                        _context.DiamondDetails.RemoveRange(existing);
+                    }
+
+                    _context.DiamondDetails.AddRange(recordsToInsert);
+
+                    _context.SaveChanges(); // ← both delete + insert sent together
+                    transaction.Commit();   // ← only commits if everything succeeded
+                }
+                catch (System.Data.Entity.Validation.DbEntityValidationException ex)
+                {
+                    transaction.Rollback();
+
+                    // ← THIS will show you exactly which field is failing
+                    var errorMessages = ex.EntityValidationErrors
+                        .SelectMany(x => x.ValidationErrors)
+                        .Select(x => $"Property: {x.PropertyName} — Error: {x.ErrorMessage}");
+
+                    var fullError = string.Join("\n", errorMessages);
+
+                    throw new Exception("Validation errors:\n" + fullError);
+                }
+                catch
+                {
+                    transaction.Rollback(); // ← undoes delete too if insert fails
+                    throw;
+                }
+            }
+        }
+
+        public int GetDiamondDetailsCount()
+        {
+            return _context.DiamondDetails.Count();
+        }
+        public List<DiamondDetail> GetAllDiamondDetailssRecords()
+        {
+            return _context.DiamondDetails.ToList();
+        }
+        #endregion
+
     }
 }
