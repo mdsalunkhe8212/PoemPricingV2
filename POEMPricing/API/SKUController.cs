@@ -331,12 +331,12 @@ namespace POEMPricing.API
         // GET api/sku/settingcostperstone?vendor=...&settingType=...&perStoneWt=...
         [HttpGet]
         [Route("settingcostperstone")]
-        public async Task<IHttpActionResult> GetCostPerStone([FromUri] string vendor, [FromUri] string settingType, [FromUri] decimal perStoneWt, [FromUri] string shape, [FromUri] string category, [FromUri] string subCategory, [FromUri] string metal)
+        public async Task<IHttpActionResult> GetCostPerStone([FromUri] string vendor, [FromUri] string settingType, [FromUri] decimal perStoneWt, [FromUri] string shapeCode, [FromUri] string shape, [FromUri] string category, [FromUri] string subCategory, [FromUri] string metal)
         {
             if (string.IsNullOrWhiteSpace(vendor) || string.IsNullOrWhiteSpace(settingType) || string.IsNullOrWhiteSpace(category) || string.IsNullOrWhiteSpace(subCategory))
                 return BadRequest("Category, Subcategory, Vendor and SettingType are required.");
 
-            var cost = await _masterDataRepository.GetSettingCostPerStone(vendor, settingType, perStoneWt,shape, category, subCategory, metal);
+            var cost = await _masterDataRepository.GetSettingCostPerStone(vendor, settingType, perStoneWt,shapeCode,shape, category, subCategory, metal);
 
             if (cost == null)
                 return NotFound();

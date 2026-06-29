@@ -159,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="API\LoginController.cs" />
+    <Compile Include="API\SharePointApiController .cs" />
     <Compile Include="API\SKUController.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -222,7 +223,6 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Config\CFPLaborDetails.json" />
     <Content Include="Config\DutyDetails.json" />
-    <Content Include="App_Browsers\qt.browser" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\html2canvas.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />

@@ -115,6 +115,7 @@
     <Compile Include="Model\Report\CollectionProposalDto.cs" />
     <Compile Include="Model\Report\SKUReportDto.cs" />
     <Compile Include="Model\SettingLaborDetail.cs" />
+    <Compile Include="Model\SharePointImage.cs" />
     <Compile Include="Model\SkuCalculation.cs" />
     <Compile Include="Model\SkuCalculationDto.cs" />
     <Compile Include="Model\SKUDetailsDbDto.cs" />
