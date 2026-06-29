@@ -253,7 +253,7 @@ async function skuExistsAsync(skuNumber, skuid) {
 // Validate SKU number with server-side uniqueness check
 async function validateSkuNumber() {
     const id = 'txtSKUNumber';
-    const val = (document.getElementById(id)?.value || '').trim();
+    const val =     (document.getElementById(id)?.value || '').trim();
 
     // Required check first
     if (!val) {
@@ -271,6 +271,8 @@ async function validateSkuNumber() {
         if (exists) {
             setFieldError($('#txtSKUNumber'), 'SKU Number already exists.');
             return 'SKU Number already exists.';
+        } else {
+            loadImage(val)
         }        
         return null;
     } catch (e) {

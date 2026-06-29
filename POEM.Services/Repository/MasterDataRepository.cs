@@ -568,40 +568,20 @@ namespace POEM.Services.Repository
 
             return result;
         }
-        public Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shape, string category, string subCategory, string metal )
+        public Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shapeCode, string shape, string category, string subCategory, string metal )
         {
             var costps= null as decimal?;
             var rows = _context.SettingLaborDetails
                 .AsNoTracking()
                 .Where(s => s.SettingVendor == vendor &&
                             s.SettingType == settingType &&
-                            (s.ShapeCode == shape || s.Shape == "All Shape" || s.Shape.ToLower() == "all Fancy") &&
+                            (s.ShapeCode == shapeCode ) &&
                             //(s.Category == category || s.Category == "") &&
                             //(s.SubCategory == subCategory || s.SubCategory == "") &&
                             (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
                 .FirstOrDefault();
-            //.ToList();   // <-- IMPORTANT: Split only works after this
-
-            //foreach (var row in rows)
-            //{
-            //    if (string.IsNullOrWhiteSpace(row.DiamondPSWtRange))
-            //        continue;
-
-            //    var parts = row.DiamondPSWtRange.Split('-');
-            //    if (parts.Length != 2)
-            //        continue;
-
-            //    if (decimal.TryParse(parts[0], out decimal min) &&
-            //        decimal.TryParse(parts[1], out decimal max))
-            //    {
-            //        if (perStoneWt >= min && perStoneWt <= max)
-            //        {
-            //            costps = row.GoldCostPS;   // or whichever cost column you want
-            //            return Task.FromResult(costps);
-            //        }
-            //    }
-            //}
-            if (rows == null) {
+           
+            if (rows == null && shape.Contains("Round")) {
 
                  rows = _context.SettingLaborDetails
                    .AsNoTracking()
@@ -613,7 +593,20 @@ namespace POEM.Services.Repository
                                (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
                    .FirstOrDefault();
             }
-                if (rows != null) {
+            if (rows == null && !shape.Contains("Round"))
+            {
+
+                rows = _context.SettingLaborDetails
+                  .AsNoTracking()
+                  .Where(s => s.SettingVendor == vendor &&
+                              s.SettingType == settingType &&
+                              (s.Shape.ToLower() == "all fancy") &&
+                              //(s.Category == category || s.Category == "") &&
+                              //(s.SubCategory == subCategory || s.SubCategory == "") &&
+                              (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
+                  .FirstOrDefault();
+            }
+            if (rows != null) {
                 if (metal.ToLower() == "gold")
                 {
                     costps = rows.GoldCostPS;
