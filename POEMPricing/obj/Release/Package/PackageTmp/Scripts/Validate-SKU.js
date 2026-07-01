@@ -77,9 +77,10 @@ const FieldValidators = {
     //'#txtVendorNumber': $el =>
     //    !$el.val().trim() ? "Vendor Number is required." : null,
 
-    '#txtSKUNumber': $el =>
-        !$el.val().trim() ? "SKU Number is required." : null,
-
+    '#txtSKUNumber': $el => {
+        !$el.val().trim() ? "SKU Number is required." : null;
+        //validateSkuNumber();
+        },
 
     '#ddlCategory': $el =>
         !$el.val().trim() ? "Category is required." : null,
@@ -242,8 +243,8 @@ function debounce(fn, ms) {
 }
 
 // Async API check (returns true if exists)
-async function skuExistsAsync(skuNumber) {
-    const url = webRoot + '/api/sku/exists/' + encodeURIComponent(skuNumber);
+async function skuExistsAsync(skuNumber, skuid) {
+    const url = webRoot + '/api/sku/exists/' + encodeURIComponent(skuNumber) + '/' + encodeURIComponent(skuid);
     const res = await fetch(url, { method: 'GET' });
     const data = await res.json();
     return !!data.Exists;
@@ -252,22 +253,26 @@ async function skuExistsAsync(skuNumber) {
 // Validate SKU number with server-side uniqueness check
 async function validateSkuNumber() {
     const id = 'txtSKUNumber';
-    const val = (document.getElementById(id)?.value || '').trim();
+    const val =     (document.getElementById(id)?.value || '').trim();
 
     // Required check first
     if (!val) {
         setFieldError($('#txtSKUNumber'), 'SKU Number is required.');
-        return false;
+        return 'SKU Number is required.';
     }
 
     // Server uniqueness check
     try {
-        const exists = await skuExistsAsync(val);
+        var skuid = 0;
+        if (skuModule.skuInfo.VendorProduct.skuId>0) {
+            skuid = skuModule.skuInfo.VendorProduct.skuId;
+        }
+        const exists = await skuExistsAsync(val, skuid);
         if (exists) {
             setFieldError($('#txtSKUNumber'), 'SKU Number already exists.');
-            return false;
+            return 'SKU Number already exists.';
         }        
-        return true;
+        return null;
     } catch (e) {
         //setFieldError($('#txtSKUNumber'), 'Unable to validate SKU.');
         console.error('SKU validation error:', e);
@@ -292,7 +297,7 @@ if (!(path.includes("/sku/edit") || path.includes("/sku/info"))) {
 
 
 document.getElementById('txtSKUNumber')?.addEventListener('blur', () => {
-    validateSkuNumber(); // final check when user leaves field
+    return validateSkuNumber(); // final check when user leaves field
 });
     
 // Validate Adjusted Total Stone Weight based on Per Stone Weight and Quantity Line Items
@@ -316,7 +321,14 @@ const stoneRules = [
     { min: 5, max: 9.99, per: 0.03 },
     { min: 10, max: 20, per: 0.02 }
 ];
-
+const totalStoneRules = [
+    { min: 0.0001, max: 0.57, permin: 0.07, permax: 0.12 },
+    { min: 0.58, max: 1.49, permin: 0.07, permax: 0.12 },
+    { min: 1.5, max: 2.99, permin: 0.03, permax: 0.05 },
+    { min: 3, max: 4.99, permin: 0.03, permax: 0.05 },
+    { min: 5, max: 9.99, perpermin: 0.03, permax: 0.05 },
+    { min: 10, max: 20, permin: 0.02, permax: 0.04 }
+];
 /**
  * Generic validation function
  * adjInput - the adjusted weight textbox being validated
@@ -324,9 +336,19 @@ const stoneRules = [
  */
 function validateAdjStoneGeneric(adjInput, baseWt) {
     const adjValue = parseFloat(adjInput.value) || 0;
-
+    var minAllowed = 0;
+    var maxAllowed = 0;
     // Find matching rule based on base weight
-    const rule = stoneRules.find(r => baseWt >= r.min && baseWt <= r.max);
+    var istotal = false;
+    var ctrlid = adjInput.id;
+    if (ctrlid === 'txtSemiAdjWt' || ctrlid === 'txtCenterAdjWt' ) {
+        istotal = true;
+    }
+    var rule = stoneRules.find(r => baseWt >= r.min && baseWt <= r.max);
+    if (istotal) {
+        rule = totalStoneRules.find(r => baseWt >= r.min && baseWt <= r.max);
+
+    }
 
     if (!rule) {
         setFieldError($(adjInput), "Base weight not in any defined range.");
@@ -334,9 +356,14 @@ function validateAdjStoneGeneric(adjInput, baseWt) {
     }
 
     // Allowed range with 4 decimal precision
-    const minAllowed = parseFloat((baseWt - (baseWt * rule.per)).toFixed(4));
-    const maxAllowed = parseFloat((baseWt + (baseWt * rule.per)).toFixed(4));
-
+    if (istotal) {
+        minAllowed = parseFloat((baseWt - (baseWt * rule.permin)).toFixed(4));
+        maxAllowed = parseFloat((baseWt + (baseWt * rule.permax)).toFixed(4));
+    }
+    else {
+        minAllowed = parseFloat((baseWt - (baseWt * rule.per)).toFixed(4));
+        maxAllowed = parseFloat((baseWt + (baseWt * rule.per)).toFixed(4));
+    }
     console.log("Range:", minAllowed, "-", maxAllowed, "Adj:", adjValue);
 
     if (adjValue < minAllowed || adjValue > maxAllowed) {

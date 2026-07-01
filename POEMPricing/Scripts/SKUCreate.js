@@ -179,8 +179,8 @@ $(document).ready(function () {
 
         const metalRates = {
             Gold: 5000.00,
-            Silver: 40,
-            Platinum: 1100
+            Silver: 100,
+            Platinum: 2500
         };
         // Reset All Values first
         $('#txtMetalRatePOz').val('');
@@ -590,7 +590,7 @@ function HandlingCaluculation() {
     //if (DimondHndl < diaHndLow) {
     //    DimondHndl = diaHndLow;
     //}
-    $("#txtDiaHandling").val(parseFloat(DimondHndl).toFixed(2));
+    $("#txtDiaHandling").val(parseFloat(DimondHndl).toFixed(2)).change();
 
     // Dimond Handling Calculation End
     var labourFindingcost = 0.0;
@@ -653,7 +653,9 @@ $('#txtFindingSku').on('change', function () {
 
 $('#ddlLaborLocation').on('change', function () {
     //var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
-    var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+    //var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+    var vendorlist = $('#ddlLaborLocation').val().split('|');
+    var vendor = encodeURIComponent(vendorlist[0]);
     var type = encodeURIComponent($(this).val().trim());
     var category = encodeURIComponent($('#ddlCategory  option:selected').text().trim());
     var url = webRoot + '/api/sku/otherOptional?vendorcode=' + vendor + '&category=' + category;
@@ -679,7 +681,8 @@ $('#ddlLaborLocation').on('change', function () {
 
 $('#ddlProcessType').on('change', function () {
     //var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
-    var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+    var vendorlist = $('#ddlLaborLocation').val().split('|');
+    var vendor = encodeURIComponent(vendorlist[0]);
     var type = encodeURIComponent($(this).val().trim());
     var category = encodeURIComponent($('#ddlCategory  option:selected').text().trim());
     if (type === 'Flat Labour per piece') {
@@ -739,7 +742,9 @@ function setProcessValues(data, ctrl, type) {
             $('#' + ctrl).val(data.SilverCharges);
         }
         //HandlingCaluculation();
-        var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+       // var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+        var vendorlist = $('#ddlLaborLocation').val().split('|');
+       var vendor = encodeURIComponent(vendorlist[0]);
         if (data.Type === 'CFP') {
             getVendorDetails(vendor);
         }
@@ -1521,6 +1526,7 @@ $('#ddlSettingType').on('change', function () {
     const type = $('#ddlSettingType option:selected').text();
     const perStoneWt = $('#txtPerStoneWt').val();
     const stoneShape = $('#ddlStoneShape option:selected').text();
+    const stoneShapeCode = $('#ddlStoneShape').val();
     const category = $('#ddlCategory option:selected').text().trim();
     const subCategory = $('#ddlSubCategory option:selected').text().trim();
     const errormsg = "Cost for given Vendor/Type not found.";
@@ -1529,10 +1535,13 @@ $('#ddlSettingType').on('change', function () {
         metal = metalLines[0].metalText;
     }
     $('#txtCostPerStone').val('');
+    $('#txtTotalCost').val('');
 
 
     if (!vendor || !type || !perStoneWt) {
         $('#txtCostPerStone').val('');
+        $('#txtTotalCost').val('');
+
         return;
     }
 
@@ -1540,6 +1549,7 @@ $('#ddlSettingType').on('change', function () {
         vendor: vendor,
         settingType: type,
         perStoneWt: perStoneWt,
+        shapeCode: stoneShapeCode,
         shape: stoneShape,
         category: category,
         subCategory: subCategory,
@@ -1550,10 +1560,12 @@ $('#ddlSettingType').on('change', function () {
             updateTotalCost();
         } else {
             $('#txtCostPerStone').val('');
+            $('#txtTotalCost').val('');
         }
     }).always(function () {
         if ($('#txtCostPerStone').val() === '') {
             setFieldError($("#ddlSettingType"), errormsg);
+            $('#txtTotalCost').val('');
         }
         else {
             clearFieldError($("#ddlSettingType"));
@@ -1657,6 +1669,8 @@ function recalcTotal() {
     const total = qty * per;
 
     $txtTotalStoneWt.val(total.toFixed(4));
+    $txtTotalAdjStoneWt.val(total.toFixed(4));
+
 }
 
 $qty.on('input change', recalcTotal);
@@ -2128,6 +2142,10 @@ function fillLaborFOBValues() {
     });
 
     // Calculate Semi FOB (without center stone)
+    if ($('#ddlProcessType').val() === 'Flat Labour per piece' || $('#ddlProcessType').val() === 'Flat Labour per gm') {
+        totalLaborCost = l$('#ltxtTotalLabor').val() || 0;  
+        totalLaborCostWTDuty = 0;
+    }
     const semiFOBNRound = parseFloat(totalMetalCost)
         + parseFloat(totalFindingCost)
         + parseFloat(totalSemiStoneCost)
@@ -2145,15 +2163,20 @@ function fillLaborFOBValues() {
 
 
     // Duty rates
-    var LaborLocation = $('#ddlLaborLocation').val();
-    LaborLocation = 'India'
-    if (LaborLocation === 'USA') {
-        dutyPer = 0.0;
-    } else {
+    //var LaborLocation = $('#ddlLaborLocation').val();
+    var LaborLocation = 'India'
+    if ($('#ddlLaborLocation').val().length > 2) {
+        var vendorlist = $('#ddlLaborLocation').val().split('|');
+         LaborLocation = encodeURIComponent(vendorlist[1]);
+    }
+    
+    //if (LaborLocation === 'USA') {
+    //    dutyPer = 0.0;
+    //} else {
         const filtered = msdDutyDetails.filter(d => d.VendorLocation === LaborLocation);        // Sum Duty values
         const totalDuty = filtered.reduce((sum, d) => sum + d.Duty + d.Penalty + d.Tariff, 0);
         dutyPer = totalDuty / 100.0;
-    }
+    //}
 
 
 
@@ -2335,9 +2358,16 @@ function calculateTotalLabor() {
 
 
 function getLabor() {
+    var LaborLocation = '';
+    var vendorCode = '';
+    if ($('#ddlLaborLocation').val().length > 2) {
+        var vendorlist = $('#ddlLaborLocation').val().split('|');
+        vendorCode = vendorlist[0];
+        LaborLocation = vendorlist[1];
+    }
     return {
-        LaborLocation: $('#ddlLaborLocation').val(),
-        VendorCode: $('#ddlLaborLocation').val(),
+        LaborLocation: LaborLocation,
+        VendorCode: vendorCode,
         VendorName: $('#ddlLaborLocation option:selected').text().trim(),
         ProcessType: $('#ddlProcessType').val(),
         CastingLabor: 0,//$('#txtCastingLabor').val(),
@@ -2400,7 +2430,8 @@ function getLabor() {
 function setLaborObject(obj) {
 
     //$('#ddlLaborLocation').val(obj.LaborLocation);
-    $('#ddlLaborLocation option:selected').text(obj.VendorCode).trim(),
+    var laborLocation = obj.VendorCode + '|' + obj.LaborLocation;
+    $('#ddlLaborLocation option:selected').text(obj.VendorCode),
         $('#ddlProcessType').val(obj.ProcessType);
 
     $('#txtCastingLabor').val(obj.CastingLabor);
@@ -3210,9 +3241,9 @@ function GetCFP() {
 const el = document.getElementById('txtTotalLabor');
 if (el) {
     el.addEventListener("input", function () {
-        if ($('#ddlProcessType').val() === 'Flat Labour per piece') {
+        if ($('#ddlProcessType').val() === 'Flat Labour per piece' || $('#ddlProcessType').val() === 'Flat Labour per gm') {
             totalLaborCost = parseFloat($(this).val()) || 0;
-            totalLaborCostWTDuty = parseFloat($(this).val()) || 0;
+            totalLaborCostWTDuty = 0;
             fillLaborFOBValues(); // always recalc labor
         }
     });
@@ -3421,4 +3452,32 @@ function downloadSummaryPage() {
     });
     $("#printSummarypg").css('display', 'none');
 
+}
+
+function loadImage(filePath) {
+    //$('#imgLoader').show();
+    //$('#imgError').hide();
+    //$('#spImage').hide();
+    filePath = filePath + '.JPG';
+    $.ajax({
+        url: '/api/sharepoint/image',
+        type: 'GET',
+        data: { filePath: filePath },
+        xhrFields: { responseType: 'blob' },  // important — treat response as binary
+        success: function (blob) {
+            var objectUrl = URL.createObjectURL(blob);
+            $('#product_image')
+                .attr('src', objectUrl)
+                .show();
+            $('#sumproduct_image')
+                .attr('src', objectUrl)
+                .show();
+           /* $('#imgLoader').hide();*/
+        },
+        error: function (error) {
+            var errorMessage = error;
+            //$('#imgLoader').hide();
+            //$('#imgError').show();
+        }
+    });
 }
