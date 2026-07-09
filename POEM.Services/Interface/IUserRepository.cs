@@ -12,5 +12,20 @@ namespace POEM.Services.Interface
         Task<User> GetByEmailAsync(string email);
         Task<bool> ValidateUserAsync(string email, string password);
         Task<bool> CreateUserAsync(User user);
+
+        Task<List<User>> GetUsersAsync(
+            int pageNumber,
+            int pageSize,
+            string name = null,
+            string email = null);
+        Task<int> GetTotalUsersCountAsync();
+        Task<User> GetUserByIdAsync(int loginId);
+        Task<bool> UpdateUserAsync(User user);
+        Task<bool> DeleteUserAsync(int loginId);
+        Task<List<UserRoleDbDto>> GetAllRolesAsync();
+
+        Task<User> GetActiveUserByEmailAsync(string email);
+
+        Task<bool> UpdatePasswordAsync(string email, string newPassword);
     }
 }

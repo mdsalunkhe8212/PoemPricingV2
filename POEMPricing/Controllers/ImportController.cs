@@ -12,6 +12,7 @@ using System.Web.Mvc;
 
 namespace POEMPricing.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ImportController : Controller
     {
         private readonly ExportManager _exportManager = new ExportManager(); // for export to excel

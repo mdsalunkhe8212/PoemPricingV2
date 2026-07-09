@@ -135,7 +135,7 @@ namespace POEMPricing.Managers
                     row.IsValid = false;
                     row.ErrorMessage1 = "Code is required.";
                 }
-                else if (row.Code.Length > 10)
+                else if (row.Code.Length > 100)
                 {
                     row.IsValid = false;
                     row.ErrorMessage1 = "Code cannot exceed 10 characters.";

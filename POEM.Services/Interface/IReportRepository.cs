@@ -9,11 +9,18 @@ namespace POEM.Services.Interface
 {
     public interface IReportRepository
     {
+        List<SKUItemDto> GetSkus(
+       string term,
+       string company,
+       List<string> category,
+       List<string> subCategory,
+       List<string> collection);
         List<SKUReportDto> GetSKUReport(
-        string company,
-        string category,
-        string subCategory,
-        string collection);
+            string company,
+            List<string> category,
+            List<string> subCategory,
+            List<string> collection,
+            List<string> skus);
 
         List<CollectionProposalDto> GetCollectionProposalReport(
            string company,
