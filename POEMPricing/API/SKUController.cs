@@ -242,6 +242,25 @@ namespace POEMPricing.API
                 return InternalServerError(ex);
             }
         }
+
+
+        [HttpGet]
+        [Route("stonesizerange/{StoneType}/{GrowingType}/{StoneShape}/{Vendor}")]
+        public async Task<IHttpActionResult> stonesizerange([FromUri] string stonetype, string growingtype, string stoneshape, string vendor)
+        {
+            try
+            {
+                if (growingtype == "Lab - HPHT  CVD") { growingtype = "Lab - HPHT / CVD"; }
+                ;
+                var stonesizerange = _masterDataRepository.GetDropdownFromDb("SizeRange", stonetype + '|' + growingtype + '|' + stoneshape+'|'+vendor);
+                await Task.Delay(0);
+                return Ok(stonesizerange);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
         // GET api/sku/perstoneweight?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
         [HttpGet]
         [Route("perstoneweight")]
@@ -258,6 +277,24 @@ namespace POEMPricing.API
 
             return Ok(new { perStoneWeight = weight });
         }
+
+        // GET api/sku/stonecostpercarat?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
+        [HttpGet]
+        [Route("stonelengthdiameter")]
+        public async Task<IHttpActionResult> GetStoneLengthDiameter([FromUri] string vendor, string stoneType, [FromUri] string growingType, [FromUri] string stoneShape, [FromUri] string sizeRange)
+        {
+            if (string.IsNullOrWhiteSpace(stoneType) || string.IsNullOrWhiteSpace(vendor) || string.IsNullOrWhiteSpace(growingType) )
+                return BadRequest("Missing required parameters: vendor,stoneType,growingType, stoneShape.");
+            if (growingType == "Lab - HPHT  CVD") { growingType = "Lab - HPHT / CVD"; }
+            var lengthDiameter = await _masterDataRepository.GetStoneLengthDiameter(vendor, stoneType, growingType, stoneShape,sizeRange);
+
+            if (lengthDiameter == null) {
+                lengthDiameter = 0;
+            }
+                //return NotFound();
+
+            return Ok(new { stonelengthdiameter = lengthDiameter });
+        }
         // GET api/sku/stonecostpercarat?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
         [HttpGet]
         [Route("stonecostpercarat")]
@@ -268,8 +305,10 @@ namespace POEMPricing.API
             if (growingType == "Lab - HPHT  CVD") { growingType = "Lab - HPHT / CVD"; }
             var cost = await _masterDataRepository.GetStoneCostPerCarat(vendor, stoneType, growingType, stoneShape, lengthDiameter, stoneQuality);
 
-            if (cost == null)
-                return NotFound();
+            if (cost == null) {
+                cost = 0;
+            }
+            //    return NotFound();
 
             return Ok(new { stoneCostPerCarat = cost });
         }
@@ -292,12 +331,12 @@ namespace POEMPricing.API
         // GET api/sku/settingcostperstone?vendor=...&settingType=...&perStoneWt=...
         [HttpGet]
         [Route("settingcostperstone")]
-        public async Task<IHttpActionResult> GetCostPerStone([FromUri] string vendor, [FromUri] string settingType, [FromUri] decimal perStoneWt, [FromUri] string shape, [FromUri] string category, [FromUri] string subCategory)
+        public async Task<IHttpActionResult> GetCostPerStone([FromUri] string vendor, [FromUri] string settingType, [FromUri] decimal perStoneWt, [FromUri] string shapeCode, [FromUri] string shape, [FromUri] string category, [FromUri] string subCategory, [FromUri] string metal)
         {
             if (string.IsNullOrWhiteSpace(vendor) || string.IsNullOrWhiteSpace(settingType) || string.IsNullOrWhiteSpace(category) || string.IsNullOrWhiteSpace(subCategory))
                 return BadRequest("Category, Subcategory, Vendor and SettingType are required.");
 
-            var cost = await _masterDataRepository.GetSettingCostPerStone(vendor, settingType, perStoneWt,shape, category, subCategory);
+            var cost = await _masterDataRepository.GetSettingCostPerStone(vendor, settingType, perStoneWt,shapeCode,shape, category, subCategory, metal);
 
             if (cost == null)
                 return NotFound();
@@ -358,10 +397,10 @@ namespace POEMPricing.API
 
         }
         [HttpGet]
-        [Route("exists/{skuNumber}")]
-        public async Task<IHttpActionResult> CheckSkuExists(string skuNumber)
+        [Route("exists/{skuNumber}/{skuid}")]
+        public async Task<IHttpActionResult> CheckSkuExists(string skuNumber,int skuid)
         {
-            bool exists = await _skuRepository.ExistsAsync(skuNumber);
+            bool exists = await _skuRepository.ExistsAsync(skuNumber, skuid);
             return Ok(new { Exists = exists });
         }
 

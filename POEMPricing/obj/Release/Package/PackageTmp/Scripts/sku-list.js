@@ -16,7 +16,7 @@ const state = {
 // Load SKU list from API with filters and pagination
 // ---------------------------
 async function loadSkuPage() {
-    //if (!state.company) return; // Company is mandatory
+    if (!state.company) return; // Company is mandatory
 
     // Build query parameters
     const params = new URLSearchParams({
@@ -28,6 +28,7 @@ async function loadSkuPage() {
     // Apply SKU prefix filter if length >= 5, else use category/subcategory/collection
     if (state.skuPrefix && state.skuPrefix.trim().length >= 5) {
         params.append('skuPrefix', state.skuPrefix.trim());
+
     } else {
         if (state.category) params.append('category', state.category);
         if (state.subcategory) params.append('subcategory', state.subcategory);
@@ -35,7 +36,11 @@ async function loadSkuPage() {
     }
 
     // Call API
-    const res = await fetch(webRoot + '/api/sku/list?' + params.toString());
+    $('#loader').show();
+    const res = await fetch(webRoot + '/api/sku/list?' + params.toString()).finally(() => {
+        // 2. Hide the loader when finished (success or error)
+        $('#loader').hide();
+    });
     const data = await res.json();
 
     // Update state and render UI
@@ -132,6 +137,15 @@ function renderPager() {
 // Company dropdown change → reload list
 document.getElementById('ddlCompany').addEventListener('change', e => {
     state.company = e.target.value;
+    $('#txtSkuNumber').val('');
+    document.getElementById('txtSkuNumber').disabled = false;
+    $('#ddlCategory').val('');
+    $('#ddlSubCategory').val('');
+    $('#ddlCollection').val('');
+    state.skuPrefix = '';
+    state.subcategory = '';
+    state.collection = '';
+    state.category = '';
     state.page = 1;    
     loadSkuPage();
 });
@@ -144,30 +158,49 @@ document.getElementById('txtSkuNumber').addEventListener('input', e => {
     document.getElementById('ddlCategory').disabled = disableDropdowns;
     document.getElementById('ddlSubCategory').disabled = disableDropdowns;
     document.getElementById('ddlCollection').disabled = disableDropdowns;
-
+    $('#ddlCategory').val('');
+    $('#ddlSubCategory').val('');
+    $('#ddlCollection').val('');
+    state.subcategory = '';
+    state.collection = '';
+    state.category = '';
     state.page = 1;
     loadSkuPage();
 });
 
 // Category dropdown change → clears/disables SKU input
 document.getElementById('ddlCategory').addEventListener('change', e => {
-    state.category = e.target.options[e.target.selectedIndex].text || '';
-    document.getElementById('txtSkuNumber').value = '';
-    document.getElementById('txtSkuNumber').disabled = true;
+    if ($('#ddlCategory').val() === '') {
+
+        document.getElementById('txtSkuNumber').disabled = false
+    }
+    else {
+     document.getElementById('txtSkuNumber').value = '';
+     document.getElementById('txtSkuNumber').disabled = true
+    }
+    $('#ddlSubCategory').val('').change();
+    state.subcategory = '';
+    $('#ddlCollection').val('').change();
+    state.collection = '';
+    state.category = $('#ddlCategory').val() || '';
     state.skuPrefix = '';
     state.page = 1;
+    loadSkuPage();
 });
 
 // Subcategory dropdown change → reload list
 document.getElementById('ddlSubCategory').addEventListener('change', e => {
-    state.subcategory = e.target.options[e.target.selectedIndex].text || '';
+    state.subcategory = $('#ddlSubCategory').val() || '';
     state.page = 1;
+    $('#ddlCollection').val('');
+    state.collection = '';
+
     loadSkuPage();
 });
 
 // Collection dropdown change → reload list
 document.getElementById('ddlCollection').addEventListener('change', e => {
-    state.collection = e.target.options[e.target.selectedIndex].text || '';
+    state.collection = $('#ddlCollection').val() || '';
     state.page = 1;
     loadSkuPage();
 });
@@ -175,7 +208,7 @@ document.getElementById('ddlCollection').addEventListener('change', e => {
 // ---------------------------
 // Initial load on page ready
 // ---------------------------
-state.company = document.getElementById('ddlCompany').value || '';
+state.company = $('#ddlCompany').val() || '';
 state.page = 1;
 //loadSkuPage();
 

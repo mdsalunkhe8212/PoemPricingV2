@@ -384,10 +384,10 @@ namespace POEM.Services.Repository
                     items = _context.DiamondDetails
                         .Where(c => c.StoneType == stonetype
                         && c.GrowingType == growingtype
-                        && c.StoneShape == stoneshape)
+                        && c.StoneShapeCode == stoneshape)
                         .Select(f => new
                         {
-                            Key = f.StoneQuality,
+                            Key = f.StoneQualityCode,
                             Value = f.StoneQuality
                         })
                         .Distinct()
@@ -421,6 +421,28 @@ namespace POEM.Services.Repository
                          .ToList()
                          .Select(x => new KeyValuePair<string, string>(x.Key, x.Value))
                          .ToList();
+                    break;
+                case "SizeRange":
+                    var spstoneQualityParts = param.Split('|');
+                    var selstonetype = spstoneQualityParts[0];
+                    var selgrowingtype = spstoneQualityParts[1];
+                    var selstoneshape = spstoneQualityParts[2];
+                    var selVendor = spstoneQualityParts[3];
+
+                    items = _context.DiamondDetails
+                        .Where(c => c.StoneType == selstonetype
+                        && c.GrowingType == selgrowingtype
+                        && c.StoneShapeCode == selstoneshape
+                        && c.VendorCode == selVendor)
+                        .Select(f => new
+                        {
+                            Key = f.SizeRange,
+                            Value = f.SizeRange
+                        })
+                        .Distinct()
+                        .ToList()  // Execute SQL first
+                        .Select(x => new KeyValuePair<string, string>(x.Key, x.Value))
+                        .ToList();
                     break;
                 case "LaborLocation":
                     items = _context.VendorDetails
@@ -502,7 +524,23 @@ namespace POEM.Services.Repository
             return result;
 
         }
+        public Task<decimal?> GetStoneLengthDiameter(string vendor, string stoneType, string growingType, string stoneShape, string sizeRange)
+        {
+            
+            // query using numeric comparison against the decimal column
+            var result = _context.DiamondDetails
+                .AsNoTracking()
+                .Where(dd =>
+                    dd.VendorCode == vendor &&  
+                    dd.StoneType == stoneType &&
+                    dd.GrowingType == growingType &&
+                    dd.StoneShape == stoneShape &&
+                    dd.SizeRange == sizeRange)
+                .Select(dd => (decimal?)dd.LengthDiameter)
+                .FirstOrDefaultAsync();
 
+            return result;
+        }
         public Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality)
         {
             // normalize inputs
@@ -522,52 +560,68 @@ namespace POEM.Services.Repository
                 .Where(dd =>
                     dd.StoneType == stoneType &&
                     dd.GrowingType == growingType &&
-                    dd.StoneShape == stoneShape &&
+                    dd.StoneShapeCode == stoneShape &&
                     dd.LengthDiameter == ldDecimal &&
-                    dd.StoneQuality == stoneQuality)
+                    dd.StoneQualityCode == stoneQuality)
                 .Select(dd => (decimal?)dd.CostPerCt)
                 .FirstOrDefaultAsync();
 
             return result;
         }
-        public Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shape, string category, string subCategory)
+        public Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shapeCode, string shape, string category, string subCategory, string metal )
         {
             var costps= null as decimal?;
             var rows = _context.SettingLaborDetails
                 .AsNoTracking()
                 .Where(s => s.SettingVendor == vendor &&
                             s.SettingType == settingType &&
-                            (s.Shape == shape || s.Shape == "All Shape" || s.Shape.ToLower() == "all Fancy") &&
+                            (s.ShapeCode == shapeCode ) &&
                             //(s.Category == category || s.Category == "") &&
                             //(s.SubCategory == subCategory || s.SubCategory == "") &&
                             (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
                 .FirstOrDefault();
-                //.ToList();   // <-- IMPORTANT: Split only works after this
+           
+            if (rows == null && shape.Contains("Round")) {
 
-            //foreach (var row in rows)
-            //{
-            //    if (string.IsNullOrWhiteSpace(row.DiamondPSWtRange))
-            //        continue;
-
-            //    var parts = row.DiamondPSWtRange.Split('-');
-            //    if (parts.Length != 2)
-            //        continue;
-
-            //    if (decimal.TryParse(parts[0], out decimal min) &&
-            //        decimal.TryParse(parts[1], out decimal max))
-            //    {
-            //        if (perStoneWt >= min && perStoneWt <= max)
-            //        {
-            //            costps = row.GoldCostPS;   // or whichever cost column you want
-            //            return Task.FromResult(costps);
-            //        }
-            //    }
-            //}
-
-                if (rows != null) {
-                costps = rows.GoldCostPS;
-                return Task.FromResult(costps);
+                 rows = _context.SettingLaborDetails
+                   .AsNoTracking()
+                   .Where(s => s.SettingVendor == vendor &&
+                               s.SettingType == settingType &&
+                               (s.Shape.ToLower() == "all shape" ) &&
+                               //(s.Category == category || s.Category == "") &&
+                               //(s.SubCategory == subCategory || s.SubCategory == "") &&
+                               (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
+                   .FirstOrDefault();
             }
+            if (rows == null && !shape.Contains("Round"))
+            {
+
+                rows = _context.SettingLaborDetails
+                  .AsNoTracking()
+                  .Where(s => s.SettingVendor == vendor &&
+                              s.SettingType == settingType &&
+                              (s.Shape.ToLower() == "all fancy") &&
+                              //(s.Category == category || s.Category == "") &&
+                              //(s.SubCategory == subCategory || s.SubCategory == "") &&
+                              (s.DiamondPSWtFrom <= perStoneWt && s.DiamondPSWtTo >= perStoneWt))
+                  .FirstOrDefault();
+            }
+            if (rows != null) {
+                if (metal.ToLower() == "gold")
+                {
+                    costps = rows.GoldCostPS;
+                }
+                else if (metal.ToLower() == "platinum") { 
+                costps= rows.PlatinumCostPS;
+                }
+                else if (metal.ToLower() == "silver")
+                 {
+                    costps = rows.SilverCostPS;
+                }
+                return Task.FromResult(costps);
+
+            }
+
 
             return null;
 

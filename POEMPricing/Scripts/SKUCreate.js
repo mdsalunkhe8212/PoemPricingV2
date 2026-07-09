@@ -23,6 +23,7 @@ let totalSemiWt = 0;
 let totalCenterWt = 0;
 let totalLaborCost = 0;
 // Mahesh Start
+let totalLaborCostWTDuty = 0;
 let totalSemiAdjWt = 0;
 let totalCenterAdjWt = 0;
 let totalStoneQty = 0;
@@ -178,8 +179,8 @@ $(document).ready(function () {
 
         const metalRates = {
             Gold: 5000.00,
-            Silver: 40,
-            Platinum: 1100
+            Silver: 100,
+            Platinum: 2500
         };
         // Reset All Values first
         $('#txtMetalRatePOz').val('');
@@ -589,7 +590,7 @@ function HandlingCaluculation() {
     //if (DimondHndl < diaHndLow) {
     //    DimondHndl = diaHndLow;
     //}
-    $("#txtDiaHandling").val(parseFloat(DimondHndl).toFixed(2));
+    $("#txtDiaHandling").val(parseFloat(DimondHndl).toFixed(2)).change();
 
     // Dimond Handling Calculation End
     var labourFindingcost = 0.0;
@@ -652,7 +653,9 @@ $('#txtFindingSku').on('change', function () {
 
 $('#ddlLaborLocation').on('change', function () {
     //var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
-    var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+    //var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+    var vendorlist = $('#ddlLaborLocation').val().split('|');
+    var vendor = encodeURIComponent(vendorlist[0]);
     var type = encodeURIComponent($(this).val().trim());
     var category = encodeURIComponent($('#ddlCategory  option:selected').text().trim());
     var url = webRoot + '/api/sku/otherOptional?vendorcode=' + vendor + '&category=' + category;
@@ -678,9 +681,17 @@ $('#ddlLaborLocation').on('change', function () {
 
 $('#ddlProcessType').on('change', function () {
     //var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
-    var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+    var vendorlist = $('#ddlLaborLocation').val().split('|');
+    var vendor = encodeURIComponent(vendorlist[0]);
     var type = encodeURIComponent($(this).val().trim());
     var category = encodeURIComponent($('#ddlCategory  option:selected').text().trim());
+    if (type === 'Flat Labour per piece') {
+        txtboxDisEna('disabled');
+        $('#txtTotalLabor').val(0.001);
+        $('#txtTotalLabor').prop('disabled', false).prop('readonly', false);
+        return;
+    }
+
     var url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + type + '/' + category;
     $.getJSON(url, function (data) {
         if (!data) {
@@ -731,7 +742,9 @@ function setProcessValues(data, ctrl, type) {
             $('#' + ctrl).val(data.SilverCharges);
         }
         //HandlingCaluculation();
-        var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+       // var vendor = encodeURIComponent($('#ddlLaborLocation').val());
+        var vendorlist = $('#ddlLaborLocation').val().split('|');
+       var vendor = encodeURIComponent(vendorlist[0]);
         if (data.Type === 'CFP') {
             getVendorDetails(vendor);
         }
@@ -1164,7 +1177,13 @@ $(function () {
         if (validateButtonAddUpdate("btnMetalAddUpdate")) {
             const row = readMetalForm();
             metalLines.push(row);
-
+            $('#ddlMetal').val('');
+            $('#txtMetalRatePOz').val('0.00');
+            $('#ddlKarat').val('');
+            $('#ddlMetalColor').val('');
+            $('#txtMetalGmWt').val('0');
+            $('#txtMetalRatePerGm').val('0.00');
+            $('#txtMetalCost').val('0.00');
             renderMetalGrid();
             toggleTableVisibility();
         }
@@ -1317,6 +1336,7 @@ const $ddlQuality = $('#ddlStoneQuality');
 const $ddlStoneType = $('#ddlStoneType');
 const $ddlGrowingType = $('#ddlGrowingType');
 const $ddlStoneShape = $('#ddlStoneShape');
+const $ddlSizeRange = $('#ddlSizeRange');
 
 const $txtCost = $('#txtStoneCostPerCarat');
 const $txtStoneTotalCost = $('#txtStoneTotalCost');
@@ -1366,6 +1386,47 @@ function parseValOrText($el) {
     return ($el.find('option:selected').text() || '').trim();
 }
 
+
+$ddlSizeRange.on('change', function () {
+     const stoneType = $stoneType.val();
+    const growingType = $growingType.val();
+    const stoneShape = $stoneShape.find('option:selected').text() || '';
+    const vendor = $stoneVendor.val();
+    const sizeRange = $ddlSizeRange.val();  
+    $.ajax({
+        url: webRoot + '/api/sku/stonelengthdiameter',
+        method: 'GET',
+        data: {
+            vendor: vendor,
+            stoneType: stoneType,
+            growingType: growingType,
+            stoneShape: stoneShape,
+            sizeRange: sizeRange    
+
+        },
+        beforeSend: function () {
+            //$txtCost.prop('disabled', true);
+            $('#txtPerStoneWt').val(''); // clear weight until we get new value 
+        },
+        success: function (res) {
+            if (res && res.stonelengthdiameter !== undefined && res.stonelengthdiameter !== null) {
+                const lengthdiameter = Number(res.stonelengthdiameter).toFixed(2);
+                $mmSize.val(lengthdiameter);
+                $mmSize.change(); // trigger change to load per-stone weight
+                
+            } else {
+                $mmSize.val('0');
+            }
+        },
+        error: function () {
+            $mmSize.val('0');
+        },
+        complete: function () {
+            //$txtCost.prop('disabled', false);
+        }
+    });
+});
+
 async function fetchAndSetCost() {
     const stoneQuality = parseValOrText($ddlQuality);
     const lengthDiameter = ($mmSize.val() || '').toString().trim();
@@ -1377,7 +1438,8 @@ async function fetchAndSetCost() {
 
     const stoneType = $stoneType.val();
     const growingType = $growingType.val();
-    const stoneShape = $stoneShape.find('option:selected').text() || '';
+    //const stoneShape = $stoneShape.find('option:selected').text() || '';
+    const stoneShapeCpde = $stoneShape.val() || '';
     const vendor = $stoneVendor.val();
     $.ajax({
         url: webRoot + '/api/sku/stonecostpercarat',
@@ -1386,7 +1448,7 @@ async function fetchAndSetCost() {
             vendor: vendor,
             stoneType: stoneType,
             growingType: growingType,
-            stoneShape: stoneShape,
+            stoneShape: stoneShapeCpde,
             lengthDiameter: lengthDiameter,
             stoneQuality: stoneQuality
         },
@@ -1421,6 +1483,7 @@ $mmSize.on('input change', costHandler);
 $ddlStoneType.on('change', costHandler);
 $ddlGrowingType.on('change', costHandler);
 $ddlStoneShape.on('change', costHandler);
+$ddlSizeRange.on('change', costHandler);
 $ddlQuality.on('input change', costHandler);
 $txtTotalAdjStoneWt.on('input change', costHandler);
 
@@ -1438,6 +1501,7 @@ $('#ddlSettingVendor').on('change', function () {
     const vendor = $(this).val();
 
     if (!vendor) {
+        $('#ddlSettingType').empty().append('<option value=""></option>');
         $('#ddlSettingType').empty().append('<option value=""></option>');
         return;
     }
@@ -1462,14 +1526,22 @@ $('#ddlSettingType').on('change', function () {
     const type = $('#ddlSettingType option:selected').text();
     const perStoneWt = $('#txtPerStoneWt').val();
     const stoneShape = $('#ddlStoneShape option:selected').text();
+    const stoneShapeCode = $('#ddlStoneShape').val();
     const category = $('#ddlCategory option:selected').text().trim();
     const subCategory = $('#ddlSubCategory option:selected').text().trim();
     const errormsg = "Cost for given Vendor/Type not found.";
+    var metal = 'Gold';
+    if (metalLines.length > 0) {
+        metal = metalLines[0].metalText;
+    }
     $('#txtCostPerStone').val('');
+    $('#txtTotalCost').val('');
 
 
     if (!vendor || !type || !perStoneWt) {
         $('#txtCostPerStone').val('');
+        $('#txtTotalCost').val('');
+
         return;
     }
 
@@ -1477,19 +1549,23 @@ $('#ddlSettingType').on('change', function () {
         vendor: vendor,
         settingType: type,
         perStoneWt: perStoneWt,
+        shapeCode: stoneShapeCode,
         shape: stoneShape,
         category: category,
-        subCategory: subCategory
+        subCategory: subCategory,
+        metal: metal    
     }, function (data) {
         if (data && data.costPerStone !== undefined) {
             $('#txtCostPerStone').val(Number(data.costPerStone).toFixed(2));
             updateTotalCost();
         } else {
             $('#txtCostPerStone').val('');
+            $('#txtTotalCost').val('');
         }
     }).always(function () {
         if ($('#txtCostPerStone').val() === '') {
             setFieldError($("#ddlSettingType"), errormsg);
+            $('#txtTotalCost').val('');
         }
         else {
             clearFieldError($("#ddlSettingType"));
@@ -1532,10 +1608,10 @@ $('#ddlStoneType').on('change', function () {
  * STONE SHAPE → STONE QUALITY
  ************************************************************/
 $('#ddlStoneShape').on('change', function () {
-    const stoneShape = $(this).find('option:selected').text().trim();
+    const stoneShape = $(this).val();
     const stoneType = $('#ddlStoneType').val();
     const growing = $('#ddlGrowing').val();
-
+    const vendor = $('#ddlStoneVendor').val();
     $.get(webRoot + 'api/sku/stonequality/' +
         stoneType + '/' + growing + '/' + stoneShape,
         function (data) {
@@ -1544,6 +1620,17 @@ $('#ddlStoneShape').on('change', function () {
 
             $.each(data, function (i, item) {
                 stoneQuality.append($('<option>').val(item.Key).text(item.Value));
+            });
+        });
+
+    $.get(webRoot + 'api/sku/stonesizerange/' +
+        stoneType + '/' + growing + '/' + stoneShape + '/' + vendor,
+        function (data) {
+            const stonesizerange = $('#ddlSizeRange');
+            stonesizerange.empty().append('<option value=""></option>');
+
+            $.each(data, function (i, item) {
+                stonesizerange.append($('<option>').val(item.Key).text(item.Value));
             });
         });
 });
@@ -1582,6 +1669,8 @@ function recalcTotal() {
     const total = qty * per;
 
     $txtTotalStoneWt.val(total.toFixed(4));
+    $txtTotalAdjStoneWt.val(total.toFixed(4));
+
 }
 
 $qty.on('input change', recalcTotal);
@@ -1643,6 +1732,7 @@ function getStoneModel() {
 
         Shape: $('#ddlStoneShape').val(),
         ShapeText: $('#ddlStoneShape option:selected').text(),
+        SizeRange: $('#ddlSizeRange').val(),
 
         MMSize: $('#txtStoneMMSize').val(),
         Width1: $('#txtStoneWidth1').val(),
@@ -1659,7 +1749,7 @@ function getStoneModel() {
 
         SettingVendorCode: $('#ddlSettingVendor').val(),
         SettingVendor: $('#ddlSettingVendor option:selected').text(),
-        SettingType: $('#ddlSettingType').val(),
+        SettingType: $('#ddlSettingType option:selected').text(),
         SettingTypeCode: $('#ddlSettingType').val(),
         CostPerStone: $('#txtCostPerStone').val(),
         TotalCost: $('#txtTotalCost').val(),
@@ -1695,6 +1785,7 @@ $('#btnStoneAddUpdate').on('click', function () {
         totalCenterWt += parseFloat(model.TotalStoneWt) || 0;
         totalCenterSettingCost += parseFloat(model.TotalCost) || 0;
         totalCenterAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;//added By Mahesh
+        $('#txtCenterAdjWt').prop('disabled', false);
 
     }
     else {
@@ -1702,6 +1793,7 @@ $('#btnStoneAddUpdate').on('click', function () {
         totalSemiWt += parseFloat(model.TotalStoneWt) || 0;
         totalSemiSettingCost += parseFloat(model.TotalCost) || 0;
         totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
+        $('#txtSemiAdjWt').prop('disabled', false);
     }
     $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(4));
     $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(4));
@@ -1729,6 +1821,8 @@ function renderStoneTable() {
     totalTotalStoneWt = 0;
     totalTotalAdjStoneWt = 0;
     totalCosttotal = 0;
+    $('#txtCenterAdjWt').prop('disabled', true);
+    $('#txtSemiAdjWt').prop('disabled', true);
     stoneList.sort(function (a, b) {
 
         // 1. SettingLocation (string)
@@ -1745,6 +1839,11 @@ function renderStoneTable() {
         return (parseFloat(a.PerStoneWt) || 0) - (parseFloat(b.PerStoneWt) || 0);
     });
     stoneList.forEach((s, i) => {
+        if (s.SettingLocation === 'Center') {
+            $('#txtCenterAdjWt').prop('disabled', false);
+        }else{
+            $('#txtSemiAdjWt').prop('disabled', false);
+        }
         html += `
             <tr>
                 <td>${s.StoneVendor}</td>
@@ -1818,7 +1917,9 @@ function editStone(index) {
     setValue('#ddlSettingLocation', s.SettingLocation);
     //$('#ddlLab').val(s.Lab);
     setValue('#ddlLab', s.Lab);
-    setSelectedText('#ddlStoneShape', s.Shape);
+    //setSelectedText('#ddlStoneShape', s.Shape);
+    setValue('#ddlStoneShape', s.Shape);
+    setValue('#ddlSizeRange', s.SizeRange);
     //$('#ddlStoneShape').val(s.Shape);
     $('#txtStoneMMSize').val(s.MMSize);
     $('#txtStoneWidth1').val(s.Width1);
@@ -1873,9 +1974,9 @@ function deleteStone(index) {
     $('#txtSemiAdjWt').val(Number(totalSemiAdjWt).toFixed(4));//added By Mahesh
     $('#txtCenterAdjWt').val(Number(totalCenterAdjWt).toFixed(4));//added By Mahesh
 
-    calculateTotals();
+   
     stoneList.splice(index, 1);
-
+    calculateTotals();
     renderStoneTable();
 }
 
@@ -1892,6 +1993,8 @@ function setStoneData(index) {
         setTimeout(function () {
             $('#ddlStoneQuality').val(data.StoneQuality);
             $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat);
+            $('#ddlSizeRange').val(data.SizeRange); 
+
         }, 800);
     }, 800);
     //$('#ddlStoneShape').val(data.Shape);
@@ -1935,7 +2038,8 @@ function clearStoneControls() {
     $('#ddlSettingLocation').val('');
     $('#ddlLab').val('');
     $('#ddlStoneShape').val('');
-    $('#txtSizeRange').val('');
+    //$('#txtSizeRange').val('');
+    $('#ddlSizeRange').val('');
     $('#txtStoneMMSize').val('');
     $('#txtStoneWidth1').val('');
     $('#txtStoneWidth2').val('');
@@ -2038,11 +2142,15 @@ function fillLaborFOBValues() {
     });
 
     // Calculate Semi FOB (without center stone)
+    if ($('#ddlProcessType').val() === 'Flat Labour per piece' || $('#ddlProcessType').val() === 'Flat Labour per gm') {
+        totalLaborCost = l$('#ltxtTotalLabor').val() || 0;  
+        totalLaborCostWTDuty = 0;
+    }
     const semiFOBNRound = parseFloat(totalMetalCost)
         + parseFloat(totalFindingCost)
         + parseFloat(totalSemiStoneCost)
         + parseFloat(totalSemiSettingCost)
-        + parseFloat(totalLaborCost);
+        + (parseFloat(totalLaborCost) - parseFloat(totalLaborCostWTDuty));
 
     const semiFOB = roundUpToQuarter(semiFOBNRound);
 
@@ -2055,15 +2163,20 @@ function fillLaborFOBValues() {
 
 
     // Duty rates
-    var LaborLocation = $('#ddlLaborLocation').val();
-    LaborLocation = 'India'
-    if (LaborLocation === 'USA') {
-        dutyPer = 0.0;
-    } else {
+    //var LaborLocation = $('#ddlLaborLocation').val();
+    var LaborLocation = 'India'
+    if ($('#ddlLaborLocation').val().length > 2) {
+        var vendorlist = $('#ddlLaborLocation').val().split('|');
+         LaborLocation = encodeURIComponent(vendorlist[1]);
+    }
+    
+    //if (LaborLocation === 'USA') {
+    //    dutyPer = 0.0;
+    //} else {
         const filtered = msdDutyDetails.filter(d => d.VendorLocation === LaborLocation);        // Sum Duty values
         const totalDuty = filtered.reduce((sum, d) => sum + d.Duty + d.Penalty + d.Tariff, 0);
         dutyPer = totalDuty / 100.0;
-    }
+    //}
 
 
 
@@ -2080,15 +2193,15 @@ function fillLaborFOBValues() {
 
 
 
-    const semiPrice1 = (parseFloat(semiFOB) / (1 - semiPrice1Per)) + parseFloat(semiDuty);
-    const semiPrice2 = (parseFloat(semiFOB) / (1 - semiPrice2Per)) + parseFloat(semiDuty);
-    const semiPrice3 = (parseFloat(semiFOB) / (1 - semiPrice3Per)) + parseFloat(semiDuty);
-    const semiPrice4 = (parseFloat(semiFOB) / (1 - semiPrice4Per)) + parseFloat(semiDuty);
+    const semiPrice1 = (parseFloat(semiFOB) / (1 - semiPrice1Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
+    const semiPrice2 = (parseFloat(semiFOB) / (1 - semiPrice2Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
+    const semiPrice3 = (parseFloat(semiFOB) / (1 - semiPrice3Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
+    const semiPrice4 = (parseFloat(semiFOB) / (1 - semiPrice4Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
 
-    const centerPrice1 = (parseFloat(completeFOB) / (1 - centerPrice1Per)) + parseFloat(centerDuty);
-    const centerPrice2 = (parseFloat(completeFOB) / (1 - centerPrice2Per)) + parseFloat(centerDuty);
-    const centerPrice3 = (parseFloat(completeFOB) / (1 - centerPrice3Per)) + parseFloat(centerDuty);
-    const centerPrice4 = (parseFloat(completeFOB) / (1 - centerPrice4Per)) + parseFloat(centerDuty);
+    const centerPrice1 = (parseFloat(completeFOB) / (1 - centerPrice1Per)) + parseFloat(centerDuty) + parseFloat(totalLaborCostWTDuty);
+    const centerPrice2 = (parseFloat(completeFOB) / (1 - centerPrice2Per)) + parseFloat(centerDuty) + parseFloat(totalLaborCostWTDuty);
+    const centerPrice3 = (parseFloat(completeFOB) / (1 - centerPrice3Per)) + parseFloat(centerDuty) + parseFloat(totalLaborCostWTDuty);
+    const centerPrice4 = (parseFloat(completeFOB) / (1 - centerPrice4Per)) + parseFloat(centerDuty) + parseFloat(totalLaborCostWTDuty);
 
     const semiMargin1 = ((semiPrice1 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice1) * 100;
     const semiMargin2 = ((semiPrice2 - (parseFloat(semiDuty) + parseFloat(semiFOB))) / semiPrice2) * 100;
@@ -2226,10 +2339,12 @@ function calculateTotalLabor() {
     var totalLabor = 0;
     if ($('#ddlProcessType').val() == 'Flat Labour per gm' || $('#ddlProcessType').val() == 'Flat Labour per piece') {
         totalLabor = totalLaborEl.value;
+        totalLaborCostWTDuty = parseFloat(totalLaborEl.value);
     }
     else {
         // Total calculation
         totalLabor = model + giftBox + cfp + rhodium + diaHandle + finHandle + stamping + cam + other1 + other2 + other3;
+        totalLaborCostWTDuty = model + giftBox + cam; // + other1 + other2 + other3;
     }
     // Fill into txtTotalLabor
 
@@ -2243,9 +2358,16 @@ function calculateTotalLabor() {
 
 
 function getLabor() {
+    var LaborLocation = '';
+    var vendorCode = '';
+    if ($('#ddlLaborLocation').val().length > 2) {
+        var vendorlist = $('#ddlLaborLocation').val().split('|');
+        vendorCode = vendorlist[0];
+        LaborLocation = vendorlist[1];
+    }
     return {
-        LaborLocation: $('#ddlLaborLocation').val(),
-        VendorCode: $('#ddlLaborLocation').val(),
+        LaborLocation: LaborLocation,
+        VendorCode: vendorCode,
         VendorName: $('#ddlLaborLocation option:selected').text().trim(),
         ProcessType: $('#ddlProcessType').val(),
         CastingLabor: 0,//$('#txtCastingLabor').val(),
@@ -2308,7 +2430,8 @@ function getLabor() {
 function setLaborObject(obj) {
 
     //$('#ddlLaborLocation').val(obj.LaborLocation);
-    $('#ddlLaborLocation option:selected').text(obj.VendorCode).trim(),
+    var laborLocation = obj.VendorCode + '|' + obj.LaborLocation;
+    $('#ddlLaborLocation option:selected').text(obj.VendorCode),
         $('#ddlProcessType').val(obj.ProcessType);
 
     $('#txtCastingLabor').val(obj.CastingLabor);
@@ -2413,15 +2536,19 @@ $('#btnSubmit').on('click', function () {
  ************************************************************/
 function collectSkuInfo() {
     var skuID = 0;
+    var createdby = 1;
+    var createdon = new Date();
     // ✅ Skip updating VendorProduct if on /SKU/Edit
     if (window.location.pathname.toLowerCase().includes("/sku/edit")) {
         // return; // exit early
         skuID = parseInt(skuModule.skuInfo.VendorProduct.skuId);
+        createdby = parseInt(skuModule.skuInfo.VendorProduct.createdBy);
+        createdon = skuModule.skuInfo.VendorProduct.createdOn;
 
     }
-    else {
+    //else {
         skuModule.skuInfo.VendorProduct = {
-            skuId: 0,
+            skuId: skuID,
             company: $('#ddlCompany').val(),
             vendor: $('#ddlVendor').val(),
             orderType: $('#ddlOrderType').val(),
@@ -2439,10 +2566,13 @@ function collectSkuInfo() {
             semiMinWt: 0,
             centerMinWt: 0,
             SemiAdjWt: $('#SemiAdjWt').val(),//Added By Mahesh
-            CenterAdjWt: $('#txtCenterAdjWt').val()//Added By Mahesh
+            CenterAdjWt: $('#txtCenterAdjWt').val(),//Added By Mahesh
+            createdBy: createdby,
+            createdOn: createdon,
+
 
         };
-    }
+    //}
     // Sync global arrays with module aliases
     findings = findingLines;
     metals = metalLines;
@@ -2888,6 +3018,7 @@ function bindFormData(skuModel) {
 
     // Labor
     setSelectedText("ddlLaborLocation", labor.VendorName);
+    setValue("ddlProcessType", labor.ProcessType);
     setValue("txtCastPcs", labor.CastPcs);
     setValue("txtGiftBox", labor.GiftBox);
     /*Added by Mahesh Start*/
@@ -2899,7 +3030,7 @@ function bindFormData(skuModel) {
     //setValue("ddlLaborLocation", labor.LaborLocation);
     setValue("txtCastingLabor", labor.CastingLabor);
     setValue("txtModel", labor.Model);
-    setValue("ddlProcessType", labor.ProcessType);
+
 
 
     totalSemiAdjWt = parseFloat(vp.SemiAdjWt) || 0;
@@ -3083,7 +3214,7 @@ function GetCFP() {
     // Need business rules for Dia. Handling lookup
 }
 // Attach event listeners to trigger calculation on change
-["txtCFP", "txtCAM", "txtModel", "txtGiftBox", "txtOtherCost1", "txtOtherCost2", "txtOtherCost3", "txtDiaHandling", 'txtFinHandling', 'txtStamping', 'txtOtherCost1', 'txtOtherCost2', 'txtOtherCost3'].forEach(id => {
+["txtCFP", "txtCAM", "txtModel", "txtGiftBox", "txtOtherCost1", "txtOtherCost2", "txtOtherCost3",'txtRhodium', "txtDiaHandling", 'txtFinHandling', 'txtStamping'].forEach(id => {
     const el = document.getElementById(id);
     if (el) {
         el.addEventListener("input", function () {
@@ -3110,8 +3241,9 @@ function GetCFP() {
 const el = document.getElementById('txtTotalLabor');
 if (el) {
     el.addEventListener("input", function () {
-        if ($('#ddlProcessType').val() === 'Flat Labour per piece') {
-            totalLaborCost = parseFloat( $(this).val()) || 0;
+        if ($('#ddlProcessType').val() === 'Flat Labour per piece' || $('#ddlProcessType').val() === 'Flat Labour per gm') {
+            totalLaborCost = parseFloat($(this).val()) || 0;
+            totalLaborCostWTDuty = 0;
             fillLaborFOBValues(); // always recalc labor
         }
     });
@@ -3166,7 +3298,7 @@ function validateTabs(tabname, newTab) {
     var ValidateField = ["#", "#"];
 
     if (tabname === "nav-sku-information-tab") {
-        ValidateField = ["ddlCompany", "ddlVendor", "ddlOrderType", "txtSKUNumber", "ddlCategory", "ddlSubCategory"];
+        ValidateField = ["ddlCompany", "ddlVendor", "ddlOrderType", "ddlCategory", "ddlSubCategory", , "txtSKUNumber"];
     } else if (tabname === "nav-stone-information-tab") {
         //ValidateField = ["ddlStoneVendor", "ddlStoneType", "ddlGrowing", "ddlSettingLocation", "ddlStoneShape", "txtStoneMMSize", "txtStoneQty", "txtTotalAdjStoneWt","ddlStoneQuality"]
         var stoneAdded = $("#tblStone tr").length;
@@ -3320,4 +3452,32 @@ function downloadSummaryPage() {
     });
     $("#printSummarypg").css('display', 'none');
 
+}
+
+function loadImage(filePath) {
+    //$('#imgLoader').show();
+    //$('#imgError').hide();
+    //$('#spImage').hide();
+    filePath = filePath + '.JPG';
+    $.ajax({
+        url: '/api/sharepoint/image',
+        type: 'GET',
+        data: { filePath: filePath },
+        xhrFields: { responseType: 'blob' },  // important — treat response as binary
+        success: function (blob) {
+            var objectUrl = URL.createObjectURL(blob);
+            $('#product_image')
+                .attr('src', objectUrl)
+                .show();
+            $('#sumproduct_image')
+                .attr('src', objectUrl)
+                .show();
+           /* $('#imgLoader').hide();*/
+        },
+        error: function (error) {
+            var errorMessage = error;
+            //$('#imgLoader').hide();
+            //$('#imgError').show();
+        }
+    });
 }

@@ -401,8 +401,11 @@
                             </div>
 
                             <div class="col-sm-3 col-md-2">
-                                <label for="txtStoneMMSize" class="form-label">Size Range</label>
-                                <input type="text" class="form-control" id="txtSizeRange" placeholder="">
+                                @*<label for="txtStoneMMSize" class="form-label">Size Range</label>
+        <input type="text" class="form-control" id="txtSizeRange" placeholder="">*@
+                                @Html.LabelFor(m => m.SelectedSizeRange, "Size Range", new { @class = "form-label" })
+                                @Html.DropDownListFor(m => m.SelectedSizeRange, new SelectList(Model.StoneSizeRange, "Key", "Value"), " ", new { @class = "form-select", id = "ddlSizeRange" })
+
                             </div>
 
                             <div class="col-sm-3 col-md-2">
@@ -511,7 +514,7 @@
                                     </div>
                                     <div class="col-lg-2 col-sm-6 col-md-3">
                                         <label for="txtSemiAdjWt" class="form-label">Semi Adj Wt</label>
-                                        <input id="txtSemiAdjWt" name="SemiAdjWt" class="form-control text-end" type="number" step="0.0001" value="">
+                                        <input id="txtSemiAdjWt" disabled="disabled" name="SemiAdjWt" class="form-control text-end" type="number" step="0.0001" value="">
                                     </div>
                                     <div class="col-lg-2 col-sm-6 col-md-3">
                                         <label for="txtCenterMinWt" class="form-label">Center Min Wt</label>
@@ -519,7 +522,7 @@
                                     </div>
                                     <div class="col-lg-2 col-sm-6 col-md-3">
                                         <label for="txtCenterAdjWt" class="form-label">Center Adj Wt</label>
-                                        <input id="txtCenterAdjWt" name="CenterAdjWt" class="form-control text-end" type="number" step="0.0001" value="">
+                                        <input id="txtCenterAdjWt" disabled="disabled" name="CenterAdjWt" class="form-control text-end" type="number" step="0.0001" value="">
                                     </div>
                                     <div class="col-lg-2 col-sm-6 col-md-3">
                                         <label for="txtTotalMinWt" class="form-label">Total Min Wt</label>
@@ -669,7 +672,7 @@
                                     <div class="col-lg-2 col-sm-6 col-md-3">
                                         @*<label for="txtOtherHead1" class="form-label">Other Head 1</label>
                                             <input type="text" class="form-control" id="txtOtherHead1" placeholder="">*@
-                                        @Html.LabelFor(m => m.OtherOption1, "Other Head 2", new { @class = "form-label" })
+                                        @Html.LabelFor(m => m.OtherOption1, "Other Head 1", new { @class = "form-label" })
                                         @Html.DropDownListFor(m => m.OtherOption1, new SelectList(Model.OtherOption1, "Key", "Value"), " ", new { @class = "form-select", id = "ddlOtherHead1" })
 
                                     </div>
@@ -696,7 +699,7 @@
                                         @*<label for="txtOtherHead3" class="form-label">Other Head 3</label>
                                             <input type="text" class="form-control" id="txtOtherHead3" placeholder="">*@
                                         @Html.LabelFor(m => m.OtherOption3, "Other Head 3", new { @class = "form-label" })
-                                        @Html.DropDownListFor(m => m.OtherOption3, new SelectList(Model.OtherOption2, "Key", "Value"), " ", new { @class = "form-select", id = "ddlOtherHead3" })
+                                        @Html.DropDownListFor(m => m.OtherOption3, new SelectList(Model.OtherOption3, "Key", "Value"), " ", new { @class = "form-select", id = "ddlOtherHead3" })
 
                                     </div>
 
@@ -1069,7 +1072,7 @@
 
                     <div class="col-12 text-center">
                         @*<label for="product_image" style="width:100%" class="form-label">Product Image</label>*@
-                        <img src="~/Content/images/200X200.png" style="max-width: 80%;" id="product_image" class="img-thumbnail" alt="Product Image">
+                        <img src="~/Content/images/200X200.png" style="max-width: 80%;" id="sumproduct_image" class="img-thumbnail" alt="Product Image">
                     </div>
 
                 </div>
@@ -1216,8 +1219,8 @@
 
 </div>
 @section scripts {
-    <script src="~/Scripts/Validate-SKU.js?v1.131"></script>
-    <script src="~/Scripts/SKUCreate.js?v1.131"></script>
+    <script src="~/Scripts/Validate-SKU.js?v1.31"></script>
+    <script src="~/Scripts/SKUCreate.js?v1.31"></script>
 
     <!-- In your .cshtml -->
     <script id="skuData" type="application/json">

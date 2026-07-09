@@ -14,7 +14,7 @@ namespace POEM.Services.Interface
         FindingDetail GetFindingDetails(string findingnumber);
         Task<decimal?> GetPerStoneWeight(string stoneType, string growingType, string stoneShape, string lengthDiameter);
         Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality);
-        Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shape, string category, string subCategory);
+        Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shapeCode, string shape, string category, string subCategory, string metal);
 
     }
 }

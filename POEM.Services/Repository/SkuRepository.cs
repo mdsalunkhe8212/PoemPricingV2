@@ -10,6 +10,8 @@ using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Services.Description;
+using Azure.Identity;
+using Microsoft.Graph;
 
 namespace POEM.Services.Repository
 {
@@ -141,12 +143,20 @@ namespace POEM.Services.Repository
                     if (model.skuInfo.VendorProduct.skuId > 0)
                     {
                         // ✅ Update existing
-                        skuId = UpdateSkuDetails(MapSkuDetails(model.skuInfo.VendorProduct));
+                        SKUDetailsDbDto savemode = MapSkuDetails(model.skuInfo.VendorProduct);
+                        savemode.CreatedBy = model.skuInfo.VendorProduct.createdBy;
+                        savemode.CreatedOn = model.skuInfo.VendorProduct.createdOn;
+                        savemode.ModifiedBy = 1;
+                        savemode.ModifiedOn = DateTime.Now;
+                        skuId = UpdateSkuDetails(savemode);
                     }
                     else
                     {
                         // ✅ Insert new
-                        skuId = SaveSkuDetails(MapSkuDetails(model.skuInfo.VendorProduct));
+                        SKUDetailsDbDto savemode = MapSkuDetails(model.skuInfo.VendorProduct);
+                        savemode.CreatedBy = 1;
+                        savemode.CreatedOn=DateTime.Now;
+                        skuId = SaveSkuDetails(savemode);
                     }
 
 
@@ -210,9 +220,9 @@ namespace POEM.Services.Repository
                 semiMinWt = ParseDecimal(dto.semiMinWt),
                 centerMinWt = ParseDecimal(dto.centerMinWt),
                 SemiAdjWt = ParseDecimal(dto.SemiAdjWt),
-                CenterAdjWt = ParseDecimal(dto.CenterAdjWt),
-                CreatedBy = 1,
-                CreatedOn = DateTime.Now
+                CenterAdjWt = ParseDecimal(dto.CenterAdjWt)
+                //CreatedBy = 1,
+                //CreatedOn = DateTime.Now
             };
         }
 
@@ -275,11 +285,12 @@ namespace POEM.Services.Repository
             return new SKUStoneDbDto
             {
                 StoneVendor = dto.StoneVendor,
+                StoneVendorCode=dto.StoneVendorCode,
                 StoneType = dto.StoneType,
                 Growing = dto.Growing,
                 SettingLocation = dto.SettingLocation,
                 Lab = dto.Lab,
-
+                SizeRange=dto.SizeRange,
                 StoneShape = dto.Shape,
                 ShapeText = dto.ShapeText,
                 StoneMMSize = dto.MMSize,
@@ -296,7 +307,9 @@ namespace POEM.Services.Repository
                 StoneTotalCost = ParseDecimal(dto.StoneTotalCost),
 
                 StoneSettingVendor = dto.SettingVendor,
+                StoneSettingVendorCode=dto.SettingVendorCode,
                 StoneSettingType = dto.SettingType,
+                StoneSettingTypeCode=dto.SettingTypeCode,
                 CostPerStone = ParseDecimal(dto.CostPerStone),
                 SettingTotalCost = ParseDecimal(dto.TotalCost),
 
@@ -435,8 +448,11 @@ namespace POEM.Services.Repository
                             sku.ModifiedOn,
                             sku.IsActive,
                             sku.Category,
+                            sku.CategoryCode,
                             sku.SubCategory,
+                            sku.SubCategoryCode,
                             sku.Collection,
+                            sku.CollectionCode
                         };
 
             // SKU prefix filter (min length 5)
@@ -449,13 +465,13 @@ namespace POEM.Services.Repository
                 // category/subcategory/collection filters can be applied here
                 // assuming SKUDetails has these columns
                 if (!string.IsNullOrEmpty(category))
-                    query = query.Where(s => s.Category == category);
+                    query = query.Where(s => s.CategoryCode == category);
 
                 if (!string.IsNullOrEmpty(subcategory))
-                    query = query.Where(s => s.SubCategory == subcategory);
+                    query = query.Where(s => s.SubCategoryCode == subcategory);
 
                 if (!string.IsNullOrEmpty(collection))
-                    query = query.Where(s => s.Collection == collection);
+                    query = query.Where(s => s.CollectionCode == collection);
             }
 
             var total = await query.CountAsync();
@@ -521,10 +537,17 @@ namespace POEM.Services.Repository
 
             return result;
         }
-        public async Task<bool> ExistsAsync(string skuNumber)
+        public async Task<bool> ExistsAsync(string skuNumber, int skuid)
         {
-            return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber);
+                return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber && s.SKUId != skuid);
+            
         }
+
+        //public async Task<bool> GetImage(string skuNumber, int skuid)
+        //{
+        //    return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber && s.SKUId != skuid);
+
+        //}
 
         public SkuModuleDto GetSkuByNumber(string skuNumber)
         {
@@ -595,6 +618,7 @@ namespace POEM.Services.Repository
                     StoneVendorCode = st.StoneVendorCode,
                     StoneType = st.StoneType,
                     ShapeText = st.ShapeText,
+                    SizeRange=st.SizeRange,
                     Qty = st.StoneQty.ToString(),
                     SemiMinWt = st.SemiMinWt.ToString(),
                     CenterMinWt = st.CenterMinWt.ToString(),
@@ -657,6 +681,9 @@ namespace POEM.Services.Repository
                         categoryCode=skuEntity.CategoryCode,
                         subCategoryCode=skuEntity.SubCategoryCode,
                         collectionCode=skuEntity.CollectionCode,
+                        createdBy=skuEntity.CreatedBy,
+                        createdOn=skuEntity.CreatedOn
+                        
                     },
                     Metals = metals,
                     Findings = findings

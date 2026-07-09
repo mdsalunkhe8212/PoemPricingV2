@@ -12,6 +12,7 @@ namespace POEM.Model.Model
         [Key]
         public long DiamondId { get; set; }                // bigint IDENTITY
 
+        public string Code { get; set; }
         [Required, MaxLength(50)]
         public string VendorCode { get; set; } = string.Empty;
 
@@ -21,14 +22,22 @@ namespace POEM.Model.Model
         [Required, MaxLength(50)]
         public string GrowingType { get; set; } = string.Empty;
 
+        public string StoneShapeCode { get; set; } = string.Empty;
         [Required, MaxLength(50)]
+
         public string StoneShape { get; set; } = string.Empty;
 
+        [Required, MaxLength(50)]
+        public string StoneQualityCode { get; set; } = string.Empty;
         [Required, MaxLength(50)]
         public string StoneQuality { get; set; } = string.Empty;
 
         [MaxLength(50)]
         public string SizeRange { get; set; }
+
+        //new added
+        public decimal? SizeFrom { get; set; }
+        public decimal? SizeTo { get; set; }
 
         [MaxLength(50)]
         public string SieveSize { get; set; }

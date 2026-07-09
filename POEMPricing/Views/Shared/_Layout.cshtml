@@ -73,7 +73,28 @@
                     @Html.ActionLink("Home", "Index", "SKU", new { area = "" }, new { @class = "nav-link" })
                     @Html.ActionLink("New", "Create", "SKU", new { area = "" }, new { @class = "nav-link" })
                     @Html.ActionLink("Import", "Upload", "Import", new { area = "" }, new { @class = "nav-link" })
-                    @Html.ActionLink("Report", "SKUReport", "Report", new { area = "" }, new { @class = "nav-link" })
+                    @*@Html.ActionLink("Report", "SKUReport", "Report", new { area = "" }, new { @class = "nav-link" })*@
+
+                    <a href="#" id="reportLink" class="nav-link">
+                        Report ▼
+                    </a>
+
+                    <div id="reportMenu" style="display:none; padding-left:20px;">
+                        @Html.ActionLink(
+                            "Thumbnail Proposal",
+                            "ThumbnailProposal",
+                            "Report",
+                            null,
+                            new { @class = "nav-link" })
+
+                        @Html.ActionLink(
+                            "Collection Proposal",
+                            "CollectionProposal",
+                            "Report",
+                            null,
+                            new { @class = "nav-link" })
+                    </div>
+
                     <a class="nav-link" href="#">BOM</a>
                     <a class="nav-link" href="#">Proposals</a>
                     <a class="nav-link" href="#">Reports</a>
@@ -148,6 +169,14 @@
                 $("#loader").hide();
             });
 
+        });
+
+        //
+        $(function () {
+            $("#reportLink").click(function (e) {
+                e.preventDefault();
+                $("#reportMenu").slideToggle();
+            });
         });
     </script>
 </body>
