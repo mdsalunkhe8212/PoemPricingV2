@@ -234,7 +234,7 @@ namespace POEMPricing.API
             try
             {
                 if (growingtype == "Lab - HPHT  CVD") { growingtype = "Lab - HPHT / CVD"; }
-                ;
+               
                 var stoneQuality = _masterDataRepository.GetDropdownFromDb("StoneQuality", stonetype + '|' + growingtype + '|' + stoneshape);
                 await Task.Delay(0);
                 return Ok(stoneQuality);
@@ -406,7 +406,21 @@ namespace POEMPricing.API
             return Ok(new { Exists = exists });
         }
 
-        [HttpGet]
+       [HttpGet]
+[Route("taxdetails/{taxtype}/{vendorlocation}")]
+public async Task<IHttpActionResult> DutyDetails([FromUri] string taxtype, [FromUri] string vendorlocation, [FromUri] string location=null)
+{
+    try
+    {
+        TaxDetailsDto taxdetails = _masterDataRepository.GetDutyDetail(taxtype, vendorlocation,  location);
+        await Task.Delay(0);
+        return Ok(taxdetails);
+    }
+    catch (Exception ex)
+    {
+        return InternalServerError(ex);
+    }
+}
         [Route("GetSkus")]
         public async Task<IHttpActionResult> GetSkus(
                [FromUri] string term,
