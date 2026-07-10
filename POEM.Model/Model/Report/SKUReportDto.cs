@@ -10,6 +10,9 @@ namespace POEM.Model.Model.Report
         public long SKUId { get; set; }
         public string Company { get; set; }
         public string CompanyName { get; set; }
+        public string Category { get; set; }=string.Empty;
+        public string SubCategory { get; set; } = string.Empty;
+
         public string SKUNumber { get; set; }
 
         public string Metal { get; set; }

@@ -2143,7 +2143,7 @@ function fillLaborFOBValues() {
 
     // Calculate Semi FOB (without center stone)
     if ($('#ddlProcessType').val() === 'Flat Labour per piece' || $('#ddlProcessType').val() === 'Flat Labour per gm') {
-        totalLaborCost = l$('#ltxtTotalLabor').val() || 0;  
+        totalLaborCost = $('#txtTotalLabor').val() || 0;  
         totalLaborCostWTDuty = 0;
     }
     const semiFOBNRound = parseFloat(totalMetalCost)
