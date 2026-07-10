@@ -113,6 +113,7 @@
     <Compile Include="Model\MetalLossDetails.cs" />
     <Compile Include="Model\MetelColorDtls.cs" />
     <Compile Include="Model\Report\CollectionProposalDto.cs" />
+    <Compile Include="Model\Report\SKUItemDto.cs" />
     <Compile Include="Model\Report\SKUReportDto.cs" />
     <Compile Include="Model\SettingLaborDetail.cs" />
     <Compile Include="Model\SharePointImage.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Model\StoneShapeDetail.cs" />
     <Compile Include="Model\SubCategoryMasterDbDto.cs" />
     <Compile Include="Model\User.cs" />
+    <Compile Include="Model\UserRoleDbDto.cs" />
     <Compile Include="Model\VendorDetails.cs" />
     <Compile Include="Model\VendorProductDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

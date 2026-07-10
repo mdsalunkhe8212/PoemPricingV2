@@ -18,6 +18,7 @@ namespace POEMPricing.API
         public string webRoot;
         private readonly MasterDataRepository _masterDataRepository;
         private readonly SkuRepository _skuRepository;
+        private readonly ReportRepository _reportRepo;
         public SKUController()
         {
             webRoot = System.Configuration.ConfigurationManager.AppSettings["WebRoot"];
@@ -25,6 +26,7 @@ namespace POEMPricing.API
             var xmlPath = "";
             _masterDataRepository = new MasterDataRepository(xmlPath);
             _skuRepository = new SkuRepository();
+            _reportRepo = new ReportRepository();
         }
         //GET: api/sku/subcategory
         [HttpGet]
@@ -404,7 +406,33 @@ namespace POEMPricing.API
             return Ok(new { Exists = exists });
         }
 
+        [HttpGet]
+        [Route("GetSkus")]
+        public async Task<IHttpActionResult> GetSkus(
+               [FromUri] string term,
+               [FromUri] string company,
+               [FromUri] List<string> category = null,
+               [FromUri] List<string> subCategory = null,
+               [FromUri] List<string> collection = null)
+        {
+            try
+            {
+                var data = _reportRepo.GetSkus(
+                    term,
+                    company,
+                    category,
+                    subCategory,
+                    collection);
 
+                await Task.Delay(0);
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
 
     }
 }
