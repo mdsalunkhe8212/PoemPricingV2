@@ -6,6 +6,7 @@
             border: 2px solid #d9534f !important;
             background-color: #fff5f5;
         }
+
         .navbar {
             display: none;
         }
@@ -40,7 +41,9 @@
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-3">
-                            <a href="#" id="lnkForgotPassword">Forgot password?</a>
+                            <a href="#" id="lnkForgotPassword">
+                                Forgot Password?
+                            </a>
                         </div>
 
                         <div class="d-grid">
@@ -61,6 +64,172 @@
 
         </div>
     </div>
+</div>
+
+<!-- Forgot Password Modal -->
+
+<div class="modal fade"
+     id="forgotPasswordModal"
+     tabindex="-1"
+     data-bs-backdrop="static">
+
+    <div class="modal-dialog">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+                    Reset Password
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+
+                        Registered Email
+
+                    </label>
+
+                    <input type="email"
+                           id="txtResetEmail"
+                           class="form-control"
+                           placeholder="Enter your registered email" />
+
+                </div>
+
+                <!-- Hidden Initially -->
+
+                <div id="resetSection"
+                     style="display:none;">
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Verification Code
+
+                        </label>
+
+                        <input type="text"
+                               id="txtVerificationCode"
+                               maxlength="6"
+                               class="form-control"
+                               placeholder="Enter 6 digit code" />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            New Password
+
+                        </label>
+
+                        <input type="password"
+                               id="txtNewPassword"
+                               class="form-control" />
+
+                    </div>
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+
+                            Confirm Password
+
+                        </label>
+
+                        <input type="password"
+                               id="txtConfirmPassword"
+                               class="form-control" />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+
+                    Close
+
+                </button>
+
+                <button id="btnSendCode"
+                        class="btn btn-primary">
+
+                    Send Code
+
+                </button>
+
+                <button id="btnResetPassword"
+                        class="btn btn-success"
+                        style="display:none;">
+
+                    Reset Password
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade"
+     id="messageModal"
+     tabindex="-1">
+
+    <div class="modal-dialog modal-sm">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title"
+                    id="messageTitle">
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+            <div class="modal-body"
+                 id="messageBody">
+            </div>
+
+            <div class="modal-footer">
+
+                <button class="btn btn-primary"
+                        data-bs-dismiss="modal">
+                    OK
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
 @section scripts {
     <script src="~/scripts/login.js"></script>

@@ -1,4 +1,5 @@
-﻿using POEM.Services.Interface;
+﻿using POEM.Model.Model.Report;
+using POEM.Services.Interface;
 using POEM.Services.Repository;
 using Rotativa;
 using System;
@@ -10,6 +11,7 @@ using System.Web.Mvc;
 
 namespace POEMPricing.Controllers
 {
+    [Authorize]
     public class ReportController : Controller
     {
         private readonly IReportRepository _repo;
@@ -44,60 +46,117 @@ namespace POEMPricing.Controllers
         #region ThumbnailProposal
         // Open ThumbnailProposal Report Page
 
+        //[ActionName("ThumbnailProposal")]
+        //public ActionResult SKUReport()
+        //{
+        //    LoadDropdowns();
+
+
+        //    var data = _repo.GetSKUReport(
+        //        null,
+        //        null,
+        //        null,
+        //        null
+        //    );
+
+
+        //    return View("SKUReport",data);
+        //}
         [ActionName("ThumbnailProposal")]
         public ActionResult SKUReport()
         {
             LoadDropdowns();
 
+            var data = new List<SKUReportDto>();
 
-            var data = _repo.GetSKUReport(
-                null,
-                null,
-                null,
-                null
-            );
-
-
-            return View("SKUReport",data);
+            return View("SKUReport", data);
         }
 
+        //[HttpGet]
+        //public JsonResult GetSkus(
+        //    string company,
+        //    List<string> category,
+        //    List<string> subCategory,
+        //    List<string> collection)
+        //{
+        //    var data = _repo.GetSkus(
+        //        company,
+        //        category,
+        //        subCategory,
+        //        collection);
 
+        //    return Json(
+        //        data,
+        //        JsonRequestBehavior.AllowGet);
+        //}
 
         // Search
+        //[HttpGet]
+        //public ActionResult ThumbnailProposalReportSearch(
+        //    string company,
+        //    string category,
+        //    string subCategory,
+        //    string collection)
+        //{
+
+        //    LoadDropdowns();
+
+
+        //    var data = _repo.GetSKUReport(
+        //        company,
+        //        category,
+        //        subCategory,
+        //        collection
+        //    );
+
+
+        //    return View("SKUReport", data);
+        //}
+
         [HttpGet]
         public ActionResult ThumbnailProposalReportSearch(
             string company,
-            string category,
-            string subCategory,
-            string collection)
+            List<string> category,
+            List<string> subCategory,
+            List<string> collection,
+            List<string> skus,
+            string price)
         {
-
             LoadDropdowns();
+            ViewBag.SelectedCompany = company;
+            ViewBag.SelectedCategories = category;
+            ViewBag.SelectedSubCategories = subCategory;
+            ViewBag.SelectedCollections = collection;
+            ViewBag.SelectedSkus = skus;
 
 
             var data = _repo.GetSKUReport(
                 company,
                 category,
                 subCategory,
-                collection
+                collection,
+                skus
             );
 
+            ViewBag.Price = price;
 
             return View("SKUReport", data);
         }
 
         public ActionResult ThumbnailProposalReportPdf(
         string company,
-        string category,
-        string subCategory,
-        string collection,
-        string price)
+            List<string> category,
+            List<string> subCategory,
+            List<string> collection,
+            List<string> skus,
+            string price)
         {
             var data = _repo.GetSKUReport(
                 company,
                 category,
                 subCategory,
-                collection
+                collection,
+                skus
             );
 
 
