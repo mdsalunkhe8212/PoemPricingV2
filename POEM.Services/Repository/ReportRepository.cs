@@ -118,7 +118,13 @@ namespace POEM.Services.Repository
                     .ToList();
             }
 
-
+            //var sortedskuData = skuData
+            //    .OrderBy(x => x.sd.Collection)
+            //    .ThenBy(x => x.sd.Category)
+            //    .ThenBy(x => x.sd.SubCategory)
+            //    .ThenByDescending(x => x.sd.SKUNumber)
+            //    .ThenBy(x => x.w)
+            //    .ToList();
             var result = skuData.Select(x => new SKUReportDto
             {
                 SKUId = x.sd.SKUId,
@@ -130,6 +136,10 @@ namespace POEM.Services.Repository
                     : null,
 
                 SKUNumber = x.sd.SKUNumber,
+                
+                Category = x.sd.Category,
+                SubCategory = x.sd.SubCategory,
+                Collection = x.sd.Collection,
 
                 Metal =
                     _context.SKUMetalDetails
@@ -203,10 +213,14 @@ namespace POEM.Services.Repository
                         .ToList()
                     ),
 
-                Collection = x.sd.Collection
 
             }).ToList();
-
+            var sortedResult = result.OrderBy(x => x.Collection)
+                .ThenBy(x => x.Category)
+                .ThenBy(x => x.SubCategory)
+                .ThenByDescending(x => x.SKUNumber)
+                .ThenBy(x=>x.TotalWeight)
+                .ToList();
 
             return result;
         }
