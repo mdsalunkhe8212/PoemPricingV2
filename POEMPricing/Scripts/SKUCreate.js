@@ -23,6 +23,21 @@ let totalSemiWt = 0;
 let totalCenterWt = 0;
 let totalLaborCost = 0;
 // Mahesh Start
+let dutyPer = 0.0;
+let vendorTaxper = 0.00;
+let vendorTax = 0.00;
+let findingTaxper = 0.00;
+let findingTax = 0.00;
+let laborTaxper = 0.00;
+let laborTax = 0.00;
+let diamondTaxper = 0.00;
+let diamondSemiTax = 0.00;
+let diamondCenterTax = 0.00;
+//let totalSemiSettingCost = 0.00;
+//let totalCenterSettingCost = 0.00;
+
+
+
 let totalLaborCostWTDuty = 0;
 let totalSemiAdjWt = 0;
 let totalCenterAdjWt = 0;
@@ -148,6 +163,42 @@ $(document).ready(function () {
         getMarginDetails();
         console.log('Value:', selectedValue);
     });
+
+
+    /********************************************************
+     * VENDOR DROPDOWN
+     ********************************************************/
+    $('#ddlVendor').change(function () {
+        const selectedValue = $(this).val();
+        const selectedText = $('#ddlVendor option:selected').text();
+        getTaxDetails('vendor');
+        fillLaborFOBValues();
+        console.log('Value:', selectedValue);
+    });
+
+    /********************************************************
+     * FindingSupplier DROPDOWN
+     ********************************************************/
+    $('#ddlFindingSupplier').change(function () {
+        const selectedValue = $(this).val();
+        const selectedText = $('#ddlFindingSupplier option:selected').text();
+        getTaxDetails('finding', selectedValue);
+        fillLaborFOBValues();
+        console.log('Value:', selectedValue);
+    });
+
+
+    /********************************************************
+     * SotneVendor DROPDOWN
+     ********************************************************/
+    $('#ddlStoneVendor').change(function () {
+        const selectedValue = $(this).val();
+        const selectedText = $('#ddlStoneVendor option:selected').text();
+        getTaxDetails('diamond', selectedValue);
+        fillLaborFOBValues();
+        console.log('Value:', selectedValue);
+    });
+
 
     /********************************************************
      * CATEGORY → SUBCATEGORY
@@ -674,8 +725,12 @@ $('#ddlLaborLocation').on('change', function () {
         });
     });
 
-    //getVendorDetails(vendor);
-    //calculateTotalLabor();
+    const selectedValue = vendorlist[0];
+    const selectedText = $('#ddlLaborLocation option:selected').text();
+    getTaxDetails('labor', selectedValue);
+    fillLaborFOBValues();
+    console.log('labor:', selectedValue);
+    
 });
 
 
@@ -991,10 +1046,12 @@ function renderTable() {
     const $tbody = $('#tblFindings tbody');
     $tbody.empty();
     var karat = '';
+    findingTax = 0.00;
     findingLines.forEach((row, idx) => {
         if (row.metal == 'Gold') {
             karat = row.karatText || row.karat + 'K';
         }
+        findingTax += parseFloat(row.totalCost) * parseFloat(findingTaxper);
         const tr = `
             <tr data-index="${idx}">
                 <td>${row.type}</td>
@@ -1144,8 +1201,10 @@ function renderMetalGrid() {
     const $tbody = $('#tblMetals tbody');
     $tbody.empty();
     totalMetalCost = 0;
+    vendorTax = 0;
     metalLines.forEach((row, idx) => {
         totalMetalCost += row.metalCost;
+        vendorTax += (parseFloat(row.metalCost) * parseFloat(vendorTaxper))
         const tr = `
             <tr data-index="${idx}">
                 <td class="text-center">${row.metalText}</td>
@@ -1838,11 +1897,20 @@ function renderStoneTable() {
         // 3. PerStoneWt (numeric)
         return (parseFloat(a.PerStoneWt) || 0) - (parseFloat(b.PerStoneWt) || 0);
     });
+    diamondCenterTax = 0.00;
+    diamondSemiTax = 0.00;
+    //totalCenterSettingCost = 0.00;
+    //totalSemiSettingCost = 0.00;
     stoneList.forEach((s, i) => {
+        
         if (s.SettingLocation === 'Center') {
             $('#txtCenterAdjWt').prop('disabled', false);
+            diamondCenterTax += (parseFloat(s.StoneTotalCost) * parseFloat(diamondTaxper));
+            //totalCenterSettingCost += s.TotalCost;
         }else{
             $('#txtSemiAdjWt').prop('disabled', false);
+            diamondSemiTax += (parseFloat(s.StoneTotalCost) * parseFloat(diamondTaxper));
+            //totalSemiSettingCost += s.TotalCost;
         }
         html += `
             <tr>
@@ -2108,7 +2176,7 @@ function fillLaborFOBValues() {
 
     // getMarginDetails();
 
-    var dutyPer = 0.0;
+    
 
     var landedcost = 0.00;
     var landedcostCenter = 0.00;
@@ -2143,7 +2211,7 @@ function fillLaborFOBValues() {
 
     // Calculate Semi FOB (without center stone)
     if ($('#ddlProcessType').val() === 'Flat Labour per piece' || $('#ddlProcessType').val() === 'Flat Labour per gm') {
-        totalLaborCost = l$('#ltxtTotalLabor').val() || 0;  
+        totalLaborCost = $('#txtTotalLabor').val() || 0;  
         totalLaborCostWTDuty = 0;
     }
     const semiFOBNRound = parseFloat(totalMetalCost)
@@ -2153,7 +2221,6 @@ function fillLaborFOBValues() {
         + (parseFloat(totalLaborCost) - parseFloat(totalLaborCostWTDuty));
 
     const semiFOB = roundUpToQuarter(semiFOBNRound);
-
 
 
 
@@ -2170,28 +2237,41 @@ function fillLaborFOBValues() {
          LaborLocation = encodeURIComponent(vendorlist[1]);
     }
     
-    //if (LaborLocation === 'USA') {
-    //    dutyPer = 0.0;
-    //} else {
-        const filtered = msdDutyDetails.filter(d => d.VendorLocation === LaborLocation);        // Sum Duty values
-        const totalDuty = filtered.reduce((sum, d) => sum + d.Duty + d.Penalty + d.Tariff, 0);
-        dutyPer = totalDuty / 100.0;
+    ////if (LaborLocation === 'USA') {
+    ////    dutyPer = 0.0;
+    ////} else {
+    //    const filtered = msdDutyDetails.filter(d => d.VendorLocation === LaborLocation);        // Sum Duty values
+    //    const totalDuty = filtered.reduce((sum, d) => sum + d.Duty + d.Penalty + d.Tariff, 0);
+    //    dutyPer = totalDuty / 100.0;
+    ////}
+
+
+
+    //if (dutyPer >= 0.0) {
+    //    semiDuty = parseFloat(semiFOB) * dutyPer;
+    //    centerDuty = semiDuty + (parseFloat(totalCenterStoneCost) * dutyPer);
+    //    landedcost = parseFloat(semiFOB) + parseFloat(semiDuty);
+    //    landedcostCenter = parseFloat(completeFOB) + parseFloat(centerDuty);
+    //}
+    //else {
+    //    landedcost = parseFloat(semiFOB);
+    //    landedcostCenter = parseFloat(completeFOB);
     //}
 
 
 
-    if (dutyPer >= 0.0) {
-        semiDuty = parseFloat(semiFOB) * dutyPer;
-        centerDuty = semiDuty + (parseFloat(totalCenterStoneCost) * dutyPer);
-        landedcost = parseFloat(semiFOB) + parseFloat(semiDuty);
-        landedcostCenter = parseFloat(completeFOB) + parseFloat(centerDuty);
-    }
-    else {
-        landedcost = parseFloat(semiFOB);
-        landedcostCenter = parseFloat(completeFOB);
-    }
+    const laborSemiTax = (parseFloat(totalLaborCost) - parseFloat(totalLaborCostWTDuty) + totalSemiSettingCost) * laborTaxper;
+    const laborCenterTax = (parseFloat(totalLaborCost) - parseFloat(totalLaborCostWTDuty) + totalCenterSettingCost) * laborTaxper;
 
 
+    semiDuty = parseFloat(vendorTax) + parseFloat(findingTax) + parseFloat(diamondSemiTax) + parseFloat(laborSemiTax);
+    centerDuty = semiDuty + parseFloat(diamondCenterTax)+parseFloat(laborCenterTax);
+
+    landedcost = parseFloat(semiFOB) + parseFloat(semiDuty);
+    landedcostCenter = parseFloat(completeFOB) + parseFloat(centerDuty);
+
+    landedcost = parseFloat(semiFOB) + parseFloat(semiDuty);
+    landedcostCenter = parseFloat(completeFOB) + parseFloat(centerDuty);
 
     const semiPrice1 = (parseFloat(semiFOB) / (1 - semiPrice1Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
     const semiPrice2 = (parseFloat(semiFOB) / (1 - semiPrice2Per)) + parseFloat(semiDuty) + parseFloat(totalLaborCostWTDuty);
@@ -2278,7 +2358,7 @@ function fillLaborFOBValues() {
 
     if (txtSemiFOB) txtSemiFOB.value = semiFOB.toFixed(0);
     if (txtCompleteFOB) txtCompleteFOB.value = completeFOB.toFixed(0);
-    if (txtSemiDuty) txtSemiDuty.value = semiDuty.toFixed(0);
+    if (txtSemiDuty) txtSemiDuty.value =parseFloat( semiDuty).toFixed(0);
     if (txtCompleteDuty) txtCompleteDuty.value = centerDuty.toFixed(0);
     if (txtPrice1) txtPrice1.value = semiPrice1.toFixed(0);
     if (txtPrice2) txtPrice2.value = semiPrice2.toFixed(0);
@@ -3479,5 +3559,43 @@ function loadImage(filePath) {
             //$('#imgLoader').hide();
             //$('#imgError').show();
         }
+    });
+}
+
+function getTaxDetails(taxtype, location='') {
+
+    const vendorlocation = $('#ddlVendor').val();
+   
+   
+    var  url = webRoot + '/api/sku/taxdetails/' + encodeURIComponent(taxtype) + '/' + encodeURIComponent(vendorlocation);
+    var taxvalue = 0.0;
+    if (taxtype != 'vendor') {
+        url = url + '?location=' + location;
+    }
+
+    $.getJSON(url, function (data) {
+        if (!data) return;
+        if (data.Duty) {
+            taxvalue += data.DutyPer
+        }
+        if (data.Tariff) {
+            taxvalue += data.TariffPer
+        }
+        if (data.Penalty) {
+            taxvalue += data.PenaltyPer
+        }
+        taxvalue = taxvalue / 100;
+        console.log(data);
+        console.log(taxvalue);
+        if (taxtype === 'vendor') {
+            vendorTaxper = taxvalue;
+        } else if(taxtype === 'diamond'){
+            diamondTaxper = taxvalue;
+        } else if(taxtype === 'labor'){
+            laborTaxper = taxvalue;
+        } else if(taxtype === 'finding'){
+            findingTaxper = taxvalue;
+    }
+        return taxvalue;
     });
 }

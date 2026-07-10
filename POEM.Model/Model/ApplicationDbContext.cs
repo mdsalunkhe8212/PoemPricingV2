@@ -34,6 +34,8 @@ namespace POEM.Model.Model
         public DbSet<SubCategoryMasterDbDto> SubCategoryMasters { get; set; }
         public DbSet<FindingTypeMasterDbDto> FindingTypeMaster { get; set; }
         public DbSet<MarginDetailsDbDto> MarginDetails { get; set; }
+        public DbSet<DutyDetailsDbDto> DutyDetails { get; set; }
+        public DbSet<DutyChartMasterDbDto> DutyChartMaster { get; set; }
 
         public DbSet<StoneQualityDetailsDbDto> StoneQualityDetails { get; set; }
 
