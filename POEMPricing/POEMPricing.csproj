@@ -170,15 +170,19 @@
     <Compile Include="Controllers\ImportController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\SKUController.cs" />
+    <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Managers\CategoryDetailsImportManager.cs" />
     <Compile Include="Managers\CollectionDetailsImportManager.cs" />
     <Compile Include="Managers\CompanyMasterImportManager.cs" />
+    <Compile Include="Managers\DiamondDetailsImportManager.cs" />
+    <Compile Include="Managers\EmailManager.cs" />
     <Compile Include="Managers\ExportManager.cs" />
     <Compile Include="Managers\FindingDetailsImportManager.cs" />
     <Compile Include="Managers\MarginDetailsImportManager.cs" />
+    <Compile Include="Managers\PasswordResetManager.cs" />
     <Compile Include="Managers\ProcessCostingDetailsImportManager.cs" />
     <Compile Include="Managers\SettingLaborDetailsImportManager.cs" />
     <Compile Include="Managers\StoneQualityDetailsImportManager.cs" />
@@ -186,6 +190,7 @@
     <Compile Include="Managers\SubCategoryMasterImportManager.cs" />
     <Compile Include="Managers\VendorDetailsImportManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\CustomRoleProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Config\MasterData.xml" />
@@ -237,6 +242,7 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\sku-list.js" />
     <Content Include="Scripts\SKUCreate.js" />
+    <Content Include="Scripts\user.js" />
     <Content Include="Scripts\Validate-SKU.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -259,6 +265,9 @@
     <Content Include="Views\Import\Summary.cshtml" />
     <Content Include="Views\Report\SKUReport.cshtml" />
     <Content Include="Views\Report\SKUReportPdf.cshtml" />
+    <Content Include="Views\Report\CollectionProposal.cshtml" />
+    <Content Include="Views\Report\CollectionProposalPdf.cshtml" />
+    <Content Include="Views\User\Users.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

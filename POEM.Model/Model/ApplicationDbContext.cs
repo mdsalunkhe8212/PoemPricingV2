@@ -29,6 +29,8 @@ namespace POEM.Model.Model
         public DbSet<SKULaborDbDto> SKULaborDetails { get; set; }
         public DbSet<SkuCalculation> SkuCalculations { get; set; }
         public DbSet<User> Users { get; set; }
+
+        public DbSet<UserRoleDbDto> UserRoles { get; set; }
         public DbSet<ProcessCostingDetails> ProcessCostingDetails { get; set; }
         public DbSet<CompanyMasterDbDto> CompanyMaster { get; set; }
         public DbSet<SubCategoryMasterDbDto> SubCategoryMasters { get; set; }

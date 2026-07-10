@@ -12,6 +12,7 @@ using System.Web.Mvc;
 
 namespace POEMPricing.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class ImportController : Controller
     {
         private readonly ExportManager _exportManager = new ExportManager(); // for export to excel
@@ -172,6 +173,19 @@ namespace POEMPricing.Controllers
                     var result = manager.ValidateExcel(model.File);
                     Session["ImportMasterType"] = model.MasterType;
                     Session["MarginDetailsImportData"] =
+                        JsonConvert.SerializeObject(result.ValidRecords);
+
+                    return View("Summary", result);
+                }
+
+                if (model.MasterType == "DiamondDetails")
+                {
+                    TempData["master"] = "Diamond Details";
+                    var manager = new DiamondDetailsImportManager();
+
+                    var result = manager.ValidateExcel(model.File);
+                    Session["ImportMasterType"] = model.MasterType;
+                    Session["DiamondDetailsImportData"] =
                         JsonConvert.SerializeObject(result.ValidRecords);
 
                     return View("Summary", result);
@@ -566,6 +580,40 @@ namespace POEMPricing.Controllers
 
                     TempData["Success"] =
                         insertedCount + " margin details records imported successfully.";
+
+                    return RedirectToAction("Upload");
+                }
+
+
+                //diamonddetails
+                if (masterType == "DiamondDetails")
+                {
+                    var sessionData =
+                        Session["DiamondDetailsImportData"];
+
+                    if (sessionData == null)
+                    {
+                        TempData["Error"] = "Session expired.";
+
+                        return RedirectToAction("Upload");
+                    }
+
+                    var rows = JsonConvert.DeserializeObject
+                        <List<DiamondDetailsImportRowDto>>
+                        (sessionData.ToString());
+
+                    var manager =
+                        new DiamondDetailsImportManager();
+
+                    var insertedCount =
+                        manager.ImportDiamondDetails(rows);
+
+                    Session.Remove("DiamondDetailsImportData");
+
+                    Session.Remove("ImportMasterType");
+
+                    TempData["Success"] =
+                        insertedCount + " Diamond Details records imported successfully.";
 
                     return RedirectToAction("Upload");
                 }
