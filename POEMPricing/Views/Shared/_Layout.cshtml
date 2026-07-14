@@ -6,13 +6,16 @@
     <title>@ViewBag.Title - POEM Pricing</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-<style type="text/css">
+  
+    <style type="text/css">
         table thead th {
             text-align: center;
         }
+
         .form-label {
             white-space: nowrap;
         }
+
         .sidebar {
             min-width: 200px;
             max-width: 250px;
@@ -21,48 +24,52 @@
             border-right: 1px solid #dee2e6;
             transition: all 0.3s;
         }
-    .sidebar .nav-link {
-      color: #333;
-    }
-    .hamburger {
-      font-size: 2rem;
-      cursor: pointer;
-    }
-    @@media (max-width: 991.98px) {
-      .sidebar {
-        position: fixed;
-        height: 100%;
-        z-index: 1040;
-      }
-    }
 
-    #loader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.7);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+            .sidebar .nav-link {
+                color: #333;
+            }
 
-.spinner {
-    width: 50px;
-    height: 50px;
-    border: 5px solid #ddd;
-    border-top: 5px solid #3498db;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
+        .hamburger {
+            font-size: 2rem;
+            cursor: pointer;
+        }
 
-@@keyframes spin {
-    100% {
-        transform: rotate(360deg);
-    } }
-</style>
+        @@media (max-width: 991.98px) {
+            .sidebar {
+                position: fixed;
+                height: 100%;
+                z-index: 1040;
+            }
+        }
+
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.7);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #ddd;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @@keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container-fluid px-0">
@@ -143,8 +150,14 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/ajax-bootstrap-select@1.4.5/dist/css/ajax-bootstrap-select.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ajax-bootstrap-select@1.4.5/dist/js/ajax-bootstrap-select.min.js"></script>
+
     <!-- jQuery (only one version) -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- jQuery (only one version) -->
+    <!--<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>-->
     @*new*@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
           rel="stylesheet" />

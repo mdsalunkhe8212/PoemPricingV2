@@ -1,6 +1,4 @@
-﻿
-
-@using POEM.Model.Model.Report
+﻿@using POEM.Model.Model.Report
 @using System.Globalization
 @model List<SKUReportDto>
 
@@ -59,18 +57,23 @@
                     </label>
 
                     @Html.ListBox(
-                                                     "category",
-                                                     new MultiSelectList(
-                                                         ViewBag.Categories,
-                                                         "Key",
-                                                         "Value",
-                                                         ViewBag.SelectedCategories
-                                                     ),
-                                                     new
-                                                     {
-                                                         @class = "form-control",
-                                                         id = "ddlCategory"
-                                                     })
+                        "category",
+                        new MultiSelectList(
+                            ViewBag.Categories,
+                            "Key",
+                            "Value",
+                            ViewBag.SelectedCategories
+                        ),
+                        new
+                        {
+                            @class = "selectpicker",
+                            id = "ddlCategory",
+                            title = "Category",
+                            data_live_search = "true",
+                            data_selected_text_format = "count > 2",
+                            data_actions_box = "true",
+                            data_width = "100%"
+                        })
 
                 </div>
 
@@ -84,18 +87,23 @@
                     </label>
 
                     @Html.ListBox(
-                                                      "subCategory",
-                                                      new MultiSelectList(
-                                                         ViewBag.SubCategories,
-                                                         "Key",
-                                                         "Value",
-                                                         ViewBag.SelectedSubCategories
-                                                      ),
-                                                      new
-                                                      {
-                                                          @class = "form-control",
-                                                          id = "ddlSubCategory"
-                                                      })
+                        "subCategory",
+                        new MultiSelectList(
+                           ViewBag.SubCategories,
+                           "Key",
+                           "Value",
+                           ViewBag.SelectedSubCategories
+                        ),
+                        new
+                        {
+                            @class = "selectpicker",
+                            id = "ddlSubCategory",
+                            title = "Sub Category",
+                            data_live_search = "true",
+                            data_selected_text_format = "count > 2",
+                            data_actions_box = "true",
+                            data_width = "100%"
+                        })
 
                 </div>
 
@@ -108,36 +116,46 @@
                         Collection
                     </label>
                     @Html.ListBox(
-                                                  "collection",
-                                                  new MultiSelectList(
-                                                      ViewBag.Collections,
-                                                      "Key",
-                                                      "Value",
-                                                      ViewBag.SelectedCollections
-                                                  ),
-                                                  new
-                                                  {
-                                                      @class = "form-control",
-                                                      id = "ddlCollection"
-                                                  })
+                        "collection",
+                        new MultiSelectList(
+                            ViewBag.Collections,
+                            "Key",
+                            "Value",
+                            ViewBag.SelectedCollections
+                        ),
+                        new
+                        {
+                            @class = "selectpicker",
+                            id = "ddlCollection",
+                            title = "Collection",
+                            data_live_search = "true",
+                            data_selected_text_format = "count > 2",
+                            data_actions_box = "true",
+                            data_width = "100%"
+                        })
 
                 </div>
 
                 <div class="col-md-2">
                     <div class="mb-1">
-                        <div class="d-flex align-items-center mb-2">
-                            <label for="ddlSku" class="form-label mb-0">SKU</label>
-
-                        </div>
+                        <label for="ddlSku" class="form-label">SKU</label>
 
                         <select id="ddlSku"
                                 name="skus"
                                 multiple
-                                class="form-control">
+                                class="selectpicker"
+                                title="Select SKU"
+                                data-live-search="true"
+                                data-selected-text-format="count > 2"
+                                data-width="100%">
+                            @if (ViewBag.SelectedSkus != null)
+                            {
+                                foreach (var sku in (IEnumerable<string>)ViewBag.SelectedSkus)
+                                {
+                                    <option value="@sku" selected>@sku</option>
+                                }
+                            }
                         </select>
-                        <input type="hidden"
-                               id="hdnSelectedSkus"
-                               value="@string.Join(",", ViewBag.SelectedSkus ?? new List<string>())" />
                     </div>
                 </div>
 
@@ -178,12 +196,15 @@
             <div class="row mt-3">
                 <div class="col-md-12 text-end">
 
-                    <button type="submit"
-                            id="btnSearch"
-                            class="btn btn-primary"
-                            disabled>
-                        Search
-                    </button>
+                    <span data-bs-toggle="tooltip"
+                          title="Select Company and Price to Search">
+                        <button type="submit"
+                                id="btnSearch"
+                                class="btn btn-primary"
+                                disabled>
+                            Search
+                        </button>
+                    </span>
 
                     <a href="@Url.Action("ThumbnailProposal","Report")"
                        class="btn btn-secondary">
@@ -477,187 +498,209 @@
 
     </div>
 </div>
+
 <style>
-    .select2-container {
-        width: 100% !important;
+    .bootstrap-select .dropdown-menu li.selected:not(.active) a .text {
+        color: #0d6efd !important;
     }
 
-        .select2-container .select2-selection--multiple {
-            min-height: 38px !important;
-            border: 1px solid #ced4da !important;
-            border-radius: .375rem !important;
-            padding: .275rem .5rem !important;
+    .bootstrap-select .dropdown-menu .check-mark {
+        color: #0d6efd !important;
+    }
+
+    .bootstrap-select .dropdown-menu li.active a .text,
+    .bootstrap-select .dropdown-menu li.active a {
+        color: #fff !important;
+    }
+
+        .bootstrap-select > .dropdown-toggle:focus {
+            box-shadow: 0 0 0 .25rem rgba(13,110,253,.25) !important;
+            border-color: #86b7fe !important;
         }
-
-    .select2-container--default
-    .select2-selection--multiple
-    .select2-selection__choice {
-        margin-top: 2px;
-    }
-
-    .select2-container--default
-    .select2-selection--multiple
-    .select2-selection__rendered {
-        padding-left: 0;
-    }
 </style>
+
 
 @section scripts
 {
     <script>
 
-    $(document).ready(function () {
+        $(document).ready(function () {
 
-        // Category
-        $('#ddlCategory').select2({
-            placeholder: '',
-            width: '100%'
-        });
+            // Category / SubCategory / Collection - checkbox dropdowns
+            $('#ddlCategory, #ddlSubCategory, #ddlCollection').selectpicker();
 
-        // Sub Category
-        $('#ddlSubCategory').select2({
-            placeholder: '',
-            width: '100%'
-        });
+            var skuXhr = null;
+            var skuSearchTimer = null;
+            var skuRequestSeq = 0;
+            var skuSearchBound = false;
 
-        // Collection
-        $('#ddlCollection').select2({
-            placeholder: '',
-            width: '100%'
-        });
+            function initSkuPicker() {
+                $('#ddlSku').selectpicker({
+                    liveSearch: true,
+                    title: 'Select SKU',
+                    selectedTextFormat: 'count > 2',
+                    width: '100%'
+                });
+            }
 
-        // SKU
-        $('#ddlSku').select2({
-            placeholder: '',
-            width: '100%',
-            minimumInputLength: 5,
-            closeOnSelect: false,
+            initSkuPicker();
 
-            ajax: {
-                url: '/api/sku/GetSkus',
-                dataType: 'json',
-                delay: 300,
-                cache: true,
-                traditional: true,
+            function bindSkuSearch() {
+                if (skuSearchBound) {
+                    return;
+                }
+                skuSearchBound = true;
 
-                data: function (params) {
-                    return {
-                        term: params.term,
+                $(document).on('keyup.skuSearch', '#ddlSku ~ .dropdown-menu .bs-searchbox input', function () {
+                    var term = $(this).val();
+
+                    clearTimeout(skuSearchTimer);
+
+                    if (term.length < 5) {
+                        return;
+                    }
+
+                    skuSearchTimer = setTimeout(function () {
+                        fetchSkus(term);
+                    }, 300);
+                });
+            }
+
+            function fetchSkus(term) {
+
+                var mySeq = ++skuRequestSeq;
+
+                if (skuXhr) {
+                    skuXhr.abort();
+                }
+
+                skuXhr = $.ajax({
+                    url: '/api/sku/GetSkus',
+                    type: 'GET',
+                    dataType: 'json',
+                    data: {
+                        term: term,
                         company: $("#ddlCompany").val(),
                         category: $("#ddlCategory").val(),
                         subCategory: $("#ddlSubCategory").val(),
                         collection: $("#ddlCollection").val()
-                    };
-                },
+                    },
+                    success: function (data) {
 
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                id: item.Value,
-                                text: item.Text
-                            };
-                        })
-                    };
-                }
+                        // Ignore this response if a newer search has started since
+                        if (mySeq !== skuRequestSeq) {
+                            return;
+                        }
+
+                        var selected = $('#ddlSku').val() || [];
+                        var seen = {};
+                        var html = '';
+
+                        $.each(selected, function (i, val) {
+                            if (!seen[val]) {
+                                seen[val] = true;
+                                html += '<option value="' + val + '" selected>' + val + '</option>';
+                            }
+                        });
+
+                        $.each(data, function (i, item) {
+                            if (!seen[item.Value]) {
+                                seen[item.Value] = true;
+                                html += '<option value="' + item.Value + '">' + item.Text + '</option>';
+                            }
+                        });
+
+                        // Fully tear down and rebuild - avoids stale internal
+                        // list state that 'refresh' can leave behind
+                        $('#ddlSku').selectpicker('destroy');
+                        $('#ddlSku').html(html);
+                        initSkuPicker();
+
+                        $('#ddlSku').selectpicker('toggle');
+
+                        var $newSearch = $('#ddlSku ~ .dropdown-menu .bs-searchbox input');
+                        $newSearch.val(term);
+                        $newSearch.focus();
+                        if ($newSearch.length) {
+                            $newSearch[0].setSelectionRange(term.length, term.length);
+                        }
+
+                        bindSkuSearch();
+                    }
+                });
             }
-        });
+
+            $('#ddlSku').on('shown.bs.select', bindSkuSearch);
+            $(document).on('changed.bs.select', '#ddlSku', updatePdfUrl);
 
 
-        // Restore selected SKUs after Search
-        var selectedSkus =
-            ($("#hdnSelectedSkus").val() || "")
-                .split(',')
-                .filter(x => x);
+            // Cascading clear: each level only clears the next one to its right.
+            $("#ddlCompany").on('change', function () {
+                $("#ddlCategory").selectpicker('val', []);
+                applyPriceFilter();
+                //resetPriceDefault();
+                checkSearchButton();
+                updatePdfUrl();
 
-        $.each(selectedSkus, function (i, sku) {
+            });
 
-            var option =
-                new Option(
-                    sku,
-                    sku,
-                    true,
-                    true
-                );
-
-            $('#ddlSku').append(option);
-        });
-
-        $('#ddlSku').trigger('change');
-
-
-        // Keep hidden field updated
-        $('#ddlSku').on(
-            'select2:select select2:unselect change',
-            function () {
-
-                $("#hdnSelectedSkus")
-                    .val(
-                        ($(this).val() || []).join(',')
-                    );
-
+            $("#ddlCategory").on('changed.bs.select', function () {
+                $("#ddlSubCategory").selectpicker('val', []);
+                resetPriceDefault();
                 updatePdfUrl();
             });
 
-
-        // Clear SKU when filters change
-        $("#ddlCompany,#ddlCategory,#ddlSubCategory,#ddlCollection")
-            .change(function () {
-
-                $("#ddlSku")
-                    .empty()
-                    .trigger('change');
-
-                $("#hdnSelectedSkus")
-                    .val("");
-
+            $("#ddlSubCategory").on('changed.bs.select', function () {
+                $("#ddlCollection").selectpicker('val', []);
+                resetPriceDefault();
                 updatePdfUrl();
             });
 
+            $("#ddlCollection").on('changed.bs.select', function () {
+                $("#ddlSku").selectpicker('val', []);
+                resetPriceDefault();
+                updatePdfUrl();
+            });
+            $(document).on('changed.bs.select', '#ddlSku', function () {
+                resetPriceDefault();
+                updatePdfUrl();
+            });
 
-        // Company / Price
-        $("#ddlCompany,#ddlPrice")
-            .change(function () {
-
+            // Price
+            $("#ddlPrice").on('change', function () {
                 applyPriceFilter();
                 checkSearchButton();
                 updatePdfUrl();
             });
 
 
-        applyPriceFilter();
-        checkSearchButton();
-        updatePdfUrl();
+            applyPriceFilter();
+            checkSearchButton();
+            updatePdfUrl();
 
-        if ($("#ddlCompany").val() != ""
-            && $("#ddlPrice").val() != ""
-            && $(".card").length > 1) {
+            if ($("#ddlCompany").val() != ""
+                && $("#ddlPrice").val() != ""
+                && $(".card").length > 1) {
 
-            $("#btnPdf")
-                .removeClass("disabled");
-        }
+                $("#btnPdf")
+                    .removeClass("disabled");
+            }
 
-    });
+        });
 
-
+    //
     function applyPriceFilter() {
 
-        var price = $("#ddlPrice").val();
+    var price = $("#ddlPrice").val();
 
-        $(".price-1,.price-2,.price-3,.price-4")
-            .hide();
+    $(".price-1,.price-2,.price-3,.price-4").hide();
 
-        if (price == "") {
-
-            $(".price-1,.price-2,.price-3,.price-4")
-                .show();
-        }
-        else {
-
-            $(".price-" + price)
-                .show();
-        }
+    if (price != "") {
+        $(".price-" + price).show();
     }
+
+    checkSearchButton();
+}
 
 
     function checkSearchButton() {
@@ -672,11 +715,6 @@
 
     function updatePdfUrl() {
 
-        var selectedSkus =
-            ($("#hdnSelectedSkus").val() || "")
-                .split(',')
-                .filter(x => x);
-
         var url =
             '@Url.Action("ThumbnailProposalReportPdf", "Report")'
             + '?'
@@ -685,7 +723,7 @@
                 category: $("#ddlCategory").val(),
                 subCategory: $("#ddlSubCategory").val(),
                 collection: $("#ddlCollection").val(),
-                skus: selectedSkus,
+                skus: $("#ddlSku").val() || [],
                 price: $("#ddlPrice").val()
             }, true);
 
@@ -727,6 +765,10 @@
                 }
             });
         });
-
+        function resetPriceDefault() {
+            //$("#ddlPrice").val("");
+            //applyPriceFilter();
+            //checkSearchButton();
+        }
     </script>
 }
