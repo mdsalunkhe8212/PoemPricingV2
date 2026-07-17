@@ -34,7 +34,9 @@ namespace POEM.Model.Model
         public decimal FindingTotalCost { get; set; }
         public decimal FindingInc { get; set; }
         public decimal FindingDec { get; set; }
-
+        public decimal FindingDutyVal { get; set; }
+        public decimal FindingTariffVal { get; set; }
+        public decimal FindingPenaltyVal { get; set; }
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
     }

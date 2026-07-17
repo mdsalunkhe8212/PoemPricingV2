@@ -48,16 +48,16 @@ namespace POEM.Model.Model
             // SKU Details
             modelBuilder.Entity<SKUDetailsDbDto>()
                 .Property(p => p.semiMinWt)
-                .HasPrecision(5, 4); // precision, scale
+                .HasPrecision(15, 4); // precision, scale
             modelBuilder.Entity<SKUDetailsDbDto>()
                 .Property(p => p.centerMinWt)
-                .HasPrecision(5, 4); // precision, scale
+                .HasPrecision(15, 4); // precision, scale
             modelBuilder.Entity<SKUDetailsDbDto>()
                 .Property(p => p.SemiAdjWt)
-                .HasPrecision(5, 4); // precision, scale
+                .HasPrecision(15, 4); // precision, scale
             modelBuilder.Entity<SKUDetailsDbDto>()
                 .Property(p => p.CenterAdjWt)
-                .HasPrecision(5, 4); // precision, scale
+                .HasPrecision(15, 4); // precision, scale
             // Stone Details
             modelBuilder.Entity<SKUStoneDbDto>()
                 .Property(p => p.PerStoneWt)
