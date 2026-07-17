@@ -52,6 +52,9 @@ namespace POEMPricing.Managers
                 case "MarginDetails":
                     return ExportProcessMarginDetails();
 
+                case "DiamondDetails":
+                    return ExportProcessDiamondDetails();
+
                 default:
                     throw new Exception("Invalid master type");
             }
@@ -87,6 +90,8 @@ namespace POEMPricing.Managers
                     return _repository.GetProcessCostingDetailsCount();
                 case "MarginDetails":
                     return _repository.GetMarginDetailsCount();
+                case "DiamondDetails":
+                    return _repository.GetDiamondDetailsCount();
                 default:
                     return 0;
             }
@@ -534,6 +539,64 @@ namespace POEMPricing.Managers
 
         }
 
+        private byte[] ExportProcessDiamondDetails()
+        {
+            using (var wb = new XLWorkbook())
+            {
+                var ws = wb.Worksheets.Add("DiamondDetails");
+                var data = _repository.GetAllDiamondDetailssRecords();
+
+                // Headers
+                ws.Cell(1, 1).Value = "Code";
+                ws.Cell(1, 2).Value = "VendorCode";
+                ws.Cell(1, 3).Value = "StoneType";
+                ws.Cell(1, 4).Value = "GrowingType";
+                ws.Cell(1, 5).Value = "StoneShapeCode";
+                ws.Cell(1, 6).Value = "StoneShape";
+                ws.Cell(1, 7).Value = "StoneQualityCode";
+                ws.Cell(1, 8).Value = "StoneQuality";
+                ws.Cell(1, 9).Value = "SizeRange";
+                ws.Cell(1, 10).Value = "SizeFrom";
+                ws.Cell(1, 11).Value = "SizeTo";
+                ws.Cell(1, 12).Value = "SieveSize";
+                ws.Cell(1, 13).Value = "LengthDiameter";
+                ws.Cell(1, 14).Value = "Width1";
+                ws.Cell(1, 15).Value = "Width2";
+                ws.Cell(1, 16).Value = "PerStoneWeight";
+                ws.Cell(1, 17).Value = "StoneCertificate";
+                ws.Cell(1, 18).Value = "CostPerCt";
+
+                for (int i = 0; i < data.Count; i++)
+                {
+                    ws.Cell(i + 2, 1).Value = data[i].Code;
+                    ws.Cell(i + 2, 2).Value = data[i].VendorCode;
+                    ws.Cell(i + 2, 3).Value = data[i].StoneType;
+                    ws.Cell(i + 2, 4).Value = data[i].GrowingType;
+                    ws.Cell(i + 2, 5).Value = data[i].StoneShapeCode;
+                    ws.Cell(i + 2, 6).Value = data[i].StoneShape;
+                    ws.Cell(i + 2, 7).Value = data[i].StoneQualityCode;
+                    ws.Cell(i + 2, 8).Value = data[i].StoneQuality;
+                    ws.Cell(i + 2, 9).Value = data[i].SizeRange;
+                    ws.Cell(i + 2, 10).Value = data[i].SizeFrom;
+                    ws.Cell(i + 2, 11).Value = data[i].SizeTo;
+                    ws.Cell(i + 2, 12).Value = data[i].SieveSize;
+                    ws.Cell(i + 2, 13).Value = data[i].LengthDiameter;
+                    ws.Cell(i + 2, 14).Value = data[i].Width1;
+                    ws.Cell(i + 2, 15).Value = data[i].Width2;
+                    ws.Cell(i + 2, 16).Value = data[i].PerStoneWeight;
+                    ws.Cell(i + 2, 17).Value = data[i].StoneCertificate;
+                    ws.Cell(i + 2, 18).Value = data[i].CostPerCt;
+                }
+
+                ws.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    return stream.ToArray();
+                }
+            }
+        }
 
     }
 }

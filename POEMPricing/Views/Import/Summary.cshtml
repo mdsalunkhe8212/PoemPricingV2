@@ -81,12 +81,21 @@
             })
             .ToList();
     }
+
+    int totalRecordsToRender = 0;
+
+    if (Model.NewRecords != null)
+    {
+        totalRecordsToRender += (int)Model.NewRows;
+    }
+
+    totalRecordsToRender += (int)Model.ExistingInDbRows;
+    totalRecordsToRender += (int)Model.DuplicateRows;
+    totalRecordsToRender += (int)Model.InvalidRows;
 }
 
 <style>
     .custom-scroll-grid {
-        max-height: 350px;
-        overflow-y: auto;
         overflow-x: auto;
     }
 
@@ -94,105 +103,149 @@
             margin-bottom: 0;
         }
 
-        .custom-scroll-grid thead th {
-            position: sticky;
-            top: 0;
-            z-index: 2;
+    #pageLoadOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.97);
+        z-index: 9998;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .pg-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 4px;
+        font-size: 13px;
+    }
+
+        .pg-wrap select {
+            padding: 3px 6px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+    .pg-info {
+        color: #6c757d;
+    }
+
+    .pg-btn {
+        display: inline-block;
+        padding: 4px 10px;
+        margin: 1px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        background: #fff;
+        color: #495057;
+        user-select: none;
+    }
+
+        .pg-btn:hover {
+            background: #e9ecef;
+        }
+
+        .pg-btn.active {
+            background: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+            font-weight: bold;
+        }
+
+        .pg-btn.off {
+            opacity: 0.4;
+            pointer-events: none;
         }
 </style>
 
-<div class="container mt-4">
+@if (totalRecordsToRender > 500)
+{
+    <div id="pageLoadOverlay">
+        <div class="spinner-border text-primary" style="width:3.5rem;height:3.5rem;" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="text-center px-3">
+            <h5 class="text-primary mb-2">
+                <i class="fa fa-hourglass-half me-1"></i> Please Wait...
+            </h5>
+            <p class="text-muted mb-1">
+                This sheet contains <strong>@totalRecordsToRender</strong> records.
+                Building summary view, this may take a moment.
+            </p>
+            <small class="text-danger fw-bold">Please do not close or refresh this page.</small>
+        </div>
+    </div>
+}
 
+<div class="container mt-4">
     <div class="card shadow">
 
         <div class="card-header bg-light text-dark d-flex justify-content-between align-items-center">
             <h4 class="mb-0">
-                Import Summary of :
-                <span class="fw-bold">@TempData["master"]</span>
+                Import Summary of : <span class="fw-bold">@TempData["master"]</span>
             </h4>
-            <a href="@Url.Action("Upload", "Import")"
-               class="btn btn-sm btn-light">
+            <a href="@Url.Action("Upload", "Import")" class="btn btn-sm btn-light">
                 <i class="fa fa-arrow-left"></i> Back
             </a>
         </div>
 
         <div class="card-body">
 
-            @* ============================
-                SUMMARY CARDS — always 6 cards for all masters
-                ============================ *@
+            @* SUMMARY CARDS *@
             <div class="row text-center mb-4">
-
                 <div class="col-md-2">
                     <div class="card border-primary">
-                        <div class="card-body">
-                            <h6>Total Rows</h6>
-                            <h5 class="text-primary">@Model.TotalRows</h5>
-                        </div>
+                        <div class="card-body"><h6>Total Rows</h6><h5 class="text-primary">@Model.TotalRows</h5></div>
                     </div>
                 </div>
-
                 <div class="col-md-2">
                     <div class="card border-success">
-                        <div class="card-body">
-                            <h6>Valid Rows</h6>
-                            <h5 class="text-success">@Model.ValidRows</h5>
-                        </div>
+                        <div class="card-body"><h6>Valid Rows</h6><h5 class="text-success">@Model.ValidRows</h5></div>
                     </div>
                 </div>
-
                 <div class="col-md-2">
                     <div class="card border-success">
-                        <div class="card-body">
-                            <h6>New Rows</h6>
-                            <h5 class="text-success">@Model.NewRows</h5>
-                        </div>
+                        <div class="card-body"><h6>New Rows</h6><h5 class="text-success">@Model.NewRows</h5></div>
                     </div>
                 </div>
-
                 <div class="col-md-2">
                     <div class="card border-info">
-                        <div class="card-body">
-                            <h6>Will Replace</h6>
-                            <h5 class="text-info">@Model.ExistingInDbRows</h5>
-                        </div>
+                        <div class="card-body"><h6>Will Replace</h6><h5 class="text-info">@Model.ExistingInDbRows</h5></div>
                     </div>
                 </div>
-
                 <div class="col-md-2">
                     <div class="card border-warning">
-                        <div class="card-body">
-                            <h6>Duplicate Rows</h6>
-                            <h5 class="text-warning">@Model.DuplicateRows</h5>
-                        </div>
+                        <div class="card-body"><h6>Duplicate Rows</h6><h5 class="text-warning">@Model.DuplicateRows</h5></div>
                     </div>
                 </div>
-
                 <div class="col-md-2">
                     <div class="card border-danger">
-                        <div class="card-body">
-                            <h6>Invalid Rows</h6>
-                            <h5 class="text-danger">@Model.InvalidRows</h5>
-                        </div>
+                        <div class="card-body"><h6>Invalid Rows</h6><h5 class="text-danger">@Model.InvalidRows</h5></div>
                     </div>
                 </div>
-
             </div>
 
-            @* ============================
-                NEW RECORDS TABLE
-                 new records not in DB — will be inserted
-                ============================ *@
+            @* NEW RECORDS TABLE *@
             @if (Model.NewRecords != null && Model.NewRecords.Count > 0)
             {
                 <div class="card mb-4 border-success">
                     <div class="card-header bg-success text-white">
                         New Records — Will Be Inserted
-                        <small class="ms-2 fw-normal">
-                            (new records not in DB)
-                        </small>
+                        <small class="ms-2 fw-normal">(new records not in DB)</small>
                     </div>
-                    <div class="card-body table-responsive custom-scroll-grid">
+                    <div class="card-body custom-scroll-grid">
+                        <div class="pg-wrap" id="pg-top-new"></div>
                         <table class="table table-bordered table-striped">
                             <thead class="table-dark">
                                 <tr>
@@ -203,7 +256,7 @@
                                     <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tb-new">
                                 @foreach (var item in Model.NewRecords)
                                 {
                                     <tr>
@@ -211,32 +264,26 @@
                                         {
                                             <td>@prop.GetValue(item)</td>
                                         }
-                                        <td class="text-success fw-bold">
-                                            New Record
-                                        </td>
+                                        <td class="text-success fw-bold">New Record</td>
                                     </tr>
-
                                 }
                             </tbody>
                         </table>
+                        <div class="pg-wrap" id="pg-bot-new"></div>
                     </div>
                 </div>
             }
 
-            @* ============================
-                EXISTING IN DB RECORDS TABLE
-                Code found in DB — old deleted, new inserted on confirm
-                ============================ *@
+            @* EXISTING IN DB TABLE *@
             @if (Model.ExistingInDbRecords != null && Model.ExistingInDbRecords.Count > 0)
             {
                 <div class="card mb-4 border-info">
                     <div class="card-header bg-info text-dark">
                         Already Existing in DB — Will Be Replaced
-                        <small class="ms-2 fw-normal">
-                            (Old record deleted, new one inserted on confirm)
-                        </small>
+                        <small class="ms-2 fw-normal">(Old record deleted, new one inserted on confirm)</small>
                     </div>
-                    <div class="card-body table-responsive custom-scroll-grid">
+                    <div class="card-body custom-scroll-grid">
+                        <div class="pg-wrap" id="pg-top-existing"></div>
                         <table class="table table-bordered table-striped">
                             <thead class="table-dark">
                                 <tr>
@@ -247,7 +294,7 @@
                                     <th>Note</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tb-existing">
                                 @foreach (var item in Model.ExistingInDbRecords)
                                 {
                                     <tr>
@@ -255,31 +302,26 @@
                                         {
                                             <td>@prop.GetValue(item)</td>
                                         }
-                                        <td class="text-info fw-bold">
-                                            @item.ErrorMessage3
-                                        </td>
+                                        <td class="text-info fw-bold">@item.ErrorMessage3</td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
+                        <div class="pg-wrap" id="pg-bot-existing"></div>
                     </div>
                 </div>
             }
 
-            @* ============================
-                DUPLICATE RECORDS TABLE
-                Repeated in Excel sheet — REJECTED
-                ============================ *@
+            @* DUPLICATE RECORDS TABLE *@
             @if (Model.DuplicateRecords.Count > 0)
             {
                 <div class="card mb-4 border-warning">
                     <div class="card-header bg-warning text-dark">
                         Duplicate Records (Duplicate Codes in Sheet)
-                        <small class="ms-2 fw-normal">
-                            (Repeated in Excel — will NOT be imported)
-                        </small>
+                        <small class="ms-2 fw-normal">(Repeated in Excel — will NOT be imported)</small>
                     </div>
-                    <div class="card-body table-responsive custom-scroll-grid">
+                    <div class="card-body custom-scroll-grid">
+                        <div class="pg-wrap" id="pg-top-dup"></div>
                         <table class="table table-bordered table-striped">
                             <thead class="table-dark">
                                 <tr>
@@ -290,7 +332,7 @@
                                     <th>Error</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tb-dup">
                                 @foreach (var item in Model.DuplicateRecords)
                                 {
                                     <tr>
@@ -298,28 +340,25 @@
                                         {
                                             <td>@prop.GetValue(item)</td>
                                         }
-                                        <td class="text-warning fw-bold">
-                                            @item.ErrorMessage2
-                                        </td>
+                                        <td class="text-warning fw-bold">@item.ErrorMessage2</td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
+                        <div class="pg-wrap" id="pg-bot-dup"></div>
                     </div>
                 </div>
             }
 
-            @* ============================
-                INVALID RECORDS TABLE
-                Blank / missing / validation errors
-                ============================ *@
+            @* INVALID RECORDS TABLE *@
             @if (Model.InvalidRecords.Count > 0)
             {
                 <div class="card mb-4 border-danger">
                     <div class="card-header bg-danger text-white">
                         Invalid Records (Empty / Missing Codes / Validation Errors)
                     </div>
-                    <div class="card-body table-responsive custom-scroll-grid">
+                    <div class="card-body custom-scroll-grid">
+                        <div class="pg-wrap" id="pg-top-invalid"></div>
                         <table class="table table-bordered table-striped">
                             <thead class="table-dark">
                                 <tr>
@@ -330,7 +369,7 @@
                                     <th>Error</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tb-invalid">
                                 @foreach (var item in Model.InvalidRecords)
                                 {
                                     <tr>
@@ -338,65 +377,41 @@
                                         {
                                             <td>@prop.GetValue(item)</td>
                                         }
-                                        <td class="text-danger fw-bold">
-                                            @item.ErrorMessage1
-                                        </td>
+                                        <td class="text-danger fw-bold">@item.ErrorMessage1</td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
+                        <div class="pg-wrap" id="pg-bot-invalid"></div>
                     </div>
                 </div>
             }
 
-            @* ============================
-                CONFIRM IMPORT BUTTON
-                ============================ *@
+            @* CONFIRM IMPORT *@
             @if (Model.ValidRows > 0)
             {
                 <div class="alert alert-success">
-
                     <h5 class="mb-3">Records are ready for import.</h5>
-
                     <p class="mb-3 text-muted">
                         <strong>@Model.NewRows</strong> new records will be inserted.
                         <strong>@Model.ExistingInDbRows</strong> existing records will be replaced.
                     </p>
-
-                    <form id="confirmForm"
-                          method="post"
-                          action="@Url.Action("ConfirmImport", "Import")">
-
-                        <button type="button"
-                                class="btn btn-success"
-                                data-bs-toggle="modal"
-                                data-bs-target="#confirmImportModal">
-                            <i class="fa fa-check"></i>
-                            Continue
+                    <form id="confirmForm" method="post" action="@Url.Action("ConfirmImport", "Import")">
+                        <button type="button" class="btn btn-success"
+                                data-bs-toggle="modal" data-bs-target="#confirmImportModal">
+                            <i class="fa fa-check"></i> Continue
                         </button>
-
-                        <a href="@Url.Action("Upload", "Import")"
-                           class="btn btn-secondary">
-                            Cancel
-                        </a>
-
+                        <a href="@Url.Action("Upload", "Import")" class="btn btn-secondary">Cancel</a>
                     </form>
-
                 </div>
 
-                @* CONFIRM MODAL *@
                 <div class="modal fade" id="confirmImportModal" tabindex="-1">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-
                             <div class="modal-header">
                                 <h5 class="modal-title text-warning">Confirm Import!</h5>
-                                <button type="button"
-                                        class="btn-close"
-                                        data-bs-dismiss="modal">
-                                </button>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-
                             <div class="modal-body">
                                 <p>Are you sure you want to continue?</p>
                                 <ul class="mb-0">
@@ -405,53 +420,132 @@
                                     <li>Total Valid Rows: <strong>@Model.ValidRows</strong></li>
                                 </ul>
                             </div>
-
                             <div class="modal-footer">
-                                <button type="button"
-                                        class="btn btn-secondary"
-                                        data-bs-dismiss="modal">
-                                    No
-                                </button>
-                                <button type="button"
-                                        class="btn btn-success"
-                                        onclick="submitConfirm()">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                <button type="button" class="btn btn-success"
+                                        data-bs-dismiss="modal" onclick="submitConfirm()">
                                     Yes, Continue
                                 </button>
                             </div>
-
                         </div>
                     </div>
                 </div>
             }
 
         </div>
-
     </div>
-
 </div>
 
-@* LOADER OVERLAY *@
 <div id="loaderOverlay"
      class="position-fixed top-0 start-0 w-100 h-100 d-none align-items-center justify-content-center"
      style="background:rgba(0,0,0,0.55);z-index:9999;">
-
-    <div class="bg-white rounded-3 p-4 d-flex flex-column align-items-center gap-3"
-         style="min-width:220px;">
-
-        <div class="spinner-border text-primary"
-             style="width:3rem;height:3rem;"
-             role="status">
+    <div class="bg-white rounded-3 p-4 d-flex flex-column align-items-center gap-3" style="min-width:220px;">
+        <div class="spinner-border text-primary" style="width:3rem;height:3rem;" role="status">
             <span class="visually-hidden">Loading...</span>
         </div>
-
         <div id="loaderLabel" class="fw-medium fs-6 text-dark"></div>
         <div id="loaderSub" class="text-muted small"></div>
-
     </div>
-
 </div>
 
 <script>
+
+    // ============================
+    // Pagination — uses numeric keys, no hyphens in names
+    // key: "new" | "existing" | "dup" | "invalid"
+    // ============================
+    var PG = {}; // stores state per table
+
+    function pgInit(key) {
+        var tbody = document.getElementById('tb-' + key);
+        if (!tbody) return;
+
+        var rows = Array.from(tbody.querySelectorAll('tr'));
+        if (rows.length === 0) return;
+
+        PG[key] = { rows: rows, page: 1, size: 10 };
+        pgShow(key);
+    }
+
+    function pgShow(key) {
+        var s = PG[key];
+        var start = (s.page - 1) * s.size;
+        var end = start + s.size;
+
+        s.rows.forEach(function (row, i) {
+            row.style.display = (i >= start && i < end) ? '' : 'none';
+        });
+
+        pgRender(key, 'pg-top-' + key);
+        pgRender(key, 'pg-bot-' + key);
+    }
+
+    function pgRender(key, containerId) {
+        var s = PG[key];
+        var tp = Math.ceil(s.rows.length / s.size);
+        var tot = s.rows.length;
+        var from = (s.page - 1) * s.size + 1;
+        var to = Math.min(s.page * s.size, tot);
+        var el = document.getElementById(containerId);
+        if (!el) return;
+
+        // page size selector
+        var html = '<div style="display:flex;align-items:center;gap:6px">'
+            + '<span>Show</span>'
+            + '<select onchange="pgSize(\'' + key + '\',this.value)">';
+        [5, 10, 20, 50].forEach(function (n) {
+            html += '<option value="' + n + '"' + (n === s.size ? ' selected' : '') + '>' + n + '</option>';
+        });
+        html += '</select><span>per page</span></div>';
+
+        // info
+        html += '<div class="pg-info">Showing ' + from + ' – ' + to + ' of ' + tot + ' records</div>';
+
+        // page buttons
+        html += '<div>';
+        html += '<span class="pg-btn' + (s.page === 1 ? ' off' : '') + '" onclick="pgGo(\'' + key + '\',1)">«</span>';
+        html += '<span class="pg-btn' + (s.page === 1 ? ' off' : '') + '" onclick="pgGo(\'' + key + '\',' + (s.page - 1) + ')">‹</span>';
+
+        var sp = Math.max(1, s.page - 2);
+        var ep = Math.min(tp, sp + 4);
+        if (ep - sp < 4) sp = Math.max(1, ep - 4);
+
+        for (var p = sp; p <= ep; p++) {
+            html += '<span class="pg-btn' + (p === s.page ? ' active' : '') + '" onclick="pgGo(\'' + key + '\',' + p + ')">' + p + '</span>';
+        }
+
+        html += '<span class="pg-btn' + (s.page === tp ? ' off' : '') + '" onclick="pgGo(\'' + key + '\',' + (s.page + 1) + ')">›</span>';
+        html += '<span class="pg-btn' + (s.page === tp ? ' off' : '') + '" onclick="pgGo(\'' + key + '\',' + tp + ')">»</span>';
+        html += '</div>';
+
+        el.innerHTML = html;
+    }
+
+    function pgGo(key, page) {
+        var s = PG[key];
+        var tp = Math.ceil(s.rows.length / s.size);
+        if (page < 1 || page > tp) return;
+        s.page = page;
+        pgShow(key);
+    }
+
+    function pgSize(key, size) {
+        PG[key].size = parseInt(size);
+        PG[key].page = 1;
+        pgShow(key);
+    }
+
+    // Init all tables after page fully renders
+    window.addEventListener('load', function () {
+        var overlay = document.getElementById('pageLoadOverlay');
+        if (overlay) overlay.style.display = 'none';
+
+        pgInit('new');
+        pgInit('existing');
+        pgInit('dup');
+        pgInit('invalid');
+    });
+
     function submitConfirm() {
         var overlay = document.getElementById('loaderOverlay');
         document.getElementById('loaderLabel').textContent = 'Importing records...';
@@ -460,4 +554,5 @@
         overlay.classList.add('d-flex');
         document.getElementById('confirmForm').submit();
     }
+
 </script>

@@ -12,6 +12,7 @@ namespace POEM.Model.Model
         [Key]
         public long DiamondId { get; set; }                // bigint IDENTITY
 
+        public string Code { get; set; }
         [Required, MaxLength(50)]
         public string VendorCode { get; set; } = string.Empty;
 
@@ -33,6 +34,10 @@ namespace POEM.Model.Model
 
         [MaxLength(50)]
         public string SizeRange { get; set; }
+
+        //new added
+        public decimal? SizeFrom { get; set; }
+        public decimal? SizeTo { get; set; }
 
         [MaxLength(50)]
         public string SieveSize { get; set; }

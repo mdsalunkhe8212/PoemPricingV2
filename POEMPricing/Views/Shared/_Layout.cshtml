@@ -71,9 +71,47 @@
             <div class="collapse sidebar" id="sidebarMenu">
                 <nav class="nav flex-column py-3">
                     @Html.ActionLink("Home", "Index", "SKU", new { area = "" }, new { @class = "nav-link" })
+                    @if (User.IsInRole("Admin"))
+                    {
+                        @Html.ActionLink(
+                            "Users",
+                            "Index",
+                            "User",
+                            null,
+                            new { @class = "nav-link" })
+                    }
                     @Html.ActionLink("New", "Create", "SKU", new { area = "" }, new { @class = "nav-link" })
-                    @Html.ActionLink("Import", "Upload", "Import", new { area = "" }, new { @class = "nav-link" })
-                    @Html.ActionLink("Report", "SKUReport", "Report", new { area = "" }, new { @class = "nav-link" })
+                    @if (User.IsInRole("Admin"))
+                    {
+                        @Html.ActionLink(
+                            "Import",
+                            "Upload",
+                            "Import",
+                            new { area = "" },
+                            new { @class = "nav-link" })
+                    }
+                    @*@Html.ActionLink("Report", "SKUReport", "Report", new { area = "" }, new { @class = "nav-link" })*@
+
+                    <a href="#" id="reportLink" class="nav-link">
+                        Report ▼
+                    </a>
+
+                    <div id="reportMenu" style="display:none; padding-left:20px;">
+                        @Html.ActionLink(
+                            "Thumbnail Proposal",
+                            "ThumbnailProposal",
+                            "Report",
+                            null,
+                            new { @class = "nav-link" })
+
+                        @Html.ActionLink(
+                            "Collection Proposal",
+                            "CollectionProposal",
+                            "Report",
+                            null,
+                            new { @class = "nav-link" })
+                    </div>
+
                     <a class="nav-link" href="#">BOM</a>
                     <a class="nav-link" href="#">Proposals</a>
                     <a class="nav-link" href="#">Reports</a>
@@ -107,6 +145,10 @@
     @Scripts.Render("~/bundles/bootstrap")
     <!-- jQuery (only one version) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    @*new*@
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+          rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <!-- jQuery UI (after jQuery) -->
     <link rel="stylesheet"
@@ -148,6 +190,14 @@
                 $("#loader").hide();
             });
 
+        });
+
+        //
+        $(function () {
+            $("#reportLink").click(function (e) {
+                e.preventDefault();
+                $("#reportMenu").slideToggle();
+            });
         });
     </script>
 </body>

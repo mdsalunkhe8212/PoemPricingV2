@@ -1,0 +1,216 @@
+﻿@using POEM.Model.Model.Report
+@model List<CollectionProposalDto>
+
+@{
+    Layout = null;
+    string price = ViewBag.Price;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial;
+            font-size: 11px;
+        }
+
+        .header {
+            width: 100%;
+            font-size: 15px;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #444;
+            padding: 4px 6px;
+            word-break: break-word;
+            vertical-align: middle;
+        }
+
+        thead tr th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .category-border {
+            border-top: 2px solid black;
+        }
+
+        .img-cell {
+            width: 200px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+            .img-cell img {
+                width: 180px;
+                height: auto;
+                object-fit: contain;
+            }
+
+        ul {
+            margin: 0;
+            padding-left: 12px;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        Company :
+        @(Model.Any() ? Model.FirstOrDefault().CompanyName : "")
+
+        <span style="float:right">
+            Date :
+            @DateTime.Now.ToString("dd-MM-yyyy")
+        </span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width:200px;"></th>
+                <th>Sku</th>
+                <th>Collection</th>
+                <th>Metal</th>
+                <th>Total Weight</th>
+                <th>Price</th>
+                <th>Finding</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @{
+                string previousCategory = "";
+            }
+
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                var item = Model[i];
+
+                decimal? semiPrice = 0;
+                decimal? centerPrice = 0;
+
+                if (price == "1")
+                {
+                    semiPrice = item.SemiPrice1;
+                    centerPrice = item.CenterPrice1;
+                }
+                else if (price == "2")
+                {
+                    semiPrice = item.SemiPrice2;
+                    centerPrice = item.CenterPrice2;
+                }
+                else if (price == "3")
+                {
+                    semiPrice = item.SemiPrice3;
+                    centerPrice = item.CenterPrice3;
+                }
+                else if (price == "4")
+                {
+                    semiPrice = item.SemiPrice4;
+                    centerPrice = item.CenterPrice4;
+                }
+
+                bool newCategory = previousCategory != item.CategoryCode;
+
+                if (newCategory)
+                {
+                    previousCategory = item.CategoryCode;
+
+                    var categoryRows = Model.Count(x => x.CategoryCode == item.CategoryCode);
+
+                    <tr class="category-border">
+                        <td rowspan="@categoryRows" class="img-cell">
+                            <img src="@Server.MapPath("~/Images/SKUImages/ring.png")" />
+                        </td>
+
+                        <td>@item.SKUNumber</td>
+
+                        <td rowspan="@categoryRows"
+                            style="text-align:center; vertical-align:middle;">
+                            @item.Collection
+                        </td>
+
+                        <td>@item.Metal</td>
+
+                        <td>@item.TotalWeight</td>
+
+                        <td>$@(semiPrice + centerPrice)</td>
+
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(item.Findings))
+                            {
+                                var findings = item.Findings.Split('#');
+
+                                if (findings.Length > 1)
+                                {
+                                    <ul>
+                                        @foreach (var f in findings)
+                                        {
+                                            <li>@f</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    @item.Findings
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td>@item.SKUNumber</td>
+
+                        <td>@item.Metal</td>
+
+                        <td>@item.TotalWeight</td>
+
+                        <td>$@(semiPrice + centerPrice)</td>
+
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(item.Findings))
+                            {
+                                var findings = item.Findings.Split('#');
+
+                                if (findings.Length > 1)
+                                {
+                                    <ul>
+                                        @foreach (var f in findings)
+                                        {
+                                            <li>@f</li>
+                                        }
+                                    </ul>
+                                }
+                                else
+                                {
+                                    @item.Findings
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+</body>
+</html>
