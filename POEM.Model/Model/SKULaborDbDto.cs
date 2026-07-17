@@ -68,7 +68,9 @@ namespace POEM.Model.Model
         public decimal CompleteMargin3 { get; set; }
 
         public decimal? CompleteMargin4 { get; set; }
-
+        public decimal LaborDutyVal { get; set; }
+        public decimal LaborPenaltyVal { get; set; }
+        public decimal LaborTariffVal { get; set; }
         public string Remark { get; set; }
 
         public int CreatedBy { get; set; }

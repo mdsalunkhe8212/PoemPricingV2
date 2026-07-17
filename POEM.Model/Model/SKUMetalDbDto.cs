@@ -27,6 +27,10 @@ namespace POEM.Model.Model
         public decimal MetalInc { get; set; }
         public decimal MetalDec { get; set; }
 
+        public decimal MetalDutyVal { get; set; }
+        public decimal MetalPenaltyVal { get; set; }
+        public decimal MetalTariffVal { get; set; }
+
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
     }

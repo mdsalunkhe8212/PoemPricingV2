@@ -28,6 +28,9 @@ namespace POEM.Model.Model
         public decimal totalCost { get; set; }
         public string inc { get; set; }
         public string dec { get; set; }
+        public decimal findingDutyVal { get; set; }
+        public decimal findingTariffVal { get; set; }
+        public decimal findingPenaltyVal { get; set; }
 
     }
 }

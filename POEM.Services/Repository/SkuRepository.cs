@@ -243,6 +243,9 @@ namespace POEM.Services.Repository
                 MetalCost = dto.metalCost,
                 MetalInc = ParseDecimal(dto.inc),
                 MetalDec = ParseDecimal(dto.dec),
+                MetalDutyVal=dto.metalDutyVal,
+                MetalPenaltyVal = dto.metalPenaltyVal,
+                MetalTariffVal = dto.metalTariffVal,
 
                 CreatedBy = 1,
                 CreatedOn = DateTime.Now
@@ -274,7 +277,9 @@ namespace POEM.Services.Repository
                 FindingTotalCost = dto.totalCost,
                 FindingInc = ParseDecimal(dto.inc),
                 FindingDec = ParseDecimal(dto.dec),
-
+                FindingDutyVal=dto.findingDutyVal,
+                FindingPenaltyVal=dto.findingPenaltyVal,
+                FindingTariffVal=dto.findingTariffVal,
                 CreatedBy = 1,
                 CreatedOn = DateTime.Now
             };
@@ -319,6 +324,13 @@ namespace POEM.Services.Repository
                 CenterAdjWt = ParseDecimal(dto.CenterAdjWt),
                 TotalMinWt = ParseDecimal(dto.TotalMinWt),
                 TotalAdjWt = ParseDecimal(dto.TotalAdjWt),
+                StoneDutyVal = dto.StoneDutyVal,
+                StonePenaltyVal = dto.StonePenaltyVal,
+                StoneTariffVal = dto.StoneTariffVal,
+                SettingDutyVal = dto.SettingDutyVal,
+                SettingPenaltyVal = dto.SettingPenaltyVal,  
+                SettingTariffVal = dto.SettingTariffVal,
+
 
                 CreatedBy = 1,
                 CreatedOn = DateTime.Now
@@ -378,6 +390,9 @@ namespace POEM.Services.Repository
                 CompleteMargin1 = dto.CompleteMargin1,
                 CompleteMargin2 = dto.CompleteMargin2,
                 CompleteMargin3 = dto.CompleteMargin3,
+                LaborDutyVal=dto.LaborDutyVal,
+                LaborPenaltyVal=dto.LaborPenaltyVal,
+                LaborTariffVal=dto.LaborTariffVal,
 
                 Remark = dto.Remark,
 
@@ -491,7 +506,7 @@ namespace POEM.Services.Repository
                                select new SkuListItemDto
                                {
                                    Sku = sku.SKUNumber,
-                                   Top1Metal = metal.MetalText,
+                                   Top1Metal = metal.KaratId + "K "+ metal.ColorText+" " + metal.MetalText ,
                                    Price1 = labor.Price1 ?? 0.00m,
                                    Price2 = labor.Price2 ?? 0.00m,
                                    Price3 = labor.Price3 ?? 0.00m,
@@ -575,7 +590,10 @@ namespace POEM.Services.Repository
                     metalCost = m.MetalCost,
 
                     inc = m.MetalInc.ToString(),
-                    dec = m.MetalDec.ToString()
+                    dec = m.MetalDec.ToString(),
+                    metalDutyVal = m.MetalDutyVal,
+                    metalPenaltyVal = m.MetalPenaltyVal,
+                    metalTariffVal  = m.MetalTariffVal
 
                 }).ToList();
 
@@ -605,7 +623,10 @@ namespace POEM.Services.Repository
                     totalCost = f.FindingTotalCost,
 
                     inc = f.FindingInc.ToString(),
-                    dec = f.FindingDec.ToString()
+                    dec = f.FindingDec.ToString(),
+                    findingPenaltyVal = f.FindingPenaltyVal,
+                    findingDutyVal = f.FindingDutyVal,
+                    findingTariffVal = f.FindingTariffVal,
 
                 }).ToList();
 
@@ -644,7 +665,13 @@ namespace POEM.Services.Repository
                     Width1 = st.StoneWidth1,
                     Width2 = st.StoneWidth2,
                     CenterAdjWt = st.CenterAdjWt.ToString(),
-                    Lab = st.Lab                    
+                    Lab = st.Lab,
+                    StoneDutyVal = st.StoneDutyVal,
+                    StonePenaltyVal = st.StonePenaltyVal,
+                    StoneTariffVal = st.StoneTariffVal,
+                    SettingDutyVal  = st.SettingDutyVal,
+                    SettingPenaltyVal = st.SettingPenaltyVal,
+                    SettingTariffVal = st.SettingTariffVal
                 }).ToList();
 
             // 5. LaborInfo
@@ -712,7 +739,10 @@ namespace POEM.Services.Repository
                     VendorCode=labor.VendorCode,
                     VendorName=labor.VendorName,
                     ProcessType=labor.ProcessType,
-                    CastingLabor=labor.CastingLabor
+                    CastingLabor=labor.CastingLabor,
+                    LaborDutyVal=labor.LaborDutyVal,
+                    LaborPenaltyVal=labor.LaborPenaltyVal,
+                    LaborTariffVal=labor.LaborTariffVal,
                     /* Added By Mahesh Start End*/
                 } : new LaborDto(),
                 calculations = new SkuCalculationDto
