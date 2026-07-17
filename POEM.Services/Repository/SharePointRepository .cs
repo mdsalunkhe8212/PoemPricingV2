@@ -22,14 +22,27 @@ namespace POEM.Services.Repository
         private readonly int siteid;
         public SharePointRepository()
         {
-            var credential = new ClientSecretCredential(
-                tenantId: ConfigurationManager.AppSettings["AzureTenantId"], 
+            string progress = "In function -> ";
+            try
+            {
+                progress+= "Reading ClientSecretCredential -> ";
+                var credential = new ClientSecretCredential(
+                tenantId: ConfigurationManager.AppSettings["AzureTenantId"],
                 clientId: ConfigurationManager.AppSettings["AzureClientId"],
-                clientSecret: ConfigurationManager.AppSettings["AzureClientSecret"] 
+                clientSecret: ConfigurationManager.AppSettings["AzureClientSecret"]
             );
-
-            _graphClient = new GraphServiceClient(credential);
-            _siteId = ConfigurationManager.AppSettings["SharePointSiteId"]; 
+                progress += "GraphServiceClient initlizing -> ";
+                _graphClient = new GraphServiceClient(credential);
+                progress += "Reading SharePointSiteId -> ";
+                _siteId = ConfigurationManager.AppSettings["SharePointSiteId"];
+            }
+            catch (Exception ex)
+            {
+                //return ();
+                throw new Exception($"Progress: {ex.Message + "  --  " + progress}", ex);
+                //throw (new { error = ex.Message + "  --  " + progress, inner = ex.InnerException?.Message, stack = ex.StackTrace });
+            }
+            
         }
 
         public async Task<SharePointImage> GetImageAsync(string filePath)
