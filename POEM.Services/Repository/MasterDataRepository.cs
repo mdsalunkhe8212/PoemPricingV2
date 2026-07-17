@@ -628,6 +628,83 @@ namespace POEM.Services.Repository
 
         }
 
-       
+        public TaxDetailsDto GetDutyDetail(string taxtype, string vendorlocation, string location = null)
+        {
+
+
+            DutyDetailsDbDto dutyDetails = new DutyDetailsDbDto();
+            TaxDetailsDto taxDetails = new TaxDetailsDto();
+            string country = "";
+            string vendorCountry = _context.VendorDetails
+                    .Where(v => v.VendorCode == vendorlocation)
+                    .Select(v => v.VendorLocation)
+                    .FirstOrDefault();
+            if (!string.IsNullOrEmpty(location))
+            {
+                country = _context.VendorDetails
+                         .Where(v => v.VendorCode == location)
+                         .Select(v => v.VendorLocation)
+                         .FirstOrDefault();
+            }
+            if (taxtype == "vendor")
+            {
+                country = vendorCountry;
+                dutyDetails = _context.DutyDetails
+                    .FirstOrDefault(m => m.VendorLocation == country);
+                if (dutyDetails != null)
+                {
+                    taxDetails.Duty = dutyDetails.Duty;
+                    taxDetails.Tariff = dutyDetails.Tariff;
+                    taxDetails.Penalty = dutyDetails.Penalty;
+                }
+            }
+            else if (taxtype == "diamond")
+            {
+                dutyDetails = _context.DutyDetails
+            .FirstOrDefault(m => m.VendorLocation == vendorCountry && m.DiamondLocation == country);
+                if (dutyDetails != null)
+                {
+                    taxDetails.Duty = dutyDetails.DiamondDuty;
+                    taxDetails.Tariff = dutyDetails.DiamondTariff;
+                    taxDetails.Penalty = dutyDetails.DiamondPenalty;
+                }
+            }
+            else if (taxtype == "labor")
+            {
+                dutyDetails = _context.DutyDetails
+                .FirstOrDefault(m => m.VendorLocation == vendorCountry && m.LaborLocation == country);
+                if (dutyDetails != null)
+                {
+                    taxDetails.Duty = dutyDetails.LaborDuty;
+                    taxDetails.Tariff = dutyDetails.LaborTariff;
+                    taxDetails.Penalty = dutyDetails.LaborPenalty;
+                }
+            }
+            else if (taxtype == "finding")
+            {
+                dutyDetails = _context.DutyDetails
+                .FirstOrDefault(m => m.VendorLocation == vendorCountry && m.FindingLocation == country);
+                if (dutyDetails != null)
+                {
+                    taxDetails.Duty = dutyDetails.FindingDuty;
+                    taxDetails.Tariff = dutyDetails.FindingTariff;
+                    taxDetails.Penalty = dutyDetails.FindingPenalty;
+                }
+            }
+            DutyChartMasterDbDto dutyChartMaster = _context.DutyChartMaster
+                   .FirstOrDefault(m => m.VendorLocation == country);
+           
+            taxDetails.VendorLocation = country;
+            if (dutyChartMaster != null)
+            {
+                taxDetails.DutyPer = dutyChartMaster.DutyPer;
+                taxDetails.TariffPer = dutyChartMaster.TariffPer;
+                taxDetails.PenaltyPer = dutyChartMaster.PenaltyPer;
+            }
+           
+            return taxDetails;
+
+        }
+
     }
 }

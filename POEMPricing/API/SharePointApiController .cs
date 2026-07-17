@@ -52,7 +52,8 @@ namespace POEMPricing.API
            
             catch (Exception ex)
             {
-                return InternalServerError(ex);
+                //return InternalServerError(ex);
+                return Json(new { error = ex.Message, inner = ex.InnerException?.Message, stack = ex.StackTrace });
             }
         }
 

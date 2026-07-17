@@ -80,6 +80,8 @@
     <Compile Include="Model\ApplicationDbContext.cs" />
     <Compile Include="Model\CategoryDtls.cs" />
     <Compile Include="Model\CompanyMasterDbDto.cs" />
+    <Compile Include="Model\DutyChartMasterDbDto.cs" />
+    <Compile Include="Model\DutyDetailsDbDto.cs" />
     <Compile Include="Model\FindingTypeMasterDbDto.cs" />
     <Compile Include="Model\Import\BaseImportRowDto.cs" />
     <Compile Include="Model\Import\CategoryDetailsImportRowDto.cs" />
@@ -131,6 +133,7 @@
     <Compile Include="Model\StoneQualityDetailsDbDto.cs" />
     <Compile Include="Model\StoneShapeDetail.cs" />
     <Compile Include="Model\SubCategoryMasterDbDto.cs" />
+    <Compile Include="Model\TaxDetailsDto.cs" />
     <Compile Include="Model\User.cs" />
     <Compile Include="Model\UserRoleDbDto.cs" />
     <Compile Include="Model\VendorDetails.cs" />
