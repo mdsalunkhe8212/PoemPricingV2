@@ -43,6 +43,12 @@ namespace POEM.Model.Model
         public string CenterAdjWt { get; set; }
         public string TotalMinWt { get; set; }
         public string TotalAdjWt { get; set; }
+        public decimal StoneDutyVal { get; set; }
+        public decimal StonePenaltyVal { get; set; }
+        public decimal StoneTariffVal { get; set; }
+        public decimal SettingDutyVal { get; set; }
+        public decimal SettingPenaltyVal { get; set; } 
+        public decimal SettingTariffVal { get; set; }
 
     }
 }

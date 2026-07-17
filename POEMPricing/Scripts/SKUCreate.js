@@ -23,16 +23,56 @@ let totalSemiWt = 0;
 let totalCenterWt = 0;
 let totalLaborCost = 0;
 // Mahesh Start
-let dutyPer = 0.0;
-let vendorTaxper = 0.00;
-let vendorTax = 0.00;
-let findingTaxper = 0.00;
-let findingTax = 0.00;
-let laborTaxper = 0.00;
-let laborTax = 0.00;
-let diamondTaxper = 0.00;
-let diamondSemiTax = 0.00;
-let diamondCenterTax = 0.00;
+let vendortotaltax = 0.0;
+let vendorDutyper = 0.00;
+let vendorDutyVal = 0.00
+let vendorTariffPer = 0.00;
+let vendorTariffVal = 0.00;
+let vendorPenaltyPer = 0.00;
+let vendorPenaltyVal = 0.00;
+
+let findingtotaltax = 0.0;
+ 
+let findingDutyper = 0.00
+let findingDutyVal = 0.00
+let findingTariffPer = 0.00;
+let findingTariffVal = 0.00;
+let findingPenaltyPer = 0.00;
+let findingPenaltyVal = 0.00;
+
+//let laborDutyper = 0.00
+//let findingDutyVal = 0.00
+//let findingTariffPer = 0.00;
+//let findingTariffVal = 0.00;
+//let findingPenaltyPer = 0.00;
+//let findingPenaltyVal = 0.00;
+let labortotaltax = 0.0;
+let laborDutyper = 0.00
+let LaborDutyVal = 0.00
+let laborTariffPer = 0.00;
+let LaborTariffVal = 0.00;
+let laborPenaltyPer = 0.00;
+let LaborPenaltyVal = 0.00;
+
+let diamondtotalSemitax = 0.0;
+let diamondtotalCentertax = 0.0;
+let diamondDutyper = 0.00
+let diamondDutyVal = 0.00
+let diamondTariffPer = 0.00;
+let diamondTariffVal = 0.00;
+let diamondPenaltyPer = 0.00;
+let diamondPenaltyVal = 0.00;
+
+let settingtotalSemitax = 0.0;
+let settingtotalCentertax = 0.0;
+
+//let findingTaxper = 0.00;
+//let findingTax = 0.00;
+//let laborTaxper = 0.00;
+//let laborTax = 0.00;
+//let diamondTaxper = 0.00;
+//let diamondSemiTax = 0.00;
+//let diamondCenterTax = 0.00;
 //let totalSemiSettingCost = 0.00;
 //let totalCenterSettingCost = 0.00;
 
@@ -632,7 +672,7 @@ function HandlingCaluculation() {
         return sum + (parseFloat(item.TotalAdjStoneWt) || 0);
     }, 0);
     var dimondhndlSTCost = (parseFloat(totalStnCost).toFixed(2) * parseFloat(diamondHandling).toFixed(2)) / 100;
-    var dimondhndlAadjwtCost = parseFloat(totalDHAdjWT).toFixed(4) * parseFloat(diaHndLow).toFixed(2);
+    var dimondhndlAadjwtCost = parseFloat(totalDHAdjWT).toFixed(3) * parseFloat(diaHndLow).toFixed(2);
     //DimondHndl = Math.min(dimondhndlSTCost, dimondhndlAadjwtCost);
     DimondHndl =  Math.min(parseFloat(dimondhndlSTCost), parseFloat(dimondhndlAadjwtCost));
     if (DimondHndl > diaHndHigh) {
@@ -815,8 +855,8 @@ function setProcessValues(data, ctrl, type) {
         const centerMin = parseFloat(txtCenterMinWt.value) || 0;
         //const centerAdj = parseFloat(txtCenterAdjWt.value) || 0;
 
-        // txtTotalMinWt.value = (semiMin + centerMin).toFixed(4); // keep 4 decimals
-        var totalwt = (semiMin + centerMin).toFixed(4);
+        // txtTotalMinWt.value = (semiMin + centerMin).toFixed(3); // keep 4 decimals
+        var totalwt = (semiMin + centerMin).toFixed(3);
         totalwt = 0;
         if (metalLines.length > 0) {
             totalwt = metalLines[0].gmWt;
@@ -844,21 +884,35 @@ function setProcessValues(data, ctrl, type) {
         const semiMin = parseFloat(txtSemiMinWt.value) || 0;
 
         const centerMin = parseFloat(txtCenterMinWt.value) || 0;
+        var costSilver = 0.00;
+        var costPlatinum = 0.00;
+        cost = data.GoldCharges;
+        costPlatinum = data.PlatinumCharges;
+        costSilver = data.SilverCharges;
 
 
+        //if (metalLines[0].metalText === 'Gold') {
+        //    cost = data.GoldCharges;
+        //}
+        //else if (metalLines[0].metalText === 'Platinum') {
+        //    cost = data.PlatinumCharges;
+        //}
+        //else if (metalLines[0].metalText === 'Silver') {
+        //    cost = data.SilverCharges;
+        //}
 
+        var totalGoldRate = metalLines.filter(s => s.metalType.toLowerCase() === "gold")
+            .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
 
-        if (metalLines[0].metalText === 'Gold') {
-            cost = data.GoldCharges;
-        }
-        else if (metalLines[0].metalText === 'Platinum') {
-            cost = data.PlatinumCharges;
-        }
-        else if (metalLines[0].metalText === 'Silver') {
-            cost = data.SilverCharges;
-        }
-        var charges = (parseFloat(totalStoneQty) * cost).toFixed(2);
-        $('#txtTotalLabor').val(charges);
+        var totalPlatinumRate = metalLines.filter(s => s.metalType.toLowerCase() === "platinum")
+            .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
+        var totalSilverRate = metalLines.filter(s => s.metalType.toLowerCase() === "silver")
+            .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
+
+        var chargesGold = (parseFloat(totalGoldRate) * cost).toFixed(2);
+        var chargesPlatinum = (parseFloat(totalPlatinumRate) * costPlatinum).toFixed(2);
+        var chargesSilver = (parseFloat(totalSilverRate) * costSilver).toFixed(2);
+        $('#txtTotalLabor').val(parseFloat(chargesGold) + parseFloat(chargesPlatinum) + parseFloat(chargesSilver));
         calculateTotalLabor();
 
         //fillLaborFOBValues();
@@ -954,7 +1008,9 @@ function readFindingForm() {
     totalFindingCost += totalCost;
     $('#txtFindingTotalGmWt').val(totalGm.toFixed(3));
     $('#txtFindingTotalCost').val(totalCost.toFixed(2));
-
+    findingDutyVal = totalCost * findingDutyper;
+    findingPenaltyVal = totalCost * findingPenaltyPer;
+    findingTariffVal = totalCost * findingTariffPer;
     return {
         supplier: $('#ddlFindingSupplier option:selected').text(),
         supplierId: $('#ddlFindingSupplier').val(),
@@ -977,7 +1033,10 @@ function readFindingForm() {
         costPerPc: costPer,
         totalCost: totalCost,
         inc: $('#txtFindingInc').val(),
-        dec: $('#txtFindingDec').val()
+        dec: $('#txtFindingDec').val(),
+        findingDutyVal: findingDutyVal,
+        findingTariffVal:findingTariffVal,
+        findingPenaltyVal:findingPenaltyVal
     };
 }
 
@@ -1046,12 +1105,12 @@ function renderTable() {
     const $tbody = $('#tblFindings tbody');
     $tbody.empty();
     var karat = '';
-    findingTax = 0.00;
+    findingtotaltax = 0.00;
     findingLines.forEach((row, idx) => {
         if (row.metal == 'Gold') {
             karat = row.karatText || row.karat + 'K';
         }
-        findingTax += parseFloat(row.totalCost) * parseFloat(findingTaxper);
+        findingtotaltax +=(row.findingDutyVal + row.findingTariffVal + row.findingPenaltyVal)
         const tr = `
             <tr data-index="${idx}">
                 <td>${row.type}</td>
@@ -1139,8 +1198,8 @@ function recalcFindingTotals() {
     const findingDec = totalCost / rateOz;
     const findingInc = findingDec / 0.65;
 
-    $('#txtFindingDec').val(findingDec.toFixed(4));
-    $('#txtFindingInc').val(findingInc.toFixed(4));
+    $('#txtFindingDec').val(findingDec.toFixed(3));
+    $('#txtFindingInc').val(findingInc.toFixed(3));
     $('#txtFindingTotalGmWt').val(totalGm.toFixed(2));
     $('#txtFindingTotalCost').val(totalCost.toFixed(2));
 }
@@ -1169,8 +1228,10 @@ function readMetalForm() {
     const cost = parseFloat($('#txtMetalCost').val()) || 0;
 
     // Total Metal Cost accumulator
-    totalMetalCost += cost;
-
+    //totalMetalCost += cost;
+    vendorDutyVal = cost * vendorDutyper;
+    vendorPenaltyVal = cost * vendorPenaltyPer;
+    vendorTariffVal = cost * vendorTariffPer;
     return {
         metalText: $('#ddlMetal option:selected').text(),
         metalId: $('#ddlMetal').val(),
@@ -1190,7 +1251,11 @@ function readMetalForm() {
         metalCost: cost,
 
         inc: $('#txtMetalInc').val(),
-        dec: $('#txtMetalDec').val()
+        dec: $('#txtMetalDec').val(),
+        metalDutyVal: vendorDutyVal,
+        metalPenaltyVal: vendorPenaltyVal,
+        metalTariffVal:vendorTariffVal
+        
     };
 }
 
@@ -1201,10 +1266,10 @@ function renderMetalGrid() {
     const $tbody = $('#tblMetals tbody');
     $tbody.empty();
     totalMetalCost = 0;
-    vendorTax = 0;
+    vendortotaltax = 0;
     metalLines.forEach((row, idx) => {
         totalMetalCost += row.metalCost;
-        vendorTax += (parseFloat(row.metalCost) * parseFloat(vendorTaxper))
+        vendortotaltax += row.metalDutyVal + row.metalPenaltyVal + row.metalTariffVal;
         const tr = `
             <tr data-index="${idx}">
                 <td class="text-center">${row.metalText}</td>
@@ -1288,8 +1353,8 @@ function calculateMetalCost() {
     const metalInc = metalDec / 0.65;
 
     $('#txtMetalCost').val(metalCost.toFixed(2));
-    $('#txtMetalDec').val(metalDec.toFixed(4));
-    $('#txtMetalInc').val(metalInc.toFixed(4));
+    $('#txtMetalDec').val(metalDec.toFixed(3));
+    $('#txtMetalInc').val(metalInc.toFixed(3));
 
 
 
@@ -1727,8 +1792,8 @@ function recalcTotal() {
     const per = parseNumber($per.val());
     const total = qty * per;
 
-    $txtTotalStoneWt.val(total.toFixed(4));
-    $txtTotalAdjStoneWt.val(total.toFixed(4));
+    $txtTotalStoneWt.val(total.toFixed(3));
+    $txtTotalAdjStoneWt.val(total.toFixed(3));
 
 }
 
@@ -1752,7 +1817,7 @@ function loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter) 
         },
         success: function (res) {
             if (res && res.perStoneWeight !== undefined && res.perStoneWeight !== null) {
-                $('#txtPerStoneWt').val(Number(res.perStoneWeight).toFixed(4));
+                $('#txtPerStoneWt').val(Number(res.perStoneWeight).toFixed(3));
             } else {
                 $('#txtPerStoneWt').val('');
             }
@@ -1781,6 +1846,22 @@ function loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter) 
 let stoneEditIndex = -1; // -1 = add mode, >=0 = edit mode
 
 function getStoneModel() {
+
+    var totalCost = parseFloat($('#txtStoneTotalCost').val());
+    var settinglocation = $('#ddlSettingLocation').val();
+        diamondDutyVal = totalCost * diamondDutyper;
+        diamondPenaltyVal = totalCost * diamondPenaltyPer;
+        diamondTariffVal = totalCost * diamondTariffPer;
+    //if (settinglocation === 'Semi') {
+    //    diamondDutyVal = totalCost * diamondDutyper;
+    //    diamondPenaltyVal = totalCost * diamondPenaltyPer;
+    //    diamondTariffVal = totalCost * diamondTariffPer;
+    //}
+    //else if (settinglocation === 'Center') {
+    //    diamondCenterDutyVal = totalCost * diamondDutyper;
+    //    diamondCenterPenaltyVal = totalCost * diamondPenaltyPer;
+    //    diamondCenterTariffVal = totalCost * diamondTariffPer;
+    //}
     return {
         StoneVendorCode: $('#ddlStoneVendor').val(),
         StoneVendor: $('#ddlStoneVendor option:selected').text(),
@@ -1818,7 +1899,13 @@ function getStoneModel() {
         CenterMinWt: $('#txtCenterMinWt').val(),
         CenterAdjWt: $('#txtCenterAdjWt').val(),
         TotalMinWt: $('#txtTotalMinWt').val(),
-        TotalAdjWt: $('#txtTotalAdjWt').val()
+        TotalAdjWt: $('#txtTotalAdjWt').val(),
+        StoneDutyVal: diamondDutyVal,
+        StonePenaltyVal: diamondPenaltyVal,
+        StoneTariffVal: diamondTariffVal,
+        SettingDutyVal: 0.00,
+        SettingPenaltyVal: 0.00,
+        SettingTariffVal: 0.00,
     };
 }
 //Added By Mahesh   Start
@@ -1854,10 +1941,10 @@ $('#btnStoneAddUpdate').on('click', function () {
         totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
         $('#txtSemiAdjWt').prop('disabled', false);
     }
-    $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(4));
-    $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(4));
-    $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(4));//added By Mahesh
-    $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(4));//added By Mahesh
+    $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(3));
+    $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(3));
+    $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(3));//added By Mahesh
+    $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(3));//added By Mahesh
     calculateTotals();
     if (stoneEditIndex === -1) {
         // ADD
@@ -1897,19 +1984,19 @@ function renderStoneTable() {
         // 3. PerStoneWt (numeric)
         return (parseFloat(a.PerStoneWt) || 0) - (parseFloat(b.PerStoneWt) || 0);
     });
-    diamondCenterTax = 0.00;
-    diamondSemiTax = 0.00;
+    diamondtotalCentertax = 0.00;
+    diamondtotalSemitax = 0.00;
     //totalCenterSettingCost = 0.00;
     //totalSemiSettingCost = 0.00;
     stoneList.forEach((s, i) => {
         
         if (s.SettingLocation === 'Center') {
             $('#txtCenterAdjWt').prop('disabled', false);
-            diamondCenterTax += (parseFloat(s.StoneTotalCost) * parseFloat(diamondTaxper));
+            diamondtotalCentertax += (parseFloat(s.StoneDutyVal) + parseFloat(s.StonePenaltyVal) + parseFloat(s.StoneTariffVal));
             //totalCenterSettingCost += s.TotalCost;
         }else{
             $('#txtSemiAdjWt').prop('disabled', false);
-            diamondSemiTax += (parseFloat(s.StoneTotalCost) * parseFloat(diamondTaxper));
+            diamondtotalSemitax += (parseFloat(s.StoneDutyVal) + parseFloat(s.StonePenaltyVal) + parseFloat(s.StoneTariffVal));
             //totalSemiSettingCost += s.TotalCost;
         }
         html += `
@@ -1943,8 +2030,8 @@ function renderStoneTable() {
                 <td></td>
                                 <td></td>
                 <td class="text-center">${totalStoneQty}</td>
-                <td class="text-center">${totalTotalStoneWt.toFixed(4)}</td>
-                <td class="text-center">${totalTotalAdjStoneWt.toFixed(4)}</td>
+                <td class="text-center">${totalTotalStoneWt.toFixed(3)}</td>
+                <td class="text-center">${totalTotalAdjStoneWt.toFixed(3)}</td>
                 <td></td>
                 <td class="text-center">$${totalCosttotal.toFixed(2)}</td>
                 <td class="text-nowrap">
@@ -2036,11 +2123,11 @@ function deleteStone(index) {
 
     }
     totalStoneQty = parseInt(totalStoneQty) - parseInt(stoneList[index].Qty);
-    $('#txtSemiMinWt').val(Number(totalSemiWt).toFixed(4));
-    $('#txtCenterMinWt').val(Number(totalCenterWt).toFixed(4));
+    $('#txtSemiMinWt').val(Number(totalSemiWt).toFixed(3));
+    $('#txtCenterMinWt').val(Number(totalCenterWt).toFixed(3));
 
-    $('#txtSemiAdjWt').val(Number(totalSemiAdjWt).toFixed(4));//added By Mahesh
-    $('#txtCenterAdjWt').val(Number(totalCenterAdjWt).toFixed(4));//added By Mahesh
+    $('#txtSemiAdjWt').val(Number(totalSemiAdjWt).toFixed(3));//added By Mahesh
+    $('#txtCenterAdjWt').val(Number(totalCenterAdjWt).toFixed(3));//added By Mahesh
 
    
     stoneList.splice(index, 1);
@@ -2174,9 +2261,25 @@ function getMarginDetails() {
 }
 function fillLaborFOBValues() {
 
-    // getMarginDetails();
+     //getMarginDetails();
+    if (laborTariffPer > 0 || laborDutyper > 0 || laborPenaltyPer> 0) {
+        settingtotalCentertax = 0.00;
+        settingtotalSemitax = 0.00;
 
-    
+        stoneList.forEach((s, i) => {
+            
+            s.SettingDutyVal = (parseFloat(s.TotalCost) * laborDutyper);
+            s.SettingPenaltyVal = (parseFloat(s.TotalCost) * laborPenaltyPer);
+            s.SettingTariffVal = (parseFloat(s.TotalCost) * laborTariffPer);
+            if (s.SettingLocation === "Semi") {
+                settingtotalSemitax += s.SettingDutyVal + s.SettingPenaltyVal + s.SettingTariffVal;
+            } else {
+                settingtotalSemitax += s.SettingDutyVal + s.SettingPenaltyVal + s.SettingTariffVal;
+
+            }
+        });
+        settingtotalCentertax = (totalSemiSettingCost * laborTariffPer)
+    }
 
     var landedcost = 0.00;
     var landedcostCenter = 0.00;
@@ -2188,26 +2291,26 @@ function fillLaborFOBValues() {
     metalLines.forEach((row, idx) => {
         totalMetalCost += parseFloat(row.metalCost)||0;
     });
-    totalCenterSettingCost = 0;
-    totalCenterStoneCost = 0;
-    totalSemiStoneCost = 0;
-    totalSemiSettingCost = 0;
-    stoneList.forEach((row, idx) => {
+    //totalCenterSettingCost = 0;
+    //totalCenterStoneCost = 0;
+    //totalSemiStoneCost = 0;
+    //totalSemiSettingCost = 0;
+    //stoneList.forEach((row, idx) => {
        
    
-        if (row.SettingLocation === 'Center') {
-            totalCenterStoneCost += parseFloat(row.StoneTotalCost) || 0;
+    //    if (row.SettingLocation === 'Center') {
+    //        totalCenterStoneCost += parseFloat(row.StoneTotalCost) || 0;
         
-            totalCenterSettingCost += parseFloat(row.TotalCost) || 0;
+    //        totalCenterSettingCost += parseFloat(row.TotalCost) || 0;
         
 
-    }
-    else {
-            totalSemiStoneCost += parseFloat(row.StoneTotalCost) || 0;
-            totalSemiSettingCost += parseFloat(row.TotalCost) || 0;
+    //}
+    //else {
+    //        totalSemiStoneCost += parseFloat(row.StoneTotalCost) || 0;
+    //        totalSemiSettingCost += parseFloat(row.TotalCost) || 0;
 
-        }
-    });
+    //    }
+    //});
 
     // Calculate Semi FOB (without center stone)
     if ($('#ddlProcessType').val() === 'Flat Labour per piece' || $('#ddlProcessType').val() === 'Flat Labour per gm') {
@@ -2259,13 +2362,18 @@ function fillLaborFOBValues() {
     //}
 
 
+    var taxableLabor = (parseFloat(totalLaborCost) - parseFloat(totalLaborCostWTDuty))
+    var laborSemiTax = 0;
+    var laborCenterTax = 0;
+    LaborDutyVal = taxableLabor * laborDutyper;
+    LaborTariffVal = taxableLabor * laborTariffPer;
+    LaborPenaltyVal = taxableLabor * laborPenaltyPer;
 
-    const laborSemiTax = (parseFloat(totalLaborCost) - parseFloat(totalLaborCostWTDuty) + totalSemiSettingCost) * laborTaxper;
-    const laborCenterTax = (parseFloat(totalLaborCost) - parseFloat(totalLaborCostWTDuty) + totalCenterSettingCost) * laborTaxper;
+    laborSemiTax = LaborDutyVal + LaborTariffVal + LaborTariffVal + settingtotalSemitax;
+    laborCenterTax = laborSemiTax + settingtotalCentertax;
 
-
-    semiDuty = parseFloat(vendorTax) + parseFloat(findingTax) + parseFloat(diamondSemiTax) + parseFloat(laborSemiTax);
-    centerDuty = semiDuty + parseFloat(diamondCenterTax)+parseFloat(laborCenterTax);
+    semiDuty = parseFloat(vendortotaltax) + parseFloat(findingtotaltax) + parseFloat(diamondtotalSemitax) + parseFloat(laborSemiTax);// + parseFloat(laborSemiTax);
+    centerDuty = semiDuty + parseFloat(diamondtotalCentertax) + parseFloat(settingtotalCentertax);
 
     landedcost = parseFloat(semiFOB) + parseFloat(semiDuty);
     landedcostCenter = parseFloat(completeFOB) + parseFloat(centerDuty);
@@ -2499,6 +2607,11 @@ function getLabor() {
         CompleteMargin2: $('#txtCompleteMargin2').val(),
         CompleteMargin3: $('#txtCompleteMargin3').val(),
         CompleteMargin4: $('#txtCompleteMargin4').val(),
+        LaborDutyVal: LaborDutyVal,
+        LaborPenaltyVal: LaborPenaltyVal    ,
+        LaborTariffVal: LaborTariffVal,
+
+
 
         Remark: $('#txtRemark').val()
     };
@@ -3341,8 +3454,8 @@ function calculateTotals() {
     const centerMin = parseFloat(txtCenterMinWt.value) || 0;
     const centerAdj = parseFloat(txtCenterAdjWt.value) || 0;
 
-    txtTotalMinWt.value = (semiMin + centerMin).toFixed(4); // keep 4 decimals
-    txtTotalAdjWt.value = (semiAdj + centerAdj).toFixed(4);
+    txtTotalMinWt.value = (semiMin + centerMin).toFixed(3); // keep 4 decimals
+    txtTotalAdjWt.value = (semiAdj + centerAdj).toFixed(3);
 }
 
 // Attach events to recalc on input/blur
@@ -3572,30 +3685,46 @@ function getTaxDetails(taxtype, location='') {
     if (taxtype != 'vendor') {
         url = url + '?location=' + location;
     }
-
+    var DutyPer = 0.00;
+    var TariffPer =0.00;
+    var PenaltyPer = 0.00;
+    var returndata = {
+        DutyPer: 0.00,
+        TariffPer: 0.00,
+        PenaltyPer: 0.00
+    };
     $.getJSON(url, function (data) {
         if (!data) return;
+        returndata = data;
         if (data.Duty) {
-            taxvalue += data.DutyPer
+            DutyPer = parseFloat(data.DutyPer) / 100;
         }
         if (data.Tariff) {
-            taxvalue += data.TariffPer
+            TariffPer = parseFloat(data.TariffPer) / 100;
         }
         if (data.Penalty) {
-            taxvalue += data.PenaltyPer
+            PenaltyPer = parseFloat( data.PenaltyPer) / 100;
         }
         taxvalue = taxvalue / 100;
         console.log(data);
         console.log(taxvalue);
         if (taxtype === 'vendor') {
-            vendorTaxper = taxvalue;
+            vendorDutyper = DutyPer;
+            vendorTariffPer = TariffPer;
+            vendorPenaltyPer = PenaltyPer;
         } else if(taxtype === 'diamond'){
-            diamondTaxper = taxvalue;
+            diamondDutyper = DutyPer;
+            diamondTariffPer = TariffPer;
+            diamondPenaltyPer = PenaltyPer;
         } else if(taxtype === 'labor'){
-            laborTaxper = taxvalue;
+            laborDutyper = DutyPer;
+            laborTariffPer = TariffPer;
+            laborPenaltyPer = PenaltyPer;
         } else if(taxtype === 'finding'){
-            findingTaxper = taxvalue;
+            findingDutyper = DutyPer;
+            findingTariffPer = TariffPer;
+            findingPenaltyPer = PenaltyPer;
     }
-        return taxvalue;
+        return returndata;
     });
 }

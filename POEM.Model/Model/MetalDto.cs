@@ -20,6 +20,9 @@ namespace POEM.Model.Model
         public decimal metalCost { get; set; }
         public string inc { get; set; }
         public string dec { get; set; }
+        public decimal metalDutyVal { get; set; }
+        public decimal metalPenaltyVal { get; set; }
+        public decimal metalTariffVal { get; set; }
 
     }
 }
