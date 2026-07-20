@@ -1924,22 +1924,21 @@ $('#btnStoneAddUpdate').on('click', function () {
         return 0;
     }
     const model = getStoneModel();
-    totalStoneQty = parseInt(totalStoneQty) + parseInt(model.Qty);
     // Total Center and Simi cost accumulators
     if (model.SettingLocation === 'Center') {
-        totalCenterStoneCost += parseFloat(model.StoneTotalCost) || 0;
-        totalCenterWt += parseFloat(model.TotalStoneWt) || 0;
-        totalCenterSettingCost += parseFloat(model.TotalCost) || 0;
-        totalCenterAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;//added By Mahesh
-        $('#txtCenterAdjWt').prop('disabled', false);
+        //totalCenterStoneCost += parseFloat(model.StoneTotalCost) || 0;
+        //totalCenterWt += parseFloat(model.TotalStoneWt) || 0;
+        //totalCenterSettingCost += parseFloat(model.TotalCost) || 0;
+        //totalCenterAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;//added By Mahesh
+        //$('#txtCenterAdjWt').prop('disabled', false);
 
     }
     else {
-        totalSemiStoneCost += parseFloat(model.StoneTotalCost) || 0;
-        totalSemiWt += parseFloat(model.TotalStoneWt) || 0;
-        totalSemiSettingCost += parseFloat(model.TotalCost) || 0;
-        totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
-        $('#txtSemiAdjWt').prop('disabled', false);
+        //totalSemiStoneCost += parseFloat(model.StoneTotalCost) || 0;
+        //totalSemiWt += parseFloat(model.TotalStoneWt) || 0;
+        //totalSemiSettingCost += parseFloat(model.TotalCost) || 0;
+        //totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
+        //$('#txtSemiAdjWt').prop('disabled', false);
     }
     $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(3));
     $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(3));
@@ -1969,6 +1968,8 @@ function renderStoneTable() {
     totalCosttotal = 0;
     $('#txtCenterAdjWt').prop('disabled', true);
     $('#txtSemiAdjWt').prop('disabled', true);
+   
+
     stoneList.sort(function (a, b) {
 
         // 1. SettingLocation (string)
@@ -1989,13 +1990,21 @@ function renderStoneTable() {
     //totalCenterSettingCost = 0.00;
     //totalSemiSettingCost = 0.00;
     stoneList.forEach((s, i) => {
-        
+        totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
         if (s.SettingLocation === 'Center') {
             $('#txtCenterAdjWt').prop('disabled', false);
+            totalCenterStoneCost += parseFloat(s.StoneTotalCost) || 0;
+            totalCenterWt += parseFloat(s.TotalStoneWt) || 0;
+            totalCenterSettingCost += parseFloat(s.TotalCost) || 0;
+            totalCenterAdjWt += parseFloat(s.TotalAdjStoneWt) || 0;//added By Mahesh
             diamondtotalCentertax += (parseFloat(s.StoneDutyVal) + parseFloat(s.StonePenaltyVal) + parseFloat(s.StoneTariffVal));
             //totalCenterSettingCost += s.TotalCost;
         }else{
             $('#txtSemiAdjWt').prop('disabled', false);
+            totalSemiStoneCost += parseFloat(s.StoneTotalCost) || 0;
+            totalSemiWt += parseFloat(s.TotalStoneWt) || 0;
+            totalSemiSettingCost += parseFloat(s.TotalCost) || 0;
+            totalSemiAdjWt += parseFloat(s.TotalAdjStoneWt) || 0;  //added By Mahesh
             diamondtotalSemitax += (parseFloat(s.StoneDutyVal) + parseFloat(s.StonePenaltyVal) + parseFloat(s.StoneTariffVal));
             //totalSemiSettingCost += s.TotalCost;
         }
@@ -2137,45 +2146,45 @@ function deleteStone(index) {
 
 function setStoneData(index) {
     var data = stoneList[index];
-    $('#ddlStoneVendor').val(data.StoneVendorCode);
-    $('#ddlStoneType').val(data.StoneType).trigger('change');
+    stoneEditIndex = index;
+    $('#ddlStoneVendor').val(data.StoneVendorCode).addClass('disabled').attr('disabled', true);
+    $('#ddlStoneType').val(data.StoneType).trigger('change').addClass('disabled').attr('disabled', true);
 
-    $('#ddlGrowing').val(data.Growing);
-    $('#ddlSettingLocation').val(data.SettingLocation);
-    $('#ddlLab').val(data.Lab);
+    $('#ddlGrowing').val(data.Growing).addClass('disabled').attr('disabled', true);
+    $('#ddlSettingLocation').val(data.SettingLocation).addClass('disabled').attr('disabled', true);
+    $('#ddlLab').val(data.Lab).addClass('disabled').attr('disabled', true);
     setTimeout(function () {
-        $('#ddlStoneShape').val(data.Shape).trigger('change');
+        $('#ddlStoneShape').val(data.Shape).trigger('change').addClass('disabled').attr('disabled', true);
         setTimeout(function () {
-            $('#ddlStoneQuality').val(data.StoneQuality);
-            $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat);
-            $('#ddlSizeRange').val(data.SizeRange); 
+            $('#ddlStoneQuality').val(data.StoneQuality).addClass('disabled').attr('disabled', true);
+            $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat).addClass('disabled').attr('disabled', true);
+            $('#ddlSizeRange').val(data.SizeRange).addClass('disabled').attr('disabled', true); 
 
         }, 800);
     }, 800);
     //$('#ddlStoneShape').val(data.Shape);
     // ShapeText usually not set manually (comes from dropdown)
 
-    $('#txtStoneMMSize').val(data.MMSize);
-    $('#txtStoneWidth1').val(data.Width1);
-    $('#txtStoneWidth2').val(data.Width2);
+    $('#txtStoneMMSize').val(data.MMSize).addClass('disabled').attr('disabled', true);
+    $('#txtStoneWidth1').val(data.Width1).addClass('disabled').attr('disabled', true);
+    $('#txtStoneWidth2').val(data.Width2).addClass('disabled').attr('disabled', true);
 
-    $('#txtPerStoneWt').val(data.PerStoneWt);
-    $('#txtStoneQty').val(data.Qty);
+    $('#txtPerStoneWt').val(data.PerStoneWt).addClass('disabled').attr('disabled', true);
+    $('#txtStoneQty').val(data.Qty).addClass('disabled').attr('disabled', true);
     $('#txtTotalStoneWt').val(data.TotalStoneWt);
     $('#txtTotalAdjStoneWt').val(data.TotalAdjStoneWt);
 
     // $('#ddlStoneQuality').val(data.StoneQuality);
 
-    $('#txtStoneTotalCost').val(data.StoneTotalCost);
+    $('#txtStoneTotalCost').val(data.StoneTotalCost).addClass('disabled').attr('disabled', true);
 
-    $('#ddlSettingVendor').val(data.SettingVendorCode).trigger('change');
+    $('#ddlSettingVendor').val(data.SettingVendorCode).addClass('disabled').attr('disabled', true).trigger('change');
     setTimeout(function () {
-        $('#ddlSettingType').val(data.SettingTypeCode);
+        $('#ddlSettingType').val(data.SettingTypeCode).addClass('disabled').attr('disabled', true);
     }, 800);
     //$('#ddlSettingType').val(data.SettingType);
-    $('#txtCostPerStone').val(data.CostPerStone);
-    $('#txtTotalCost').val(data.TotalCost);
-
+    $('#txtCostPerStone').val(data.CostPerStone).addClass('disabled').attr('disabled', true);
+    $('#txtTotalCost').val(data.TotalCost).addClass('disabled').attr('disabled', true);
     //$('#txtSemiMinWt').val(data.SemiMinWt);
     //$('#txtSemiAdjWt').val(data.SemiAdjWt);
     //$('#txtCenterMinWt').val(data.CenterMinWt);
@@ -2183,35 +2192,38 @@ function setStoneData(index) {
     //$('#txtTotalMinWt').val(data.TotalMinWt);
     //$('#txtTotalAdjWt').val(data.TotalAdjWt);
     $('html, body').animate({ scrollTop: 0 }, 800);
-    $('#btnStoneAddUpdate').addClass('disabled').attr('disabled', true);
+    /*$('#btnStoneAddUpdate').addClass('disabled').attr('disabled', true)*/
+    $('#btnStoneAddUpdate').text("Update Stone");
 }
 
 function clearStoneControls() {
-    $('#ddlStoneVendor').val('');
-    $('#ddlStoneType').val('');
-    $('#ddlGrowing').val('');
-    $('#ddlSettingLocation').val('');
-    $('#ddlLab').val('');
-    $('#ddlStoneShape').val('');
+    $('#ddlStoneVendor').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlStoneType').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlGrowing').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlSettingLocation').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlLab').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlStoneShape').val('').removeClass('disabled').attr('disabled', false);
     //$('#txtSizeRange').val('');
-    $('#ddlSizeRange').val('');
-    $('#txtStoneMMSize').val('');
-    $('#txtStoneWidth1').val('');
-    $('#txtStoneWidth2').val('');
+    $('#ddlSizeRange').val('').removeClass('disabled').attr('disabled', false);
+    $('#txtStoneMMSize').val('').removeClass('disabled').attr('disabled', false);
+    $('#txtStoneWidth1').val('').removeClass('disabled').attr('disabled', false);
+    $('#txtStoneWidth2').val('').removeClass('disabled').attr('disabled', false);
     $('#txtPerStoneWt').val('');
-    $('#txtStoneQty').val('');
+    $('#txtStoneQty').val('').removeClass('disabled').attr('disabled', false);
     $('#txtTotalStoneWt').val('');
-    $('#txtTotalAdjStoneWt').val('');
+    $('#txtTotalAdjStoneWt').val('').removeClass('disabled').attr('disabled', false);
 
-    $('#ddlStoneQuality').val('');
+    $('#ddlStoneQuality').val('').removeClass('disabled').attr('disabled', false);
     $('#txtStoneCostPerCarat').val('');
     $('#txtStoneTotalCost').val('');
 
-    $('#ddlSettingVendor').val('');
-    $('#ddlSettingType').val('');
+    $('#ddlSettingVendor').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlSettingType').val('').removeClass('disabled').attr('disabled', false);
     $('#txtCostPerStone').val('');
     $('#txtTotalCost').val('');
-    $('#btnStoneAddUpdate').removeClass('disabled').attr('disabled', false);
+    //$('#btnStoneAddUpdate').removeClass('disabled').attr('disabled', false);
+    $('#btnStoneAddUpdate').text("Add Stone");
+
 }
 
 
@@ -2278,7 +2290,7 @@ function fillLaborFOBValues() {
 
             }
         });
-        settingtotalCentertax = (totalSemiSettingCost * laborTariffPer)
+        settingtotalCentertax = (totalCenterSettingCost * laborTariffPer)
     }
 
     var landedcost = 0.00;
@@ -3087,6 +3099,14 @@ document.addEventListener("DOMContentLoaded", function () {
             $('#nav-summary-tab').removeClass('disabled').attr('disabled', false);
 
         }
+        $('input').prop('readonly', true);
+        $('select').prop('disabled', true);
+        //$('select').on('focus', function () {
+        //    $(this).data('current-value', $(this).val());
+        //}).on('change', function () {
+        //    $(this).val($(this).data('current-value'));
+        //});
+        $('select option:not(:selected)').prop('disabled', true);
     }
 
     if (path.includes("/sku/copy")) {

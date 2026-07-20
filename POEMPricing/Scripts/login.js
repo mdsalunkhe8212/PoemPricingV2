@@ -1,4 +1,11 @@
-﻿document.getElementById('btnLogin').addEventListener('click', async function () {
+﻿
+$(document).on('keypress', function (e) {
+    if (e.which === 13) { // Enter key
+        e.preventDefault();
+        $('#btnLogin').click();
+    }
+});
+document.getElementById('btnLogin').addEventListener('click', async function () {
     const email = document.getElementById('txtEmail').value.trim();
     const password = document.getElementById('txtPassword').value;
 
