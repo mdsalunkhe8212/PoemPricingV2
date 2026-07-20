@@ -65,10 +65,10 @@ namespace POEM.Model.Model
 
         // SQL type is BIT
        
-        public bool CreatedBy { get; set; }
+        public long CreatedBy { get; set; }
 
        
-        public DateTime CreatedOn { get; set; }
+        //public DateTime CreatedOn { get; set; }
 
         public int? ModifiedBy { get; set; }
 
