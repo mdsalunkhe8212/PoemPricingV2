@@ -120,5 +120,17 @@ namespace POEM.Services.Interface
         int GetDiamondDetailsCount();
         List<DiamondDetail> GetAllDiamondDetailssRecords();
         #endregion
+
+        #region DutyChartMaster
+        void ReplaceDutyChartMaster(List<DutyChartMasterDbDto> recordsToInsert);
+        int GetDutyChartMasterCount();
+        List<DutyChartMasterDbDto> GetAllDutyChartMasterRecords();
+        #endregion
+
+        #region DutyDetails
+        void ReplaceDutyDetails(List<DutyDetailsDbDto> recordsToInsert);
+        int GetDutyDetailsCount();
+        List<DutyDetailsDbDto> GetAllDutyDetailsRecords();
+        #endregion
     }
 }

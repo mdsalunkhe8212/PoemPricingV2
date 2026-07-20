@@ -191,6 +191,28 @@ namespace POEMPricing.Controllers
                     return View("Summary", result);
                 }
 
+                if (model.MasterType == "DutyChartMaster")
+                {
+                    TempData["master"] = "Duty Chart Master";
+                    var manager = new DutyChartMasterImportManager();
+                    var result = manager.ValidateExcel(model.File);
+                    Session["ImportMasterType"] = model.MasterType;
+                    Session["DutyChartMasterImportData"] =
+                        JsonConvert.SerializeObject(result.ValidRecords);
+                    return View("Summary", result);
+                }
+
+                if (model.MasterType == "DutyDetails")
+                {
+                    TempData["master"] = "Duty Details";
+                    var manager = new DutyDetailsImportManager();
+                    var result = manager.ValidateExcel(model.File);
+                    Session["ImportMasterType"] = model.MasterType;
+                    Session["DutyDetailsImportData"] =
+                        JsonConvert.SerializeObject(result.ValidRecords);
+                    return View("Summary", result);
+                }
+
                 TempData["Error"] = "Invalid master type.";
 
                 return RedirectToAction("Index");
@@ -617,6 +639,48 @@ namespace POEMPricing.Controllers
 
                     return RedirectToAction("Upload");
                 }
+
+
+                //dutychart 
+                if (masterType == "DutyChartMaster")
+                {
+                    var sessionData = Session["DutyChartMasterImportData"];
+                    if (sessionData == null)
+                    {
+                        TempData["Error"] = "Session expired.";
+                        return RedirectToAction("Upload");
+                    }
+                    var rows = JsonConvert.DeserializeObject
+                        <List<DutyChartMasterRowDto>>(sessionData.ToString());
+                    var manager = new DutyChartMasterImportManager();
+                    var insertedCount = manager.ImportDutyChartMaster(rows);
+                    Session.Remove("DutyChartMasterImportData");
+                    Session.Remove("ImportMasterType");
+                    TempData["Success"] =
+                        insertedCount + " duty chart master records imported successfully.";
+                    return RedirectToAction("Upload");
+                }
+
+                //dutydetails
+                if (masterType == "DutyDetails")
+                {
+                    var sessionData = Session["DutyDetailsImportData"];
+                    if (sessionData == null)
+                    {
+                        TempData["Error"] = "Session expired.";
+                        return RedirectToAction("Upload");
+                    }
+                    var rows = JsonConvert.DeserializeObject
+                        <List<DutyDetailsImportRowDto>>(sessionData.ToString());
+                    var manager = new DutyDetailsImportManager();
+                    var insertedCount = manager.ImportDutyDetails(rows);
+                    Session.Remove("DutyDetailsImportData");
+                    Session.Remove("ImportMasterType");
+                    TempData["Success"] =
+                        insertedCount + " duty details records imported successfully.";
+                    return RedirectToAction("Upload");
+                }
+
 
                 // ← FIX: fallback for unmatched master type — was missing before,
                 // caused "not all code paths return a value" compiler error

@@ -178,6 +178,8 @@
     <Compile Include="Managers\CollectionDetailsImportManager.cs" />
     <Compile Include="Managers\CompanyMasterImportManager.cs" />
     <Compile Include="Managers\DiamondDetailsImportManager.cs" />
+    <Compile Include="Managers\DutyChartMasterImportManager.cs" />
+    <Compile Include="Managers\DutyDetailsImportManager.cs" />
     <Compile Include="Managers\EmailManager.cs" />
     <Compile Include="Managers\ExportManager.cs" />
     <Compile Include="Managers\FindingDetailsImportManager.cs" />
