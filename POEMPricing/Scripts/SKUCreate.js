@@ -740,7 +740,12 @@ $('#txtFindingSku').on('change', function () {
     loadFindingDetails($(this).val().trim());
 });
 
-
+$('#txtSemiMinWt').on('input', function () {
+    calculateTotals();
+}); 
+$('#txtCenterMinWt').on('input', function () {
+    calculateTotals();
+}); 
 
 $('#ddlLaborLocation').on('change', function () {
     //var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
@@ -901,12 +906,12 @@ function setProcessValues(data, ctrl, type) {
         //    cost = data.SilverCharges;
         //}
 
-        var totalGoldRate = metalLines.filter(s => s.metalType.toLowerCase() === "gold")
+        var totalGoldRate = metalLines.filter(s => s.metalText.toLowerCase() === "gold")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
 
-        var totalPlatinumRate = metalLines.filter(s => s.metalType.toLowerCase() === "platinum")
+        var totalPlatinumRate = metalLines.filter(s => s.metalText.toLowerCase() === "platinum")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
-        var totalSilverRate = metalLines.filter(s => s.metalType.toLowerCase() === "silver")
+        var totalSilverRate = metalLines.filter(s => s.metalText.toLowerCase() === "silver")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
 
         var chargesGold = (parseFloat(totalGoldRate) * cost).toFixed(2);
@@ -1940,11 +1945,10 @@ $('#btnStoneAddUpdate').on('click', function () {
         //totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
         //$('#txtSemiAdjWt').prop('disabled', false);
     }
-    $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(3));
-    $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(3));
-    $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(3));//added By Mahesh
-    $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(3));//added By Mahesh
-    calculateTotals();
+    //$('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(3));
+    //$('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(3));
+   
+   
     if (stoneEditIndex === -1) {
         // ADD
         stoneList.push(model);
@@ -1956,6 +1960,9 @@ $('#btnStoneAddUpdate').on('click', function () {
     }
 
     renderStoneTable();
+     $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(3));//added By Mahesh
+    $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(3));//added By Mahesh
+    calculateTotals();
     clearStoneControls();
     // $("#ddlStoneVendor").focus();
 });
@@ -1987,8 +1994,14 @@ function renderStoneTable() {
     });
     diamondtotalCentertax = 0.00;
     diamondtotalSemitax = 0.00;
-    //totalCenterSettingCost = 0.00;
-    //totalSemiSettingCost = 0.00;
+    totalCenterSettingCost = 0.00;
+    totalSemiSettingCost = 0.00;
+    totalCenterAdjWt = 0.00;
+    totalSemiAdjWt = 0.00;
+    totalCenterStoneCost = 0.00;
+    totalSemiStoneCost = 0.00;
+    totalCenterWt = 0.00;
+    totalSemiWt = 0.00;
     stoneList.forEach((s, i) => {
         totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
         if (s.SettingLocation === 'Center') {
@@ -2132,8 +2145,8 @@ function deleteStone(index) {
 
     }
     totalStoneQty = parseInt(totalStoneQty) - parseInt(stoneList[index].Qty);
-    $('#txtSemiMinWt').val(Number(totalSemiWt).toFixed(3));
-    $('#txtCenterMinWt').val(Number(totalCenterWt).toFixed(3));
+    //$('#txtSemiMinWt').val(Number(totalSemiWt).toFixed(3));
+    //$('#txtCenterMinWt').val(Number(totalCenterWt).toFixed(3));
 
     $('#txtSemiAdjWt').val(Number(totalSemiAdjWt).toFixed(3));//added By Mahesh
     $('#txtCenterAdjWt').val(Number(totalCenterAdjWt).toFixed(3));//added By Mahesh
@@ -2158,14 +2171,14 @@ function setStoneData(index) {
         setTimeout(function () {
             $('#ddlStoneQuality').val(data.StoneQuality).addClass('disabled').attr('disabled', true);
             $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat).addClass('disabled').attr('disabled', true);
-            $('#ddlSizeRange').val(data.SizeRange).addClass('disabled').attr('disabled', true); 
+            $('#ddlSizeRange').val(data.SizeRange);//.addClass('disabled').attr('disabled', true); 
 
         }, 800);
     }, 800);
     //$('#ddlStoneShape').val(data.Shape);
     // ShapeText usually not set manually (comes from dropdown)
 
-    $('#txtStoneMMSize').val(data.MMSize).addClass('disabled').attr('disabled', true);
+    $('#txtStoneMMSize').val(data.MMSize);//.addClass('disabled').attr('disabled', true);
     $('#txtStoneWidth1').val(data.Width1).addClass('disabled').attr('disabled', true);
     $('#txtStoneWidth2').val(data.Width2).addClass('disabled').attr('disabled', true);
 
@@ -2791,8 +2804,8 @@ function collectSkuInfo() {
  ************************************************************/
 function collectStoneInfo() {
     skuModule.stoneInfo = stoneList;
-    semiMinWt = totalSemiWt;
-    centerMinWt = totalCenterWt;
+    semiMinWt = $('#txtSemiMinWt').val(); //totalSemiWt;
+    centerMinWt = $('#txtCenterMinWt').val(); //totalCenterWt;
     SemiAdjWt = $('#txtSemiAdjWt').val();
     CenterAdjWt = $('#txtCenterAdjWt').val();
     skuModule.skuInfo.VendorProduct.semiMinWt = semiMinWt;
