@@ -503,26 +503,41 @@ namespace POEM.Services.Repository
             return marginDetails;
         }
 
-        public Task<decimal?> GetPerStoneWeight(string stoneType, string growingType, string stoneShape, string lengthDiameter)
+        public async Task<POEM.Model.Model.PerStoneWeightDto> GetPerStoneWeight(string stoneType, string growingType, string stoneShape, string lengthDiameter)
         {
             // normalize inputs if needed
             var ld = (lengthDiameter ?? string.Empty).Trim();
-            if(!decimal.TryParse(ld, out decimal ldValue))
+            if (!decimal.TryParse(ld, out decimal ldValue))
             {
-                return Task.FromResult<decimal?>(null);
+                return null;
             }
             var ldDecimal = ldValue;
-            var result = _context.DiamondDetails
+
+            var record = await _context.DiamondDetails
                 .AsNoTracking()
                 .Where(dd =>
                     dd.StoneType == stoneType &&
                     dd.GrowingType == growingType &&
                     dd.StoneShape == stoneShape &&
                     dd.LengthDiameter == ldDecimal)
-                .Select(dd => (decimal?)dd.PerStoneWeight) // cast to nullable if column can be null
+                .Select(dd => new
+                {
+                    dd.PerStoneWeight,
+                    dd.Width1,
+                    dd.Width2,
+                    dd.SizeRange
+                })
                 .FirstOrDefaultAsync();
-            return result;
 
+            if (record == null) return null;
+
+            return new POEM.Model.Model.PerStoneWeightDto
+            {
+                PerStoneWeight = record.PerStoneWeight,
+                Width1 = record.Width1,
+                Width2 = record.Width2,
+                SizeRange = record.SizeRange
+            };
         }
         public Task<decimal?> GetStoneLengthDiameter(string vendor, string stoneType, string growingType, string stoneShape, string sizeRange)
         {

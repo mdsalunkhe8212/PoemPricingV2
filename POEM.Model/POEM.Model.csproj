@@ -101,6 +101,7 @@
     <Compile Include="Model\MarginDetailsDbDto.cs" />
     <Compile Include="Model\MarginDetailsDto.cs" />
     <Compile Include="Model\MetalRateMasterDto.cs" />
+    <Compile Include="Model\PerStoneWeightDto.cs" />
     <Compile Include="Model\ProcessCostingDetails.cs" />
     <Compile Include="Model\CollectionDtl.cs" />
     <Compile Include="Model\DiamondDetail.cs" />

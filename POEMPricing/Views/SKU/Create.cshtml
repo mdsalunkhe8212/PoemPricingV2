@@ -94,7 +94,7 @@
 
                             <div class="col-sm-4 col-md-3">
                                 <label for="txtSKUNumber" class="form-label">SKU Number</label>
-                                <input type="text" class="form-control" id="txtSKUNumber" placeholder="">
+                                <input type="text" class="form-control text-start" id="txtSKUNumber" placeholder="">
                             </div>
                             <div class="col-sm-4 col-md-3">
                                 @Html.LabelFor(m => m.SelectedCollection, "Collection", new { @class = "form-label" })
@@ -550,7 +550,7 @@
                             <th>MM Size</th>
                             <th>Per stone Wt</th>
                             <th>Qty</th>
-                            <th>Total Stone Wt</th>
+                            <th class="d-none">Total Stone Wt</th>
                             <th>Total Adj Stone Wt</th>
                             <th>Setting Vendor</th>
                             <th>Total Cost </th>

@@ -277,7 +277,14 @@ namespace POEMPricing.API
             if (weight == null)
                 return NotFound();
 
-            return Ok(new { perStoneWeight = weight });
+            // Return a flat JSON object with individual fields expected by the client
+            return Ok(new
+            {
+                perStoneWeight = weight.PerStoneWeight,
+                width1 = weight.Width1,
+                width2 = weight.Width2,
+                sizeRange = weight.SizeRange
+            });
         }
 
         // GET api/sku/stonecostpercarat?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
