@@ -740,7 +740,12 @@ $('#txtFindingSku').on('change', function () {
     loadFindingDetails($(this).val().trim());
 });
 
-
+$('#txtSemiMinWt').on('input', function () {
+    calculateTotals();
+}); 
+$('#txtCenterMinWt').on('input', function () {
+    calculateTotals();
+}); 
 
 $('#ddlLaborLocation').on('change', function () {
     //var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
@@ -901,12 +906,12 @@ function setProcessValues(data, ctrl, type) {
         //    cost = data.SilverCharges;
         //}
 
-        var totalGoldRate = metalLines.filter(s => s.metalType.toLowerCase() === "gold")
+        var totalGoldRate = metalLines.filter(s => s.metalText.toLowerCase() === "gold")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
 
-        var totalPlatinumRate = metalLines.filter(s => s.metalType.toLowerCase() === "platinum")
+        var totalPlatinumRate = metalLines.filter(s => s.metalText.toLowerCase() === "platinum")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
-        var totalSilverRate = metalLines.filter(s => s.metalType.toLowerCase() === "silver")
+        var totalSilverRate = metalLines.filter(s => s.metalText.toLowerCase() === "silver")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
 
         var chargesGold = (parseFloat(totalGoldRate) * cost).toFixed(2);
@@ -1512,6 +1517,7 @@ function parseValOrText($el) {
 
 
 $ddlSizeRange.on('change', function () {
+    return;
      const stoneType = $stoneType.val();
     const growingType = $growingType.val();
     const stoneShape = $stoneShape.find('option:selected').text() || '';
@@ -1806,6 +1812,16 @@ recalcTotal();
  ************************************************************/
 function loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter) {
     var errormsg = "Per Stone Wt not found for given size.";
+    // If lengthDiameter is not provided or shorter than 4 characters, reset dependent fields and skip API call
+    var ld = lengthDiameter ? lengthDiameter.toString().trim() : '';
+    if (!ld || ld.length < 4) {
+        $('#txtStoneWidth1').val('');
+        $('#txtStoneWidth2').val('');
+        $('#txtPerStoneWt').val('');
+        $('#txtStoneTotalCost').val('');
+        $('#ddlSizeRange').val('');
+        return;
+    }
     $.ajax({
         url: webRoot + '/api/sku/perstoneweight',
         method: 'GET',
@@ -1820,6 +1836,26 @@ function loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter) 
                 $('#txtPerStoneWt').val(Number(res.perStoneWeight).toFixed(3));
             } else {
                 $('#txtPerStoneWt').val('');
+            }
+
+            // Also update Width1, Width2 and SizeRange when API provides them (do not trigger change events)
+            if (res && res.width1 !== undefined && res.width1 !== null) {
+                $('#txtStoneWidth1').val(res.width1);
+            } else {
+                $('#txtStoneWidth1').val('');
+            }
+
+            if (res && res.width2 !== undefined && res.width2 !== null) {
+                $('#txtStoneWidth2').val(res.width2);
+            } else {
+                $('#txtStoneWidth2').val('');
+            }
+
+            if (res && res.sizeRange !== undefined && res.sizeRange !== null) {
+                // set dropdown value without triggering change
+                $('#ddlSizeRange').val(res.sizeRange);
+            } else {
+                $('#ddlSizeRange').val('');
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -1940,11 +1976,10 @@ $('#btnStoneAddUpdate').on('click', function () {
         //totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
         //$('#txtSemiAdjWt').prop('disabled', false);
     }
-    $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(3));
-    $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(3));
-    $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(3));//added By Mahesh
-    $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(3));//added By Mahesh
-    calculateTotals();
+    //$('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(3));
+    //$('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(3));
+   
+   
     if (stoneEditIndex === -1) {
         // ADD
         stoneList.push(model);
@@ -1956,6 +1991,9 @@ $('#btnStoneAddUpdate').on('click', function () {
     }
 
     renderStoneTable();
+     $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(3));//added By Mahesh
+    $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(3));//added By Mahesh
+    calculateTotals();
     clearStoneControls();
     // $("#ddlStoneVendor").focus();
 });
@@ -1987,12 +2025,18 @@ function renderStoneTable() {
     });
     diamondtotalCentertax = 0.00;
     diamondtotalSemitax = 0.00;
-    //totalCenterSettingCost = 0.00;
-    //totalSemiSettingCost = 0.00;
+    totalCenterSettingCost = 0.00;
+    totalSemiSettingCost = 0.00;
+    totalCenterAdjWt = 0.00;
+    totalSemiAdjWt = 0.00;
+    totalCenterStoneCost = 0.00;
+    totalSemiStoneCost = 0.00;
+    totalCenterWt = 0.00;
+    totalSemiWt = 0.00;
     stoneList.forEach((s, i) => {
         totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
         if (s.SettingLocation === 'Center') {
-            $('#txtCenterAdjWt').prop('disabled', false);
+            $('#txtCenterAdjWt').prop('disabled', true  );
             totalCenterStoneCost += parseFloat(s.StoneTotalCost) || 0;
             totalCenterWt += parseFloat(s.TotalStoneWt) || 0;
             totalCenterSettingCost += parseFloat(s.TotalCost) || 0;
@@ -2000,7 +2044,7 @@ function renderStoneTable() {
             diamondtotalCentertax += (parseFloat(s.StoneDutyVal) + parseFloat(s.StonePenaltyVal) + parseFloat(s.StoneTariffVal));
             //totalCenterSettingCost += s.TotalCost;
         }else{
-            $('#txtSemiAdjWt').prop('disabled', false);
+            $('#txtSemiAdjWt').prop('disabled', true);
             totalSemiStoneCost += parseFloat(s.StoneTotalCost) || 0;
             totalSemiWt += parseFloat(s.TotalStoneWt) || 0;
             totalSemiSettingCost += parseFloat(s.TotalCost) || 0;
@@ -2016,7 +2060,7 @@ function renderStoneTable() {
                 <td class="text-center">${s.MMSize}</td>
                 <td class="text-center">${s.PerStoneWt}</td>
                 <td class="text-center">${s.Qty}</td>
-                <td class="text-center">${s.TotalStoneWt}</td>
+                <td class="text-center d-none">${s.TotalStoneWt}</td>
                 <td class="text-center">${s.TotalAdjStoneWt}</td>
                 <td>${s.SettingVendor}</td>
                 <td class="text-center">$${(parseFloat(s.TotalCost) + parseFloat(s.StoneTotalCost))}</td>
@@ -2039,7 +2083,7 @@ function renderStoneTable() {
                 <td></td>
                                 <td></td>
                 <td class="text-center">${totalStoneQty}</td>
-                <td class="text-center">${totalTotalStoneWt.toFixed(3)}</td>
+                <td class="text-center d-none">${totalTotalStoneWt.toFixed(3)}</td>
                 <td class="text-center">${totalTotalAdjStoneWt.toFixed(3)}</td>
                 <td></td>
                 <td class="text-center">$${totalCosttotal.toFixed(2)}</td>
@@ -2132,8 +2176,8 @@ function deleteStone(index) {
 
     }
     totalStoneQty = parseInt(totalStoneQty) - parseInt(stoneList[index].Qty);
-    $('#txtSemiMinWt').val(Number(totalSemiWt).toFixed(3));
-    $('#txtCenterMinWt').val(Number(totalCenterWt).toFixed(3));
+    //$('#txtSemiMinWt').val(Number(totalSemiWt).toFixed(3));
+    //$('#txtCenterMinWt').val(Number(totalCenterWt).toFixed(3));
 
     $('#txtSemiAdjWt').val(Number(totalSemiAdjWt).toFixed(3));//added By Mahesh
     $('#txtCenterAdjWt').val(Number(totalCenterAdjWt).toFixed(3));//added By Mahesh
@@ -2158,14 +2202,14 @@ function setStoneData(index) {
         setTimeout(function () {
             $('#ddlStoneQuality').val(data.StoneQuality).addClass('disabled').attr('disabled', true);
             $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat).addClass('disabled').attr('disabled', true);
-            $('#ddlSizeRange').val(data.SizeRange).addClass('disabled').attr('disabled', true); 
+            $('#ddlSizeRange').val(data.SizeRange);//.addClass('disabled').attr('disabled', true); 
 
         }, 800);
     }, 800);
     //$('#ddlStoneShape').val(data.Shape);
     // ShapeText usually not set manually (comes from dropdown)
 
-    $('#txtStoneMMSize').val(data.MMSize).addClass('disabled').attr('disabled', true);
+    $('#txtStoneMMSize').val(data.MMSize);//.addClass('disabled').attr('disabled', true);
     $('#txtStoneWidth1').val(data.Width1).addClass('disabled').attr('disabled', true);
     $('#txtStoneWidth2').val(data.Width2).addClass('disabled').attr('disabled', true);
 
@@ -2425,20 +2469,21 @@ function fillLaborFOBValues() {
 
 
 
-    skuModule.calculations.semiFOB = semiFOB.toFixed(0);
-    skuModule.calculations.completeFOB = completeFOB.toFixed(0);
+    skuModule.calculations.semiFOB = parseFloat(semiFOB).toFixed(2);
+    skuModule.calculations.completeFOB = parseFloat(completeFOB).toFixed(2);
 
-    skuModule.calculations.landedcost = landedcost.toFixed(0);
-    skuModule.calculations.landedcostCenter = landedcostCenter.toFixed(0);
+    skuModule.calculations.landedcost = parseFloat(landedcost).toFixed(2);
+    skuModule.calculations.landedcostCenter = parseFloat(landedcostCenter).toFixed(2);
 
-    skuModule.calculations.semiPrice1 = semiPrice1.toFixed(0);
-    skuModule.calculations.semiPrice2 = semiPrice2.toFixed(0);
-    skuModule.calculations.semiPrice3 = semiPrice3.toFixed(0);
-    skuModule.calculations.semiPrice4 = semiPrice4.toFixed(0);
-    skuModule.calculations.centerPrice1 = centerPrice1.toFixed(0);
-    skuModule.calculations.centerPrice2 = centerPrice2.toFixed(0);
-    skuModule.calculations.centerPrice3 = centerPrice3.toFixed(0);
-    skuModule.calculations.centerPrice4 = centerPrice4.toFixed(0);
+    // Prices: round up to whole numbers (no decimals)
+    skuModule.calculations.semiPrice1 = (Math.ceil(semiPrice1)).toFixed(0);
+    skuModule.calculations.semiPrice2 = (Math.ceil(semiPrice2)).toFixed(0);
+    skuModule.calculations.semiPrice3 = (Math.ceil(semiPrice3)).toFixed(0);
+    skuModule.calculations.semiPrice4 = (Math.ceil(semiPrice4)).toFixed(0);
+    skuModule.calculations.centerPrice1 = (Math.ceil(centerPrice1)).toFixed(0);
+    skuModule.calculations.centerPrice2 = (Math.ceil(centerPrice2)).toFixed(0);
+    skuModule.calculations.centerPrice3 = (Math.ceil(centerPrice3)).toFixed(0);
+    skuModule.calculations.centerPrice4 = (Math.ceil(centerPrice4)).toFixed(0);
     skuModule.calculations.semiMargin1 = semiMargin1.toFixed(0);
     skuModule.calculations.semiMargin2 = semiMargin2.toFixed(0);
     skuModule.calculations.semiMargin3 = semiMargin3.toFixed(0);
@@ -2476,28 +2521,28 @@ function fillLaborFOBValues() {
     const txtLandedCostComplete = document.getElementById("txtLandedCostComplete");
 
 
-    if (txtSemiFOB) txtSemiFOB.value = semiFOB.toFixed(0);
-    if (txtCompleteFOB) txtCompleteFOB.value = completeFOB.toFixed(0);
-    if (txtSemiDuty) txtSemiDuty.value =parseFloat( semiDuty).toFixed(0);
-    if (txtCompleteDuty) txtCompleteDuty.value = centerDuty.toFixed(0);
-    if (txtPrice1) txtPrice1.value = semiPrice1.toFixed(0);
-    if (txtPrice2) txtPrice2.value = semiPrice2.toFixed(0);
-    if (txtPrice3) txtPrice3.value = semiPrice3.toFixed(0);
-    if (txtPrice4) txtPrice4.value = semiPrice4.toFixed(0);
+    if (txtSemiFOB) txtSemiFOB.value = parseFloat(semiFOB).toFixed(2);
+    if (txtCompleteFOB) txtCompleteFOB.value = parseFloat(completeFOB).toFixed(2);
+    if (txtSemiDuty) txtSemiDuty.value = parseFloat(semiDuty).toFixed(2);
+    if (txtCompleteDuty) txtCompleteDuty.value = parseFloat(centerDuty).toFixed(2);
+    if (txtPrice1) txtPrice1.value = Math.ceil(parseFloat(semiPrice1 || 0));
+    if (txtPrice2) txtPrice2.value = Math.ceil(parseFloat(semiPrice2 || 0));
+    if (txtPrice3) txtPrice3.value = Math.ceil(parseFloat(semiPrice3 || 0));
+    if (txtPrice4) txtPrice4.value = Math.ceil(parseFloat(semiPrice4 || 0));
     if (txtMargin1) txtMargin1.value = semiMargin1.toFixed(0);
     if (txtMargin2) txtMargin2.value = semiMargin2.toFixed(0);
     if (txtMargin3) txtMargin3.value = semiMargin3.toFixed(0);
     if (txtMargin4) txtMargin4.value = semiMargin4.toFixed(0);
-    if (txtCompletePrice1) txtCompletePrice1.value = centerPrice1.toFixed(0);
-    if (txtCompletePrice2) txtCompletePrice2.value = centerPrice2.toFixed(0);
-    if (txtCompletePrice3) txtCompletePrice3.value = centerPrice3.toFixed(0);
-    if (txtCompletePrice4) txtCompletePrice4.value = centerPrice4.toFixed(0);
+    if (txtCompletePrice1) txtCompletePrice1.value = Math.ceil(parseFloat(centerPrice1 || 0));
+    if (txtCompletePrice2) txtCompletePrice2.value = Math.ceil(parseFloat(centerPrice2 || 0));
+    if (txtCompletePrice3) txtCompletePrice3.value = Math.ceil(parseFloat(centerPrice3 || 0));
+    if (txtCompletePrice4) txtCompletePrice4.value = Math.ceil(parseFloat(centerPrice4 || 0));
     if (txtCompleteMargin1) txtCompleteMargin1.value = centerMargin1.toFixed(0);
     if (txtCompleteMargin2) txtCompleteMargin2.value = centerMargin2.toFixed(0);
     if (txtCompleteMargin3) txtCompleteMargin3.value = centerMargin3.toFixed(0);
     if (txtCompleteMargin4) txtCompleteMargin4.value = centerMargin4.toFixed(0);
-    if (txtLandedCost) txtLandedCost.value = landedcost.toFixed(0);
-    if (txtLandedCostComplete) txtLandedCostComplete.value = landedcostCenter.toFixed(0);
+    if (txtLandedCost) txtLandedCost.value = parseFloat(landedcost).toFixed(2);
+    if (txtLandedCostComplete) txtLandedCostComplete.value = parseFloat(landedcostCenter).toFixed(2);
 
 }
 
@@ -2791,8 +2836,8 @@ function collectSkuInfo() {
  ************************************************************/
 function collectStoneInfo() {
     skuModule.stoneInfo = stoneList;
-    semiMinWt = totalSemiWt;
-    centerMinWt = totalCenterWt;
+    semiMinWt = $('#txtSemiMinWt').val(); //totalSemiWt;
+    centerMinWt = $('#txtCenterMinWt').val(); //totalCenterWt;
     SemiAdjWt = $('#txtSemiAdjWt').val();
     CenterAdjWt = $('#txtCenterAdjWt').val();
     skuModule.skuInfo.VendorProduct.semiMinWt = semiMinWt;
@@ -2990,10 +3035,10 @@ function loadSummaryFromSkuModel(skuModel) {
 
 
 
-    // Prices (from laborInfo)
-    setLabel("lblPrice1Value", '$ ' + parseFloat(labor.Price1).toFixed(0));
-    setLabel("lblPrice2Value", '$ ' + parseFloat(labor.Price2).toFixed(0));
-    setLabel("lblPrice3Value", '$ ' + parseFloat(labor.Price3).toFixed(0));
+    // Prices (from laborInfo) - display as rounded up whole numbers with $ prefix
+    setLabel("lblPrice1Value", '$ ' + Math.ceil(parseFloat(labor.Price1 || 0)));
+    setLabel("lblPrice2Value", '$ ' + Math.ceil(parseFloat(labor.Price2 || 0)));
+    setLabel("lblPrice3Value", '$ ' + Math.ceil(parseFloat(labor.Price3 || 0)));
 }
 
 /************************************************************
@@ -3033,7 +3078,7 @@ const debouncedLoadPerStoneWeight = debounce(function () {
     const growingType = $('#ddlGrowing').val();
     const stoneShape = $('#ddlStoneShape option:selected').text().trim();
     const lengthDiameter = $('#txtStoneMMSize').val();
-
+    
     if (stoneType && growingType && stoneShape && lengthDiameter) {
         loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter);
     }
@@ -3299,9 +3344,10 @@ function bindSummaryData(skuModel) {
     setLabel("lblSemiStoneQualityValue", stones.StoneQuality);
     setLabel("lblCenterStoneQualityValue", stones.CenterStoneQuality || "");
 
-    setLabel("lblPrice1Value", labor.Price1);
-    setLabel("lblPrice2Value", labor.Price2);
-    setLabel("lblPrice3Value", labor.Price3);
+    // Bind summary labels: rounded up whole numbers (no decimals)
+    setLabel("lblPrice1Value", '$ ' + Math.ceil(parseFloat(labor.Price1 || 0)));
+    setLabel("lblPrice2Value", '$ ' + Math.ceil(parseFloat(labor.Price2 || 0)));
+    setLabel("lblPrice3Value", '$ ' + Math.ceil(parseFloat(labor.Price3 || 0)));
 }
 // Helper: Base64 encode
 function encryptSku(value) {
