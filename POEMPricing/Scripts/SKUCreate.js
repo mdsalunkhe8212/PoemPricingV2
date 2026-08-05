@@ -824,6 +824,20 @@ $('#ddlProcessType').on('change', function () {
             }
             setProcessValues(data, 'txtRhodium', type);
         });
+        var ptype = encodeURIComponent('Laser Stamping');
+        type = 'Stamping';
+        url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + ptype +'/' + category;
+        $.getJSON(url, function (data) {
+            if (!data) {
+                data = {
+                    GoldCharges: 0,
+                    PlatinumCharges: 0,
+                    SilverCharges: 0,
+                }
+
+            }
+            setProcessValues(data, 'txtStamping', type);
+        });
     }
 
     //calculateTotalLabor();
@@ -831,7 +845,7 @@ $('#ddlProcessType').on('change', function () {
 
 function setProcessValues(data, ctrl, type) {
     type = decodeURI(type);
-    if (type === 'CFP' || type === 'Rhodium') {
+    if (type === 'CFP' || type === 'Rhodium' || type === 'Stamping') {
         if (metalLines[0].metalText === 'Gold') {
             $('#' + ctrl).val(data.GoldCharges);
         }
@@ -949,9 +963,13 @@ function setProcessValues(data, ctrl, type) {
     if (el) {
         el.addEventListener("change", function () {
             var ctrl = this.id
-            var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
+            var vendorlist = $('#ddlLaborLocation').val().split('|');
+            var vendor = encodeURIComponent(vendorlist[0]);
+            // var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
             var type = encodeURIComponent($(this).val().trim());
-            var category = encodeURIComponent($('#' + ctrl + '  option:selected').text().trim());
+            // var category = encodeURIComponent($('#' + ctrl + '  option:selected').text().trim());
+            var category = encodeURIComponent($('#ddlCategory  option:selected').text().trim());
+
             var url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + type + '/' + category;
             if (category.trim().length > 0) {
                 $.getJSON(url, function (data) {
@@ -2070,7 +2088,7 @@ function renderStoneTable() {
                 </td>
             </tr>
         `;
-        totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
+       // totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
         totalTotalStoneWt = parseFloat(totalTotalStoneWt) + parseFloat(s.TotalStoneWt);
         totalTotalAdjStoneWt = parseFloat(totalTotalAdjStoneWt) + parseFloat(s.TotalAdjStoneWt);
         totalCosttotal = parseFloat(totalCosttotal) + parseFloat(s.TotalCost) + parseFloat(s.StoneTotalCost);
@@ -3794,3 +3812,86 @@ function getTaxDetails(taxtype, location='') {
         return returndata;
     });
 }
+
+$(function () {
+    // adjust selectors to match your actual element IDs/classes
+    var $semiMin = $('#SemiMinWt');
+    var $semiAdj = $('#SemiAdjWt');
+    var $centreMin = $('#CentreMinWt');
+    var $centreAdj = $('#CentreAdjWt');
+
+    if ($semiMin.length) {
+        $semiMin.on('input change', function () {
+            $semiAdj.trigger('change');
+        });
+    }
+
+    if ($centreMin.length) {
+        $centreMin.on('input change', function () {
+            $centreAdj.trigger('change');
+        });
+    }
+});
+
+
+$(function () {
+    // replace '#Shape' and the field IDs below with your actual selectors
+    $('#ddlStoneShape').on('change', function () {
+        var fieldsToClear = [
+            '#SizeRange',
+            '#SizeFrom',
+            '#SizeTo',
+            '#MinWt',
+            '#MaxWt',
+            '#SemiMinWt',
+            '#SemiAdjWt',
+            '#CentreMinWt',
+            '#CentreAdjWt',
+            '#LabourCost',
+            '#TotalCost'
+        ];
+
+        fieldsToClear.forEach(function (sel) {
+            var $el = $(sel);
+            if (!$el.length) return;
+            if ($el.is(':checkbox') || $el.is(':radio')) {
+                $el.prop('checked', false);
+            } else {
+                $el.val('');
+            }
+           // $el.trigger('change'); // propagate change in case other logic depends on it
+        });
+    });
+
+
+    $('#ddlProcessType').on('change', function () {
+        var fieldsToClear = [
+            '#txtCFP',
+            '#txtRhodium',
+            '#txtDiaHandling',
+            '#txtFinHandling',
+            '#txtStamping',
+            '#txtModel',
+            '#txtCAM',
+            '#txtGiftBox',
+            '#txtTotalLabor',
+            '#ddlOtherHead1',
+            '#ddlOtherHead2',
+            '#ddlOtherHead3',
+            '#txtOtherCost1',
+            '#txtOtherCost2',
+            '#txtOtherCost3'
+        ];
+
+        fieldsToClear.forEach(function (sel) {
+            var $el = $(sel);
+            if (!$el.length) return;
+            if ($el.is(':checkbox') || $el.is(':radio')) {
+                $el.prop('checked', false);
+            } else {
+                $el.val('');
+            }
+            // $el.trigger('change'); // propagate change in case other logic depends on it
+        });
+    });
+});

@@ -506,7 +506,7 @@ namespace POEM.Services.Repository
                                select new SkuListItemDto
                                {
                                    Sku = sku.SKUNumber,
-                                   Top1Metal = metal.KaratId + "K "+ metal.ColorText+" " + metal.MetalText ,
+                                   Top1Metal = metal.KaratText+" "+ metal.ColorText+" " + metal.MetalText ,
                                    Price1 = labor.Price1 ?? 0.00m,
                                    Price2 = labor.Price2 ?? 0.00m,
                                    Price3 = labor.Price3 ?? 0.00m,

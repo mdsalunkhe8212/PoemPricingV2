@@ -64,8 +64,8 @@ namespace POEM.Model.Model
         public bool FindingPenalty { get; set; }
 
         // SQL type is BIT
-       
-        public bool CreatedBy { get; set; }
+
+        public long CreatedBy { get; set; }
 
        
         public DateTime CreatedOn { get; set; }
