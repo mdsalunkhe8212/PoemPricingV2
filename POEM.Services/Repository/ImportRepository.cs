@@ -615,5 +615,76 @@ namespace POEM.Services.Repository
         }
         #endregion
 
+        #region DutyChartMaster
+        public void ReplaceDutyChartMaster(List<DutyChartMasterDbDto> recordsToInsert)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    // Delete ALL existing records first
+                    var existing = _context.DutyChartMaster.ToList();
+                    _context.DutyChartMaster.RemoveRange(existing);
+
+                    // Insert all new records from Excel
+                    _context.DutyChartMaster.AddRange(recordsToInsert);
+
+                    _context.SaveChanges(); // ← delete + insert in single transaction
+                    transaction.Commit();   // ← commits only if both succeed
+                }
+                catch
+                {
+                    transaction.Rollback(); // ← if insert fails, delete is also rolled back
+                    throw;
+                }
+            }
+        }
+
+        public int GetDutyChartMasterCount()
+        {
+            return _context.DutyChartMaster.Count();
+        }
+
+        public List<DutyChartMasterDbDto> GetAllDutyChartMasterRecords()
+        {
+            return _context.DutyChartMaster.ToList();
+        }
+        #endregion
+
+        #region DutyDetails
+        public void ReplaceDutyDetails(List<DutyDetailsDbDto> recordsToInsert)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    // Delete ALL existing records
+                    var existing = _context.DutyDetails.ToList();
+                    _context.DutyDetails.RemoveRange(existing);
+
+                    // Insert all new records from Excel
+                    _context.DutyDetails.AddRange(recordsToInsert);
+
+                    _context.SaveChanges(); // ← delete + insert in single transaction
+                    transaction.Commit();   // ← commits only if both succeed
+                }
+                catch
+                {
+                    transaction.Rollback(); // ← if insert fails, delete rolled back too
+                    throw;
+                }
+            }
+        }
+
+        public int GetDutyDetailsCount()
+        {
+            return _context.DutyDetails.Count();
+        }
+
+        public List<DutyDetailsDbDto> GetAllDutyDetailsRecords()
+        {
+            return _context.DutyDetails.ToList();
+        }
+        #endregion
     }
 }

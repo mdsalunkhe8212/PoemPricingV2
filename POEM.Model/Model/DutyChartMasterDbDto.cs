@@ -30,7 +30,7 @@ namespace POEM.Model.Model
         public long CreatedBy { get; set; }
 
        
-        public DateTime CreatedOn { get; set; }
+        //public DateTime CreatedOn { get; set; }
 
         public long? ModifiedBy { get; set; }
 

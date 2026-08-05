@@ -13,6 +13,15 @@
 }
 
 @{
+
+    //new code
+    var master = TempData["master"]?.ToString();
+
+    bool isReplaceImport =
+        master == "Duty Chart Master" ||
+        master == "Duty Details";
+    //
+
     ViewBag.Title = "Import Summary";
 
     object firstItem = null;
@@ -237,42 +246,150 @@
             </div>
 
             @* NEW RECORDS TABLE *@
+
             @if (Model.NewRecords != null && Model.NewRecords.Count > 0)
+
             {
-                <div class="card mb-4 border-success">
-                    <div class="card-header bg-success text-white">
-                        New Records — Will Be Inserted
-                        <small class="ms-2 fw-normal">(new records not in DB)</small>
-                    </div>
-                    <div class="card-body custom-scroll-grid">
-                        <div class="pg-wrap" id="pg-top-new"></div>
-                        <table class="table table-bordered table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    @foreach (var prop in properties)
-                                    {
-                                        <th>@prop.Name</th>
-                                    }
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tb-new">
-                                @foreach (var item in Model.NewRecords)
-                                {
+
+                if (isReplaceImport)
+                {
+                    <div class="card mb-4 border-info">
+
+                        <div class="card mb-4 border-info">
+                            <div class="card-header bg-info text-dark">
+                                These records will replace the existing database records.
+                                <small class="ms-2 fw-normal">(existing data will be deleted before insert)</small>
+                            </div>
+                        </div>
+
+                        <div class="card-body custom-scroll-grid">
+
+                            <div class="pg-wrap" id="pg-top-new"></div>
+
+                            <table class="table table-bordered table-striped">
+
+                                <thead class="table-dark">
+
                                     <tr>
+
                                         @foreach (var prop in properties)
+
                                         {
-                                            <td>@prop.GetValue(item)</td>
+
+                                            <th>@prop.Name</th>
+
                                         }
-                                        <td class="text-success fw-bold">New Record</td>
+
+
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                        <div class="pg-wrap" id="pg-bot-new"></div>
+
+                                </thead>
+
+                                <tbody id="tb-new">
+
+                                    @foreach (var item in Model.NewRecords)
+
+                                    {
+
+                                        <tr>
+
+                                            @foreach (var prop in properties)
+
+                                            {
+
+                                                <td>@(prop.GetValue(item) is bool b ? (b ? 1 : 0) : prop.GetValue(item))</td>
+
+                                            }
+
+
+                                        </tr>
+
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                            <div class="pg-wrap" id="pg-bot-new"></div>
+
+                        </div>
+
                     </div>
-                </div>
+                }
+
+                else
+                {
+                    <div class="card mb-4 border-success">
+
+                        <div class="card-header bg-success text-white">
+
+                            New Records — Will Be Inserted
+
+                            <small class="ms-2 fw-normal">(new records not in DB)</small>
+
+                        </div>
+
+                        <div class="card-body custom-scroll-grid">
+
+                            <div class="pg-wrap" id="pg-top-new"></div>
+
+                            <table class="table table-bordered table-striped">
+
+                                <thead class="table-dark">
+
+                                    <tr>
+
+                                        @foreach (var prop in properties)
+
+                                        {
+
+                                            <th>@prop.Name</th>
+
+                                        }
+
+                                        <th>Status</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="tb-new">
+
+                                    @foreach (var item in Model.NewRecords)
+
+                                    {
+
+                                        <tr>
+
+                                            @foreach (var prop in properties)
+
+                                            {
+
+                                                <td>@prop.GetValue(item)</td>
+
+                                            }
+
+                                            <td class="text-success fw-bold">New Record</td>
+
+                                        </tr>
+
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                            <div class="pg-wrap" id="pg-bot-new"></div>
+
+                        </div>
+
+                    </div>
+                }
+
             }
+
+
+
 
             @* EXISTING IN DB TABLE *@
             @if (Model.ExistingInDbRecords != null && Model.ExistingInDbRecords.Count > 0)
@@ -392,10 +509,10 @@
             {
                 <div class="alert alert-success">
                     <h5 class="mb-3">Records are ready for import.</h5>
-                    <p class="mb-3 text-muted">
+                    @*<p class="mb-3 text-muted">
                         <strong>@Model.NewRows</strong> new records will be inserted.
                         <strong>@Model.ExistingInDbRows</strong> existing records will be replaced.
-                    </p>
+                    </p>*@
                     <form id="confirmForm" method="post" action="@Url.Action("ConfirmImport", "Import")">
                         <button type="button" class="btn btn-success"
                                 data-bs-toggle="modal" data-bs-target="#confirmImportModal">
