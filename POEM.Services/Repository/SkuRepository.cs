@@ -630,50 +630,98 @@ namespace POEM.Services.Repository
 
                 }).ToList();
 
-            // 4. Stones
-            var stones = _context.SKUStoneDetails
-                .Where(st => st.SKUId == skuEntity.SKUId)
-                .Select(st => new StoneDto
-                {
-                    StoneVendor = st.StoneVendor,
-                    StoneVendorCode = st.StoneVendorCode,
-                    StoneType = st.StoneType,
-                    ShapeText = st.ShapeText,
-                    SizeRange=st.SizeRange,
-                    Qty = st.StoneQty.ToString(),
-                    SemiMinWt = st.SemiMinWt.ToString(),
-                    CenterMinWt = st.CenterMinWt.ToString(),
-                    TotalMinWt = st.TotalMinWt.ToString(),
-                    StoneQuality = st.StoneQuality,
-                    StoneTotalCost = st.StoneTotalCost.ToString(),
-                    SettingLocation = st.SettingLocation,
-                    PerStoneWt = st.PerStoneWt.ToString(),
-                    TotalStoneWt = st.TotalStoneWt.ToString(),
-                    TotalAdjWt = st.TotalAdjWt.ToString(),
-                    TotalAdjStoneWt = st.TotalAdjStoneWt.ToString(),
-                    Growing = st.Growing,
-                    Shape = st.StoneShape,
-                    StoneCostPerCarat = st.StoneCostPerCarat.ToString(),
-                    TotalCost = st.SettingTotalCost.ToString(),
-                    SettingType = st.StoneSettingType,
-                    SettingTypeCode = st.StoneSettingTypeCode,
-                    SettingVendor = st.StoneSettingVendor,
-                    SettingVendorCode=st.StoneSettingVendorCode,
-                    CostPerStone = st.CostPerStone.ToString(),
-                    SemiAdjWt = st.SemiAdjWt.ToString(),
-                    MMSize = st.StoneMMSize,
-                    Width1 = st.StoneWidth1,
-                    Width2 = st.StoneWidth2,
-                    CenterAdjWt = st.CenterAdjWt.ToString(),
-                    Lab = st.Lab,
-                    StoneDutyVal = st.StoneDutyVal,
-                    StonePenaltyVal = st.StonePenaltyVal,
-                    StoneTariffVal = st.StoneTariffVal,
-                    SettingDutyVal  = st.SettingDutyVal,
-                    SettingPenaltyVal = st.SettingPenaltyVal,
-                    SettingTariffVal = st.SettingTariffVal
-                }).ToList();
-
+            //// 4. Stones
+            //var stones = _context.SKUStoneDetails
+            //    .Where(st => st.SKUId == skuEntity.SKUId)
+            //    .Select(st => new StoneDto
+            //    {
+            //        StoneVendor = st.StoneVendor,
+            //        StoneVendorCode = st.StoneVendorCode,
+            //        StoneType = st.StoneType,
+            //        ShapeText = st.ShapeText,
+            //        SizeRange=st.SizeRange,
+            //        Qty = st.StoneQty.ToString(),
+            //        SemiMinWt = st.SemiMinWt.ToString(),
+            //        CenterMinWt = st.CenterMinWt.ToString(),
+            //        TotalMinWt = st.TotalMinWt.ToString(),
+            //        StoneQuality = st.StoneQuality,
+            //        StoneTotalCost = st.StoneTotalCost.ToString(),
+            //        SettingLocation = st.SettingLocation,
+            //        PerStoneWt = st.PerStoneWt.ToString(),
+            //        TotalStoneWt = st.TotalStoneWt.ToString(),
+            //        TotalAdjWt = st.TotalAdjWt.ToString(),
+            //        TotalAdjStoneWt = st.TotalAdjStoneWt.ToString(),
+            //        Growing = st.Growing,
+            //        Shape = st.StoneShape,
+            //        StoneCostPerCarat = st.StoneCostPerCarat.ToString(),
+            //        TotalCost = st.SettingTotalCost.ToString(),
+            //        SettingType = st.StoneSettingType,
+            //        SettingTypeCode = st.StoneSettingTypeCode,
+            //        SettingVendor = st.StoneSettingVendor,
+            //        SettingVendorCode=st.StoneSettingVendorCode,
+            //        CostPerStone = st.CostPerStone.ToString(),
+            //        SemiAdjWt = st.SemiAdjWt.ToString(),
+            //        MMSize = st.StoneMMSize,
+            //        Width1 = st.StoneWidth1,
+            //        Width2 = st.StoneWidth2,
+            //        CenterAdjWt = st.CenterAdjWt.ToString(),
+            //        Lab = st.Lab,
+            //        StoneDutyVal = st.StoneDutyVal,
+            //        StonePenaltyVal = st.StonePenaltyVal,
+            //        StoneTariffVal = st.StoneTariffVal,
+            //        SettingDutyVal  = st.SettingDutyVal,
+            //        SettingPenaltyVal = st.SettingPenaltyVal,
+            //        SettingTariffVal = st.SettingTariffVal
+            //    }).ToList();
+            var stones = (from st in _context.SKUStoneDetails
+                          where st.SKUId == skuEntity.SKUId
+                          join dd in _context.DiamondDetails
+                              on new { Growing = st.Growing, Type = st.StoneType, Shape = st.StoneShape }
+                              equals new { Growing = dd.GrowingType, Type = dd.StoneType, Shape = dd.StoneShapeCode }
+                              into ddJoin
+                          from dd in ddJoin.DefaultIfEmpty()
+                          select new StoneDto
+                          {
+                              StoneVendor = st.StoneVendor,
+                              StoneVendorCode = st.StoneVendorCode,
+                              StoneType = st.StoneType,
+                              ShapeText = st.ShapeText,
+                              SizeRange = st.SizeRange,
+                              Qty = st.StoneQty.ToString(),
+                              SemiMinWt = st.SemiMinWt.ToString(),
+                              CenterMinWt = st.CenterMinWt.ToString(),
+                              TotalMinWt = st.TotalMinWt.ToString(),
+                              StoneQuality = st.StoneQuality,
+                              // use DiamondDetail.StoneQuality when available, otherwise fall back to stored value
+                              StoneQualityVal = dd != null ? dd.StoneQuality : st.StoneQuality,
+                              StoneTotalCost = st.StoneTotalCost.ToString(),
+                              SettingLocation = st.SettingLocation,
+                              PerStoneWt = st.PerStoneWt.ToString(),
+                              TotalStoneWt = st.TotalStoneWt.ToString(),
+                              TotalAdjWt = st.TotalAdjStoneWt.ToString(),
+                              TotalAdjStoneWt = st.TotalAdjStoneWt.ToString(),
+                              Growing = st.Growing,
+                              Shape = st.StoneShape,
+                              StoneCostPerCarat = st.StoneCostPerCarat.ToString(),
+                              TotalCost = st.SettingTotalCost.ToString(),
+                              SettingType = st.StoneSettingType,
+                              SettingTypeCode = st.StoneSettingTypeCode,
+                              SettingVendor = st.StoneSettingVendor,
+                              SettingVendorCode = st.StoneSettingVendorCode,
+                              CostPerStone = st.CostPerStone.ToString(),
+                              SemiAdjWt = st.SemiAdjWt.ToString(),
+                              MMSize = st.StoneMMSize,
+                              Width1 = st.StoneWidth1,
+                              Width2 = st.StoneWidth2,
+                              CenterAdjWt = st.CenterAdjWt.ToString(),
+                              Lab = st.Lab,
+                              StoneDutyVal = st.StoneDutyVal,
+                              StonePenaltyVal = st.StonePenaltyVal,
+                              StoneTariffVal = st.StoneTariffVal,
+                              SettingDutyVal = st.SettingDutyVal,
+                              SettingPenaltyVal = st.SettingPenaltyVal,
+                              SettingTariffVal = st.SettingTariffVal
+                          }).ToList();
             // 5. LaborInfo
             var labor = _context.SKULaborDetails
                 .FirstOrDefault(l => l.SKUId == skuEntity.SKUId);

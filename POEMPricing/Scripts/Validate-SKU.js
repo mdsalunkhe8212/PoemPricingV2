@@ -352,10 +352,18 @@ function validateAdjStoneGeneric(adjInput, baseWt) {
 
     }
 
-    if (!rule) {
-        setFieldError($(adjInput), "Base weight not in any defined range.");
-        return;
+    if (adjValue > 0 || baseWt > 0) {
+        if (!rule) {
+            setFieldError($(adjInput), "Base weight not in any defined range.");
+            return;
+        } 
     }
+    if (!rule) {
+        clearFieldError($(adjInput));
+        //setFieldError($(adjInput), "Base weight not in any defined range.");
+        return;
+    } 
+
 
     // Allowed range with 4 decimal precision
     if (istotal) {
@@ -394,12 +402,14 @@ function validateSemiAdj() {
     validateAdjStoneGeneric(txtSemiAdjWtVal, baseWt);
 }
 txtSemiAdjWtVal.addEventListener("input", validateSemiAdj);
-txtSemiAdjWtVal.addEventListener("blur", validateSemiAdj);
+txtSemiAdjWtVal.addEventListener("change", validateSemiAdj);
 
 // Center Adj Wt → base = CenterMinWt
 function validateCenterAdj() {
     const baseWt = parseFloat(txtCenterMinWtVal.value) || 0;
     validateAdjStoneGeneric(txtCenterAdjWtVal, baseWt);
 }
+
+
 txtCenterAdjWtVal.addEventListener("input", validateCenterAdj);
-txtCenterAdjWtVal.addEventListener("blur", validateCenterAdj);
+txtCenterAdjWtVal.addEventListener("change", validateCenterAdj);
