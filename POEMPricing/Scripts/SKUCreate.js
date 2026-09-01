@@ -54,6 +54,15 @@ let LaborTariffVal = 0.00;
 let laborPenaltyPer = 0.00;
 let LaborPenaltyVal = 0.00;
 
+
+let settingtotaltax = 0.0;
+let settingDutyper = 0.00
+let settingDutyVal = 0.00
+let settingTariffPer = 0.00;
+let settingTariffVal = 0.00;
+let settingPenaltyPer = 0.00;
+let settingPenaltyVal = 0.00;
+
 let diamondtotalSemitax = 0.0;
 let diamondtotalCentertax = 0.0;
 let diamondDutyper = 0.00
@@ -778,7 +787,7 @@ $('#ddlLaborLocation').on('change', function () {
     const selectedValue = vendorlist[0];
     const selectedText = $('#ddlLaborLocation option:selected').text();
     getTaxDetails('labor', selectedValue);
-    fillLaborFOBValues();
+    
     console.log('labor:', selectedValue);
     
 });
@@ -1653,7 +1662,9 @@ $ddlStoneType.on('change', costHandler);
 $ddlGrowingType.on('change', costHandler);
 $ddlStoneShape.on('change', costHandler);
 $ddlSizeRange.on('change', costHandler);
-$stoneQty.on('input change', costHandler);
+//$stoneQty.on('input change', costHandler);
+$stoneQty.on('input change', calculatetStoneTotalCost);
+
 $ddlQuality.on('change', costHandler);
 $txtTotalAdjStoneWt.on('input change', calculatetStoneTotalCost);
 
@@ -1684,6 +1695,8 @@ $('#ddlSettingVendor').on('change', function () {
             settingType.append($('<option>').val(item.Key).text(item.Value));
         });
     });
+
+    getTaxDetails('setting', vendor);
 });
 
 
@@ -1924,10 +1937,16 @@ let stoneEditIndex = -1; // -1 = add mode, >=0 = edit mode
 function getStoneModel() {
 
     var totalCost = parseFloat($('#txtStoneTotalCost').val());
+    var settingtotalCost = parseFloat($('#txtTotalCost').val());
     var settinglocation = $('#ddlSettingLocation').val();
         diamondDutyVal = totalCost * diamondDutyper;
         diamondPenaltyVal = totalCost * diamondPenaltyPer;
-        diamondTariffVal = totalCost * diamondTariffPer;
+    diamondTariffVal = totalCost * diamondTariffPer;
+
+    settingDutyVal = settingtotalCost * settingDutyper;
+    settingPenaltyVal = settingtotalCost * settingPenaltyPer;
+    settingTariffVal = settingtotalCost * settingTariffPer;
+
     //if (settinglocation === 'Semi') {
     //    diamondDutyVal = totalCost * diamondDutyper;
     //    diamondPenaltyVal = totalCost * diamondPenaltyPer;
@@ -1980,9 +1999,9 @@ function getStoneModel() {
         StoneDutyVal: diamondDutyVal,
         StonePenaltyVal: diamondPenaltyVal,
         StoneTariffVal: diamondTariffVal,
-        SettingDutyVal: 0.00,
-        SettingPenaltyVal: 0.00,
-        SettingTariffVal: 0.00,
+        SettingDutyVal: settingDutyVal,
+        SettingPenaltyVal: settingPenaltyVal,
+        SettingTariffVal: settingTariffVal,
     };
 }
 //Added By Mahesh   Start
@@ -2364,24 +2383,24 @@ function getMarginDetails() {
 function fillLaborFOBValues() {
 
      //getMarginDetails();
-    if (laborTariffPer > 0 || laborDutyper > 0 || laborPenaltyPer> 0) {
+    //if (laborTariffPer > 0 || laborDutyper > 0 || laborPenaltyPer> 0) {
         settingtotalCentertax = 0.00;
         settingtotalSemitax = 0.00;
 
         stoneList.forEach((s, i) => {
             
-            s.SettingDutyVal = (parseFloat(s.TotalCost) * laborDutyper);
-            s.SettingPenaltyVal = (parseFloat(s.TotalCost) * laborPenaltyPer);
-            s.SettingTariffVal = (parseFloat(s.TotalCost) * laborTariffPer);
+            //s.SettingDutyVal = (parseFloat(s.TotalCost) * settingDutyper);
+            //s.SettingPenaltyVal = (parseFloat(s.TotalCost) * settingPenaltyPer);
+            //s.SettingTariffVal = (parseFloat(s.TotalCost) * settingTariffPer);
             if (s.SettingLocation === "Semi") {
                 settingtotalSemitax += s.SettingDutyVal + s.SettingPenaltyVal + s.SettingTariffVal;
             } else {
-                settingtotalSemitax += s.SettingDutyVal + s.SettingPenaltyVal + s.SettingTariffVal;
+                settingtotalCentertax += s.SettingDutyVal + s.SettingPenaltyVal + s.SettingTariffVal;
 
             }
         });
-        settingtotalCentertax = (totalCenterSettingCost * laborTariffPer)
-    }
+        //settingtotalCentertax = (totalCenterSettingCost * laborTariffPer)
+    //}
 
     var landedcost = 0.00;
     var landedcostCenter = 0.00;
@@ -2471,7 +2490,7 @@ function fillLaborFOBValues() {
     LaborTariffVal = taxableLabor * laborTariffPer;
     LaborPenaltyVal = taxableLabor * laborPenaltyPer;
 
-    laborSemiTax = LaborDutyVal + LaborTariffVal + LaborTariffVal + settingtotalSemitax;
+    laborSemiTax = LaborDutyVal + LaborPenaltyVal + LaborTariffVal + settingtotalSemitax;
     laborCenterTax = laborSemiTax + settingtotalCentertax;
 
     semiDuty = parseFloat(vendortotaltax) + parseFloat(findingtotaltax) + parseFloat(diamondtotalSemitax) + parseFloat(laborSemiTax);// + parseFloat(laborSemiTax);
@@ -2842,6 +2861,13 @@ function collectSkuInfo() {
         createdon = skuModule.skuInfo.VendorProduct.createdOn;
 
     }
+    if (window.location.pathname.toLowerCase().includes("/sku/Info")) {
+        // return; // exit early
+        skuID = parseInt(skuModule.skuInfo.VendorProduct.skuId);
+        createdby = parseInt(skuModule.skuInfo.VendorProduct.createdBy);
+        createdon = skuModule.skuInfo.VendorProduct.createdOn;
+
+    }
     //else {
         skuModule.skuInfo.VendorProduct = {
             skuId: skuID,
@@ -3007,7 +3033,13 @@ function saveSkuModule() {
 
         error: function (xhr) {
             console.error("Save failed:", xhr);
-
+            //{
+            //    "Message": "An error has occurred.",
+            //        "ExceptionMessage": "SKU Number already exists. Please use a different SKU Number.",
+            //            "ExceptionType": "System.Exception",
+            //                "StackTrace": "   at POEMPricing.API.SKUController.SaveSku(SkuModuleDto model) in E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\API\\SKUController.cs:line 380"
+            //}
+            //if (xhr.responseJSON.ExceptionMessage)
             // Keep Summary disabled on failure
             alert("Error saving SKU. Please try again.");
         }
@@ -3596,13 +3628,7 @@ $(document).ready(function () {
 
 function validateTabs(tabname, newTab) {
     var validate = true;
-    if (tabname === "nav-stone-information-tab" && newTab === "nav-sku-information-tab") {
-        return true;
-    } else if (tabname === "nav-labor-information-tab" && (newTab === "nav-sku-information-tab" || newTab === "nav-stone-information-tab")) {
-        return true;
-    } else if (tabname === "nav-summary-tab") {
-        return true;
-    }
+   
     var ValidateField = ["#", "#"];
 
     if (tabname === "nav-sku-information-tab") {
@@ -3645,6 +3671,14 @@ function validateTabs(tabname, newTab) {
             clearFieldError($el);
         }
     });
+
+    if (tabname === "nav-stone-information-tab" && newTab === "nav-sku-information-tab") {
+        return validate;
+    } else if (tabname === "nav-labor-information-tab" && (newTab === "nav-sku-information-tab" || newTab === "nav-stone-information-tab")) {
+        return validate;
+    } else if (tabname === "nav-summary-tab") {
+        return validate;
+    }
 
     return validate;
 
@@ -3844,11 +3878,16 @@ function getTaxDetails(taxtype, location='') {
             laborDutyper = DutyPer;
             laborTariffPer = TariffPer;
             laborPenaltyPer = PenaltyPer;
+            fillLaborFOBValues();
         } else if(taxtype === 'finding'){
             findingDutyper = DutyPer;
             findingTariffPer = TariffPer;
             findingPenaltyPer = PenaltyPer;
-    }
+        } else if(taxtype === 'setting'){
+            settingDutyper = DutyPer;
+            settingTariffPer = TariffPer;
+            settingPenaltyPer = PenaltyPer;
+        }
         return returndata;
     });
 }

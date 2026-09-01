@@ -664,6 +664,10 @@ namespace POEMPricing.Managers
                 ws.Cell(1, 14).Value = "FindingDuty";
                 ws.Cell(1, 15).Value = "FindingTariff";
                 ws.Cell(1, 16).Value = "FindingPenalty";
+                ws.Cell(1, 17).Value = "SettingLocation";
+                ws.Cell(1, 18).Value = "SettingDuty";
+                ws.Cell(1, 19).Value = "SettingTariff";
+                ws.Cell(1, 20).Value = "SettingPenalty";
 
                 for (int i = 0; i < data.Count; i++)
                 {
@@ -683,6 +687,10 @@ namespace POEMPricing.Managers
                     ws.Cell(i + 2, 14).Value = data[i].FindingDuty ? 1 : 0;
                     ws.Cell(i + 2, 15).Value = data[i].FindingTariff ? 1 : 0;
                     ws.Cell(i + 2, 16).Value = data[i].FindingPenalty ? 1 : 0;
+                    ws.Cell(i + 2, 17).Value = data[i].SettingLocation;
+                    ws.Cell(i + 2, 18).Value = data[i].SettingDuty ? 1 : 0;
+                    ws.Cell(i + 2, 19).Value = data[i].SettingTariff ? 1 : 0;
+                    ws.Cell(i + 2, 20).Value = data[i].SettingPenalty ? 1 : 0;
                 }
 
                 ws.Columns().AdjustToContents();

@@ -79,7 +79,7 @@ const FieldValidators = {
 
     '#txtSKUNumber': $el => {
         !$el.val().trim() ? "SKU Number is required." : null;
-        //validateSkuNumber();
+        validateSkuNumber();
         },
 
     '#ddlCategory': $el =>
@@ -258,21 +258,21 @@ async function validateSkuNumber() {
     // Required check first
     if (!val) {
         setFieldError($('#txtSKUNumber'), 'SKU Number is required.');
-        return 'SKU Number is required.';
+        return false;
     }
 
     // Server uniqueness check
     try {
         var skuid = 0;
-        if (skuModule.skuInfo.VendorProduct.skuId>0) {
+            if (skuModule.skuInfo.VendorProduct.skuId>0) {
             skuid = skuModule.skuInfo.VendorProduct.skuId;
         }
         const exists = await skuExistsAsync(val, skuid);
         if (exists) {
             setFieldError($('#txtSKUNumber'), 'SKU Number already exists.');
-            return 'SKU Number already exists.';
-        } else {
-            loadImage(val)
+            return false;
+        } else if (skuid===0){
+            //loadImage(val);
         }        
         return null;
     } catch (e) {

@@ -370,6 +370,13 @@ namespace POEMPricing.API
 
             try
             {
+
+                var Exists = _skuRepository.Exists(model.skuInfo.VendorProduct.skuNumber,(int) model.skuInfo.VendorProduct.skuId);
+
+                if (Exists) { 
+                throw new Exception("SKU Number already exists. Please use a different SKU Number.");
+                }
+
                 long skuId = _skuRepository.SaveSkuModule(model);
 
                 return Ok(new
