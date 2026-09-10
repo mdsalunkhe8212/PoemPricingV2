@@ -25,17 +25,17 @@ namespace POEM.Model.Model
 
         public string FindingShortDescription { get; set; } = string.Empty;
 
-        public decimal PerPcFindingWeightGms { get; set; }
+        public decimal? PerPcFindingWeightGms { get; set; }
 
         
-        public decimal Increment { get; set; }
+        public decimal? Increment { get; set; }
 
         
-        public decimal Decrement { get; set; }
+        public decimal? Decrement { get; set; }
 
-        public int MetalLock { get; set; }
+        public int? MetalLock { get; set; }
 
         
-        public decimal FindingCost { get; set; }    // money-style 
+        public decimal? FindingCost { get; set; }    // money-style 
     }
 }

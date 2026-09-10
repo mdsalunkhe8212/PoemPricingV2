@@ -706,6 +706,17 @@ namespace POEM.Services.Repository
                     taxDetails.Penalty = dutyDetails.FindingPenalty;
                 }
             }
+            else if (taxtype == "setting")
+            {
+                dutyDetails = _context.DutyDetails
+                .FirstOrDefault(m => m.VendorLocation == vendorCountry && m.SettingLocation == country);
+                if (dutyDetails != null)
+                {
+                    taxDetails.Duty = dutyDetails.SettingDuty;
+                    taxDetails.Tariff = dutyDetails.SettingTariff;
+                    taxDetails.Penalty = dutyDetails.SettingPenalty;
+                }
+            }
             DutyChartMasterDbDto dutyChartMaster = _context.DutyChartMaster
                    .FirstOrDefault(m => m.VendorLocation == country);
            

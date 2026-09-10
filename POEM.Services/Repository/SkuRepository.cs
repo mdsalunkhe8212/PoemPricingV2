@@ -558,6 +558,28 @@ namespace POEM.Services.Repository
             
         }
 
+        public bool Exists(string skuNumber, int skuid)
+        {
+            return  _context.SKUDetails.FirstOrDefault(s => s.SKUNumber == skuNumber && s.SKUId != skuid) != null   ;
+
+        }
+
+        /// <summary>
+        /// Set the active status for a SKU by id.
+        /// Returns true when update succeeds, false when SKU not found.
+        /// </summary>
+        public bool SetActiveStatus(long skuId, bool isActive)
+        {
+            var sku = _context.SKUDetails.SingleOrDefault(s => s.SKUId == skuId);
+            if (sku == null) return false;
+
+            sku.IsActive = isActive;
+            sku.ModifiedOn = DateTime.Now;
+            _context.Entry(sku).State = EntityState.Modified;
+            _context.SaveChanges();
+            return true;
+        }
+
         //public async Task<bool> GetImage(string skuNumber, int skuid)
         //{
         //    return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber && s.SKUId != skuid);

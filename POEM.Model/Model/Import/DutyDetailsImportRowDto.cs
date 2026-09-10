@@ -25,5 +25,9 @@ namespace POEM.Model.Model.Import
         public bool FindingDuty { get; set; }
         public bool FindingTariff { get; set; }
         public bool FindingPenalty { get; set; }
+        public string SettingLocation { get; set; }
+        public bool SettingDuty { get; set; }
+        public bool SettingTariff { get; set; }
+        public bool SettingPenalty { get; set; }
     }
 }

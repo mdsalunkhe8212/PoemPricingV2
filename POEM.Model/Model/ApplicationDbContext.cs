@@ -69,7 +69,12 @@ namespace POEM.Model.Model
                 .HasPrecision(10, 4); // precision, scale
             modelBuilder.Entity<SKUStoneDbDto>()
                 .Property(p => p.TotalAdjStoneWt)
-                .HasPrecision(10, 4); // precision, scale            
+                .HasPrecision(10, 4); // precision, scale
+            modelBuilder.Entity<DiamondDetail>()
+                .Property(p => p.PerStoneWeight)
+                .HasPrecision(18, 5); // precision, scale
+
+
         }
         // Add a DbSet for each entity type that you want to include in your model. For more information 
         // on configuring and using a Code First model, see http://go.microsoft.com/fwlink/?LinkId=390109.

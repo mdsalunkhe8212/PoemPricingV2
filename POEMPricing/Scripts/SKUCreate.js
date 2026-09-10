@@ -183,8 +183,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const button = this;
         if (button.textContent.trim() === 'Active') {
             button.textContent = 'In Active';
+            button.classList.remove('btn-inactive'); 
+
         } else {
             button.textContent = 'Active';
+           button.classList.add('btn-inactive');
         }
     });
 });
@@ -2021,23 +2024,8 @@ $('#btnStoneAddUpdate').on('click', function () {
     }
     const model = getStoneModel();
     // Total Center and Simi cost accumulators
-    if (model.SettingLocation === 'Center') {
-        //totalCenterStoneCost += parseFloat(model.StoneTotalCost) || 0;
-        //totalCenterWt += parseFloat(model.TotalStoneWt) || 0;
-        //totalCenterSettingCost += parseFloat(model.TotalCost) || 0;
-        //totalCenterAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;//added By Mahesh
-        //$('#txtCenterAdjWt').prop('disabled', false);
-
-    }
-    else {
-        //totalSemiStoneCost += parseFloat(model.StoneTotalCost) || 0;
-        //totalSemiWt += parseFloat(model.TotalStoneWt) || 0;
-        //totalSemiSettingCost += parseFloat(model.TotalCost) || 0;
-        //totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
-        //$('#txtSemiAdjWt').prop('disabled', false);
-    }
-    //$('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(3));
-    //$('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(3));
+   
+   
    
    
     if (stoneEditIndex === -1) {
@@ -2047,6 +2035,7 @@ $('#btnStoneAddUpdate').on('click', function () {
         // UPDATE
         stoneList[stoneEditIndex] = model;
         stoneEditIndex = -1;
+        
         $('#btnStoneAddUpdate').text('Add Stone');
     }
 
@@ -2054,6 +2043,13 @@ $('#btnStoneAddUpdate').on('click', function () {
      $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(3));//added By Mahesh
     $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(3));//added By Mahesh
     calculateTotals();
+    if (model.SettingLocation === 'Center') {
+        validateCenterAdj();
+
+    }
+    else {
+        validateSemiAdj();
+    }
     clearStoneControls();
     // $("#ddlStoneVendor").focus();
 });
@@ -2253,7 +2249,7 @@ function setStoneData(index) {
     var data = stoneList[index];
     stoneEditIndex = index;
     $('#btnStoneAddUpdate').text("Update Stone");
-    $('#ddlStoneVendor').val(data.StoneVendorCode).addClass('disabled').attr('disabled', true);
+    $('#ddlStoneVendor').val(data.StoneVendorCode).trigger('change').addClass('disabled').attr('disabled', true);
     $('#ddlStoneType').val(data.StoneType).trigger('change').addClass('disabled').attr('disabled', true);
 
     $('#ddlGrowing').val(data.Growing).addClass('disabled').attr('disabled', true);
@@ -3079,28 +3075,28 @@ function loadSummaryFromSkuModel(skuModel) {
     // Stones
     if (skuModel.stoneInfo && Array.isArray(skuModel.stoneInfo)) {
         // Total Qty across all stones
-        const totalQty = skuModel.stoneInfo.reduce((sum, s) => sum + (parseInt(s.Qty, 10) || 0), 0);
+        var totalQty = skuModel.stoneInfo.reduce((sum, s) => sum + (parseInt(s.Qty, 10) || 0), 0);
         setLabel("lblNoOfStonesValue", totalQty);
 
         // Semi Wt = sum of TotalStoneWt where SettingLocation = 'Semi'
-        const semiWt = skuModel.stoneInfo
-            .filter(s => s.SettingLocation === "Semi")
-            .reduce((sum, s) => sum + (parseFloat(s.TotalStoneWt) || 0), 0);
-        setLabel("lblSemiWtValue", semiWt.toFixed(2));
+        var semiWt = skuModel.skuInfo.VendorProduct.semiMinWt;
+            // .filter(s => s.SettingLocation === "Semi")
+            // .reduce((sum, s) => sum + (parseFloat(s.SemiMinWt) || 0), 0);
+        setLabel("lblSemiWtValue", parseFloat(semiWt).toFixed(2));
 
         // Center Wt = sum of TotalStoneWt where SettingLocation = 'Center'
-        const centerWt = skuModel.stoneInfo
-            .filter(s => s.SettingLocation === "Center")
-            .reduce((sum, s) => sum + (parseFloat(s.TotalStoneWt) || 0), 0);
-        setLabel("lblCenterWtValue", centerWt.toFixed(2));
+        var centerWt = skuModel.skuInfo.VendorProduct.centerMinWt;
+            // .filter(s => s.SettingLocation === "Center")
+            // .reduce((sum, s) => sum + (parseFloat(s.CenterMinWt) || 0), 0);
+        setLabel("lblCenterWtValue", parseFloat(centerWt).toFixed(2));
 
         // Complete Wt = Semi + Center
-        const completeWt = semiWt + centerWt;
-        setLabel("lblCompleteWtValue", completeWt.toFixed(2));
+        var completeWt = (parseFloat(semiWt)+ parseFloat(centerWt)).toFixed(2);
+        setLabel("lblCompleteWtValue", parseFloat(completeWt).toFixed(2));
 
         // Stone qualities (optional: pick first or aggregate)
-        const semiQuality = skuModel.stoneInfo.find(s => s.SettingLocation === "Semi")?.StoneQualityVal || "";
-        const centerQuality = skuModel.stoneInfo.find(s => s.SettingLocation === "Center")?.StoneQualityVal || "";
+        var semiQuality = skuModel.stoneInfo.find(s => s.SettingLocation === "Semi")?.StoneQualityVal || "";
+        var centerQuality = skuModel.stoneInfo.find(s => s.SettingLocation === "Center")?.StoneQualityVal || "";
 
         setLabel("lblSemiStoneQualityValue", semiQuality);
         setLabel("lblCenterStoneQualityValue", centerQuality);

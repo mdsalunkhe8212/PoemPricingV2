@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -463,6 +464,82 @@ namespace POEMPricing.API
                 return InternalServerError(ex);
             }
         }
+
+        // POST: api/sku/activate/{skunumber}
+        [HttpPost]
+        [Route("activate/{skunumber}")]
+        public async Task<IHttpActionResult> Activate([FromUri] string skunumber)
+        {
+            if (string.IsNullOrWhiteSpace(skunumber))
+                return BadRequest("Invalid skuid");
+
+            string decodedSku;
+            try
+            {
+                byte[] data = Convert.FromBase64String(skunumber);
+                decodedSku = Encoding.UTF8.GetString(data);
+            }
+            catch
+            {
+                return BadRequest("Invalid skuid encoding");
+            }
+
+            try
+            {
+                var skuModule = _skuRepository.GetSkuByNumber(decodedSku);
+                if (skuModule == null || skuModule.skuInfo == null || skuModule.skuInfo.VendorProduct == null)
+                    return NotFound();
+
+                var skuId = skuModule.skuInfo.VendorProduct.skuId;
+                var updated = _skuRepository.SetActiveStatus(skuId, true);
+                await Task.Delay(0);
+                if (!updated) return InternalServerError(new Exception("Failed to activate SKU"));
+                return Ok(new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        // POST: api/sku/inactivate/{skunumber}
+        [HttpPost]
+        [Route("inactivate/{skunumber}")]
+        public async Task<IHttpActionResult> Inactivate([FromUri] string skunumber)
+        {
+            if (string.IsNullOrWhiteSpace(skunumber))
+                return BadRequest("Invalid skuid");
+
+            string decodedSku;
+            try
+            {
+                byte[] data = Convert.FromBase64String(skunumber);
+                decodedSku = Encoding.UTF8.GetString(data);
+            }
+            catch
+            {
+                return BadRequest("Invalid skuid encoding");
+            }
+
+            try
+            {
+                var skuModule = _skuRepository.GetSkuByNumber(decodedSku);
+                if (skuModule == null || skuModule.skuInfo == null || skuModule.skuInfo.VendorProduct == null)
+                    return NotFound();
+
+                var skuId = skuModule.skuInfo.VendorProduct.skuId;
+                var updated = _skuRepository.SetActiveStatus(skuId, false);
+                await Task.Delay(0);
+                if (!updated) return InternalServerError(new Exception("Failed to inactivate SKU"));
+                return Ok(new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
 
     }
 }

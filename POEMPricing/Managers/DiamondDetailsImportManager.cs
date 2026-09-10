@@ -175,10 +175,10 @@ namespace POEMPricing.Managers
                     row.IsValid = false;
                     row.ErrorMessage1 = "Stone Shape is required.";
                 }
-                else if (row.StoneShape.Length > 10)
+                else if (row.StoneShape.Length > 50)
                 {
                     row.IsValid = false;
-                    row.ErrorMessage1 = "Stone Shape cannot exceed 10 characters.";
+                    row.ErrorMessage1 = "Stone Shape cannot exceed 50 characters.";
                 }
                 else if (string.IsNullOrWhiteSpace(row.StoneQualityCode))
                 {
