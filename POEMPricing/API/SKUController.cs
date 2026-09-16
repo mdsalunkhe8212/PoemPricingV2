@@ -229,14 +229,14 @@ namespace POEMPricing.API
         }
         //GET: api/sku/stonequality
         [HttpGet]
-        [Route("stonequality/{StoneType}/{GrowingType}/{StoneShape}")]
-        public async Task<IHttpActionResult> stonequality([FromUri] string stonetype, string growingtype, string stoneshape)
+        [Route("stonequality/{StoneType}/{GrowingType}/{StoneShape}/{Lab}")]
+        public async Task<IHttpActionResult> stonequality([FromUri] string stonetype, string growingtype, string stoneshape,string Lab)
         {
             try
             {
                 if (growingtype == "Lab - HPHT  CVD") { growingtype = "Lab - HPHT / CVD"; }
                
-                var stoneQuality = _masterDataRepository.GetDropdownFromDb("StoneQuality", stonetype + '|' + growingtype + '|' + stoneshape);
+                var stoneQuality = _masterDataRepository.GetDropdownFromDb("StoneQuality", stonetype + '|' + growingtype + '|' + stoneshape+'|'+Lab);
                 await Task.Delay(0);
                 return Ok(stoneQuality);
             }
@@ -308,12 +308,12 @@ namespace POEMPricing.API
         // GET api/sku/stonecostpercarat?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
         [HttpGet]
         [Route("stonecostpercarat")]
-        public async Task<IHttpActionResult> GetStoneCostPerCarat([FromUri] string vendor, string stoneType, [FromUri] string growingType, [FromUri] string stoneShape, [FromUri] string lengthDiameter, [FromUri] string stoneQuality)
+        public async Task<IHttpActionResult> GetStoneCostPerCarat([FromUri] string vendor, string stoneType, [FromUri] string growingType, [FromUri] string stoneShape, [FromUri] string lengthDiameter, [FromUri] string stoneQuality, [FromUri] string lab)
         {
-            if (string.IsNullOrWhiteSpace(stoneType) || string.IsNullOrWhiteSpace(stoneShape) || string.IsNullOrWhiteSpace(lengthDiameter) || string.IsNullOrWhiteSpace(stoneQuality))
-                return BadRequest("Missing required parameters: stoneType, stoneShape, lengthDiameter, stoneQuality.");
+            if (string.IsNullOrWhiteSpace(stoneType) || string.IsNullOrWhiteSpace(stoneShape) || string.IsNullOrWhiteSpace(lengthDiameter) || string.IsNullOrWhiteSpace(stoneQuality) || string.IsNullOrWhiteSpace(lab))
+                return BadRequest("Missing required parameters: stoneType, stoneShape, lengthDiameter, stoneQuality, and lab are required.");
             if (growingType == "Lab - HPHT  CVD") { growingType = "Lab - HPHT / CVD"; }
-            var cost = await _masterDataRepository.GetStoneCostPerCarat(vendor, stoneType, growingType, stoneShape, lengthDiameter, stoneQuality);
+            var cost = await _masterDataRepository.GetStoneCostPerCarat(vendor, stoneType, growingType, stoneShape, lengthDiameter, stoneQuality,lab);
 
             if (cost == null) {
                 cost = 0;
@@ -532,6 +532,28 @@ namespace POEMPricing.API
                 await Task.Delay(0);
                 if (!updated) return InternalServerError(new Exception("Failed to inactivate SKU"));
                 return Ok(new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        // POST: api/sku/setstatus/{skuid}/{isActive}
+        [HttpPost]
+        [Route("setstatus/{skuid}/{isActive}")]
+        public async Task<IHttpActionResult> SetStatus([FromUri] long skuid, [FromUri] bool isActive)
+        {
+            if (skuid <= 0)
+                return BadRequest("Invalid skuid");
+
+            try
+            {
+                var updated = _skuRepository.SetActiveStatus(skuid, isActive);
+                await Task.Delay(0);
+                if (!updated) return NotFound();
+                isActive = !isActive;
+                return Ok(new { Success = true, SKUId = skuid, IsActive = isActive });
             }
             catch (Exception ex)
             {

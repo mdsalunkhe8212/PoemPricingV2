@@ -13,7 +13,7 @@ namespace POEM.Services.Interface
         List<KeyValuePair<string, string>> GetDropdownFromDb(string category,string param="",string param1="", string param2 = "", string param3 = "", string param4 = "");
         FindingDetail GetFindingDetails(string findingnumber);
         Task<POEM.Model.Model.PerStoneWeightDto> GetPerStoneWeight(string stoneType, string growingType, string stoneShape, string lengthDiameter);
-        Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality);
+        Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality,string lab);
         Task<decimal?> GetSettingCostPerStone(string vendor, string settingType, decimal perStoneWt, string shapeCode, string shape, string category, string subCategory, string metal);
 
     }

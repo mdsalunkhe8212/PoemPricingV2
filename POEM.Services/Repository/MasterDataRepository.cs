@@ -381,10 +381,12 @@ namespace POEM.Services.Repository
                     var stonetype = stoneQualityParts[0];
                     var growingtype = stoneQualityParts[1];
                     var stoneshape = stoneQualityParts[2];
+                    var lab= stoneQualityParts[3];
                     items = _context.DiamondDetails
                         .Where(c => c.StoneType == stonetype
                         && c.GrowingType == growingtype
-                        && c.StoneShapeCode == stoneshape)
+                        && c.StoneShapeCode == stoneshape
+                        && c.StoneCertificate == lab)
                         .Select(f => new
                         {
                             Key = f.StoneQualityCode,
@@ -556,7 +558,7 @@ namespace POEM.Services.Repository
 
             return result;
         }
-        public Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality)
+        public Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality,string lab)
         {
             // normalize inputs
             var ld = (lengthDiameter ?? string.Empty).Trim();
@@ -573,11 +575,13 @@ namespace POEM.Services.Repository
             var result = _context.DiamondDetails
                 .AsNoTracking()
                 .Where(dd =>
+                    dd.VendorCode==vendor &&
                     dd.StoneType == stoneType &&
                     dd.GrowingType == growingType &&
                     dd.StoneShapeCode == stoneShape &&
                     dd.LengthDiameter == ldDecimal &&
-                    dd.StoneQualityCode == stoneQuality)
+                    dd.StoneQualityCode == stoneQuality &&
+                    dd.StoneCertificate== lab)
                 .Select(dd => (decimal?)dd.CostPerCt)
                 .FirstOrDefaultAsync();
 

@@ -148,6 +148,7 @@ namespace POEM.Services.Repository
                         savemode.CreatedOn = model.skuInfo.VendorProduct.createdOn;
                         savemode.ModifiedBy = 1;
                         savemode.ModifiedOn = DateTime.Now;
+                        savemode.IsActive = model.skuInfo.VendorProduct.isActive;
                         skuId = UpdateSkuDetails(savemode);
                     }
                     else
@@ -156,6 +157,7 @@ namespace POEM.Services.Repository
                         SKUDetailsDbDto savemode = MapSkuDetails(model.skuInfo.VendorProduct);
                         savemode.CreatedBy = 1;
                         savemode.CreatedOn=DateTime.Now;
+                        savemode.IsActive = true;
                         skuId = SaveSkuDetails(savemode);
                     }
 
@@ -220,7 +222,8 @@ namespace POEM.Services.Repository
                 semiMinWt = ParseDecimal(dto.semiMinWt),
                 centerMinWt = ParseDecimal(dto.centerMinWt),
                 SemiAdjWt = ParseDecimal(dto.SemiAdjWt),
-                CenterAdjWt = ParseDecimal(dto.CenterAdjWt)
+                CenterAdjWt = ParseDecimal(dto.CenterAdjWt),
+               
                 //CreatedBy = 1,
                 //CreatedOn = DateTime.Now
             };
@@ -230,6 +233,8 @@ namespace POEM.Services.Repository
         {
             return new SKUMetalDbDto
             {
+                CastingVendor = dto.castingVendorText,
+                CastingVendorID = dto.castingVendorId,
                 MetalText = dto.metalText,
                 MetalIdText = dto.metalId,
                 KaratText = dto.karatText,
@@ -374,10 +379,12 @@ namespace POEM.Services.Repository
                 Price1 = dto.Price1,
                 Price2 = dto.Price2,
                 Price3 = dto.Price3,
+                Price4= dto.Price4,
 
                 Margin1 = dto.Margin1,
                 Margin2 = dto.Margin2,
                 Margin3 = dto.Margin3,
+                Margin4 = dto.Margin4,
 
                 CompleteFOB = dto.CompleteFOB,
                 CompleteDuty = dto.CompleteDuty,
@@ -386,10 +393,12 @@ namespace POEM.Services.Repository
                 CompletePrice1 = dto.CompletePrice1,
                 CompletePrice2 = dto.CompletePrice2,
                 CompletePrice3 = dto.CompletePrice3,
+                CompletePrice4 = dto.CompletePrice4,    
 
                 CompleteMargin1 = dto.CompleteMargin1,
                 CompleteMargin2 = dto.CompleteMargin2,
                 CompleteMargin3 = dto.CompleteMargin3,
+                CompleteMargin4 = dto.CompleteMargin4,
                 LaborDutyVal=dto.LaborDutyVal,
                 LaborPenaltyVal=dto.LaborPenaltyVal,
                 LaborTariffVal=dto.LaborTariffVal,
@@ -507,9 +516,9 @@ namespace POEM.Services.Repository
                                {
                                    Sku = sku.SKUNumber,
                                    Top1Metal = metal.KaratText+" "+ metal.ColorText+" " + metal.MetalText ,
-                                   Price1 = labor.Price1 ?? 0.00m,
-                                   Price2 = labor.Price2 ?? 0.00m,
-                                   Price3 = labor.Price3 ?? 0.00m,
+                                   Price1 = labor.CompletePrice1,
+                                   Price2 = labor.CompletePrice2,
+                                   Price3 = labor.CompletePrice3,
                                    ModifiedDate = sku.ModifiedOn,
                                    IsActive = sku.IsActive 
                                })
@@ -599,6 +608,9 @@ namespace POEM.Services.Repository
                 .Where(m => m.SKUId == skuEntity.SKUId)
                 .Select(m => new MetalDto
                 {
+                    
+                    castingVendorId = m.CastingVendorID,
+                    castingVendorText=m.CastingVendor,
                     metalText = m.MetalText,
                     metalId = m.MetalId.ToString(),
                     karatText = m.KaratText,
@@ -697,11 +709,6 @@ namespace POEM.Services.Repository
             //    }).ToList();
             var stones = (from st in _context.SKUStoneDetails
                           where st.SKUId == skuEntity.SKUId
-                          join dd in _context.DiamondDetails
-                              on new { Growing = st.Growing, Type = st.StoneType, Shape = st.StoneShape }
-                              equals new { Growing = dd.GrowingType, Type = dd.StoneType, Shape = dd.StoneShapeCode }
-                              into ddJoin
-                          from dd in ddJoin.DefaultIfEmpty()
                           select new StoneDto
                           {
                               StoneVendor = st.StoneVendor,
@@ -715,7 +722,7 @@ namespace POEM.Services.Repository
                               TotalMinWt = st.TotalMinWt.ToString(),
                               StoneQuality = st.StoneQuality,
                               // use DiamondDetail.StoneQuality when available, otherwise fall back to stored value
-                              StoneQualityVal = dd != null ? dd.StoneQuality : st.StoneQuality,
+                              StoneQualityVal = st.StoneQuality,
                               StoneTotalCost = st.StoneTotalCost.ToString(),
                               SettingLocation = st.SettingLocation,
                               PerStoneWt = st.PerStoneWt.ToString(),
@@ -779,8 +786,8 @@ namespace POEM.Services.Repository
                         subCategoryCode=skuEntity.SubCategoryCode,
                         collectionCode=skuEntity.CollectionCode,
                         createdBy=skuEntity.CreatedBy,
-                        createdOn=skuEntity.CreatedOn
-                        
+                        createdOn=skuEntity.CreatedOn,
+                        isActive=skuEntity.IsActive
                     },
                     Metals = metals,
                     Findings = findings
@@ -797,7 +804,27 @@ namespace POEM.Services.Repository
                     Price2 = labor.Price2 ?? 0.00m,
                     Price3 = labor.Price3 ?? 0.00m,
                     Price4=labor.Price4 ?? 0.00m,
+                    Margin1=labor.Margin1 ?? 0.00m,
+                    Margin2=labor.Margin2 ?? 0.00m,
+                    Margin3=labor.Margin3 ?? 0.00m, 
+                    Margin4=labor.Margin4 ??0.00m,
+                    
+
+
                     CompleteFOB = labor.CompleteFOB,
+                    CompletePrice1 = labor.CompletePrice1 ,
+                    CompletePrice2 = labor.CompletePrice2 ,
+                    CompletePrice3 = labor.CompletePrice3 ,
+                    CompletePrice4 = labor.CompletePrice4 ?? 0.00m,
+
+                    CompleteMargin1 = labor.CompleteMargin1,
+                    CompleteMargin2 = labor.CompleteMargin2,
+                    CompleteMargin3 = labor.CompleteMargin3,
+                    CompleteMargin4 = labor.CompleteMargin4 ?? 0.00m,
+
+
+
+
                     Remark = labor.Remark,
                     /* Added By Mahesh Start*/
                     DiaHandling= labor.DiaHandling,

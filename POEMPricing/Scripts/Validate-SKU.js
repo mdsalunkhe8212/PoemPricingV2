@@ -99,8 +99,10 @@ const FieldValidators = {
     //},
 
     // ======================================================
-    // SKU INFORMATION - METAL 
+    // SKU INFORMATION - METAL
     // ======================================================
+    '#ddlCastingVendor': $el =>
+        !$el.val().trim() ? "Casting Vendor is required." : null,
     '#ddlMetal': $el =>
         !$el.val().trim() ? "Metal is required." : null,
 

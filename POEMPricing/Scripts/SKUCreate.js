@@ -181,14 +181,47 @@ function debounce(fn, delay) {
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btnActive').addEventListener('click', function () {
         const button = this;
-        if (button.textContent.trim() === 'Active') {
-            button.textContent = 'In Active';
-            button.classList.remove('btn-inactive'); 
+        // current checkbox state: checked = active
+        const current = $("#chkStatus").is(":checked");
+        const newStatus = !current;
+        const skuID = parseInt(skuModule.skuInfo.VendorProduct.skuId);
 
+        // update UI immediately
+        $("#chkStatus").prop('checked', newStatus);
+        if (newStatus) {
+            button.textContent = 'In Active';
+            button.classList.remove('btn-inactive');    
         } else {
             button.textContent = 'Active';
-           button.classList.add('btn-inactive');
+            button.classList.add('btn-inactive');
         }
+
+        // Call new SetStatus API
+        fetch(`/api/sku/setstatus/${skuID}/${newStatus}`, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Server returned ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                // success - optionally show a notification
+                console.log('SKU status updated', data);
+            })
+            .catch(err => {
+                // revert UI on error
+                $("#chkStatus").prop('checked', current);
+                if (current) {
+                    button.textContent = 'In Active';
+                    button.classList.remove('btn-inactive');
+                } else {
+                    button.textContent = 'Active';
+                    button.classList.add('btn-inactive');
+                }
+                console.error('Failed to update SKU status', err);
+                alert('Failed to update SKU status: ' + err.message);
+            });
     });
 });
 
@@ -1273,6 +1306,8 @@ function readMetalForm() {
     vendorPenaltyVal = cost * vendorPenaltyPer;
     vendorTariffVal = cost * vendorTariffPer;
     return {
+        castingVendorText: $('#ddlCastingVendor option:selected').text(),
+        castingVendorId: $('#ddlCastingVendor').val(),
         metalText: $('#ddlMetal option:selected').text(),
         metalId: $('#ddlMetal').val(),
         karatText: $('#ddlKarat option:selected').text(),
@@ -1312,6 +1347,7 @@ function renderMetalGrid() {
         vendortotaltax += row.metalDutyVal + row.metalPenaltyVal + row.metalTariffVal;
         const tr = `
             <tr data-index="${idx}">
+                <td class="text-center">${row.castingVendorText}</td>
                 <td class="text-center">${row.metalText}</td>
                 <td class="text-center">${row.karatText}</td>
                 <td class="text-center">${row.colorText}</td>
@@ -1341,6 +1377,7 @@ $(function () {
         if (validateButtonAddUpdate("btnMetalAddUpdate")) {
             const row = readMetalForm();
             metalLines.push(row);
+            $('#ddlCastingVendor').val('');
             $('#ddlMetal').val('');
             $('#txtMetalRatePOz').val('0.00');
             $('#ddlKarat').val('');
@@ -1376,7 +1413,7 @@ function calculateMetalCost() {
     const rateOz = parseFloat($('#txtMetalRatePOz').val()) || 0;
     const metal = $('#ddlMetal').val();
     const karat = parseFloat($('#ddlKarat').val()) || 24;
-    const vendor = $('#ddlVendor').val().trim();
+    const vendor = $('#ddlCastingVendor').val().trim();
     calculateRatePerGram(metal, rateOz, karat, vendor)
         .then(rate => {
             if (rate) {
@@ -1398,16 +1435,16 @@ function calculateMetalCost() {
 
 
 
-    calculateRatePerGram(metal, rateOz, karat, vendor)
-        .then(rate => {
-            if (rate) {
-                console.log("Rate per gram:", rate);
-                $("#txtMetalRatePerGm").val(rate);
-            } else {
-                console.log("Invalid inputs");
-            }
-        })
-        .catch(err => console.error("Error fetching metal loss:", err));
+    // calculateRatePerGram(metal, rateOz, karat, vendor)
+    //     .then(rate => {
+    //         if (rate) {
+    //             console.log("Rate per gram:", rate);
+    //             $("#txtMetalRatePerGm").val(rate);
+    //         } else {
+    //             console.log("Invalid inputs");
+    //         }
+    //     })
+    //     .catch(err => console.error("Error fetching metal loss:", err));
 }
 
 /************************************************************
@@ -1417,7 +1454,7 @@ function calculateMetalCost() {
 //    const metal = $('#ddlMetal').val();
 //    const rateOz = parseFloat($('#txtMetalRatePOz').val()) || 0;
 //    const karat = parseFloat($('#ddlKarat').val()) || 24;
-//    const vendor = $('#ddlVendor option:selected').text().trim();
+//    const vendor = $('#ddlCastingVendor option:selected').text().trim();
 
 //    if (!metal || !vendor || !rateOz) {
 //        $('#txtMetalRatePerGm').val('');
@@ -1454,7 +1491,7 @@ function calculateRatePerGram(metal, rateOz, karat = 24, vendor) {
             encodeURIComponent(metal);
 
         $.getJSON(url, function (data) {
-            const first = (data && data.length) ? data[0] : null;
+            const first = (data && data.length) ? data[0] : 0;
             const metalLossPercent = first ? parseFloat(first.Value) || 0 : 0;
 
             const lossFactor = 1 + (metalLossPercent / 100.0);
@@ -1607,6 +1644,7 @@ async function fetchAndSetCost() {
     //const stoneShape = $stoneShape.find('option:selected').text() || '';
     const stoneShapeCpde = $stoneShape.val() || '';
     const vendor = $stoneVendor.val();
+    var lab = $('#ddlLab').val();
     $.ajax({
         url: webRoot + '/api/sku/stonecostpercarat',
         method: 'GET',
@@ -1616,7 +1654,8 @@ async function fetchAndSetCost() {
             growingType: growingType,
             stoneShape: stoneShapeCpde,
             lengthDiameter: lengthDiameter,
-            stoneQuality: stoneQuality
+            stoneQuality: stoneQuality,
+            lab: lab
         },
         beforeSend: function () {
             //$txtCost.prop('disabled', true);
@@ -1798,8 +1837,9 @@ $('#ddlStoneShape').on('change', function () {
     const stoneType = $('#ddlStoneType').val();
     const growing = $('#ddlGrowing').val();
     const vendor = $('#ddlStoneVendor').val();
+    const lab = $('#ddlLab').val();
     $.get(webRoot + 'api/sku/stonequality/' +
-        stoneType + '/' + growing + '/' + stoneShape,
+        stoneType + '/' + growing + '/' + stoneShape + '/' + lab,
         function (data) {
             const stoneQuality = $('#ddlStoneQuality');
             stoneQuality.empty().append('<option value=""></option>');
@@ -2849,6 +2889,7 @@ function collectSkuInfo() {
     var skuID = 0;
     var createdby = 1;
     var createdon = new Date();
+    var isActive = true;
     // ✅ Skip updating VendorProduct if on /SKU/Edit
     if (window.location.pathname.toLowerCase().includes("/sku/edit")) {
         // return; // exit early
@@ -2887,6 +2928,7 @@ function collectSkuInfo() {
             CenterAdjWt: $('#txtCenterAdjWt').val(),//Added By Mahesh
             createdBy: createdby,
             createdOn: createdon,
+            isActive: $('#chkStatus').is(':checked')
 
 
         };
@@ -3110,9 +3152,9 @@ function loadSummaryFromSkuModel(skuModel) {
 
 
     // Prices (from laborInfo) - display as rounded up whole numbers with $ prefix
-    setLabel("lblPrice1Value", '$ ' + Math.ceil(parseFloat(labor.Price1 || 0)));
-    setLabel("lblPrice2Value", '$ ' + Math.ceil(parseFloat(labor.Price2 || 0)));
-    setLabel("lblPrice3Value", '$ ' + Math.ceil(parseFloat(labor.Price3 || 0)));
+    setLabel("lblPrice1Value", '$ ' + Math.ceil(parseFloat(labor.CompletePrice1 || 0)));
+    setLabel("lblPrice2Value", '$ ' + Math.ceil(parseFloat(labor.CompletePrice2 || 0)));
+    setLabel("lblPrice3Value", '$ ' + Math.ceil(parseFloat(labor.CompletePrice3 || 0)));
 }
 
 /************************************************************
@@ -3341,7 +3383,17 @@ function bindFormData(skuModel) {
     setValue("txtCenterMinWt", vp.centerMinWt);
     setValue("txtSemiAdjWt", vp.SemiAdjWt);
     setValue("txtCenterAdjWt", vp.CenterAdjWt);
-
+    //$("$chkStatus").val(vp.isActive);
+    if (vp.isActive) {
+        $("#chkStatus").prop("checked", true);
+        $("#btnActive").text('In Active');
+        $("#btnActive").removeClass('btn-inactive');
+        
+    } else {
+        $("#chkStatus").prop("checked", false);
+        $("#btnActive").text('Active');
+        $("#btnActive").addClass('btn-inactive');
+    }
     //Findings
 
     findingLines = skuModel.skuInfo.Findings || [];
@@ -3690,7 +3742,7 @@ function validateButtonAddUpdate(buttonid) {
     var validate = true;
     var ValidateField = [];
     if (buttonid === "btnMetalAddUpdate") {
-        ValidateField = ["#ddlMetal", "#ddlKarat", "#ddlMetalColor", "#txtMetalGmWt"];
+        ValidateField = ["#ddlCastingVendor", "#ddlMetal", "#ddlKarat", "#ddlMetalColor", "#txtMetalGmWt"];
     } else if (buttonid === "btnFindingAddUpdate") {
         ValidateField = ["#ddlFindingSupplier", "#txtFindingSku", "#ddlFindingAssembly", "#txtFindingQty"];
     } else if (buttonid === "btnStoneAddUpdate") {
