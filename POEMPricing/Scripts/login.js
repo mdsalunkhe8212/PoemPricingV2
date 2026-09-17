@@ -20,6 +20,7 @@ document.getElementById('btnLogin').addEventListener('click', async function () 
     }
 
     try {
+        $("#loader").show();
         const response = await fetch(webRoot + '/api/login/login', {
             method: 'POST',
             headers: {
@@ -29,6 +30,7 @@ document.getElementById('btnLogin').addEventListener('click', async function () 
         });
 
         if (!response.ok) {
+            $("#loader").hide();
             const errorData = await response.json().catch(() => null);
             errorDiv.textContent = errorData?.message || 'Invalid email or password.';
             errorDiv.style.display = 'block';

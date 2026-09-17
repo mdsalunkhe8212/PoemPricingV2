@@ -27,6 +27,7 @@ namespace POEM.Model.Model
         public string TotalAdjStoneWt { get; set; }
 
         public string StoneQuality { get; set; }
+        public string StoneQualityVal { get; set; }
         public string StoneCostPerCarat { get; set; }
         public string StoneTotalCost { get; set; }
 

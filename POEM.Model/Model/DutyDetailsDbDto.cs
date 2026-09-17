@@ -62,9 +62,18 @@ namespace POEM.Model.Model
 
        
         public bool FindingPenalty { get; set; }
+        public string SettingLocation { get; set; } = string.Empty;
+
+
+        public bool SettingDuty { get; set; }   
+
+        public bool SettingTariff { get; set; }
+
+
+        public bool SettingPenalty   { get; set; }
 
         // SQL type is BIT
-       
+
         public long CreatedBy { get; set; }
 
        

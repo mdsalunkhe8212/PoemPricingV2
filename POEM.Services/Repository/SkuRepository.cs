@@ -148,6 +148,7 @@ namespace POEM.Services.Repository
                         savemode.CreatedOn = model.skuInfo.VendorProduct.createdOn;
                         savemode.ModifiedBy = 1;
                         savemode.ModifiedOn = DateTime.Now;
+                        savemode.IsActive = model.skuInfo.VendorProduct.isActive;
                         skuId = UpdateSkuDetails(savemode);
                     }
                     else
@@ -156,6 +157,7 @@ namespace POEM.Services.Repository
                         SKUDetailsDbDto savemode = MapSkuDetails(model.skuInfo.VendorProduct);
                         savemode.CreatedBy = 1;
                         savemode.CreatedOn=DateTime.Now;
+                        savemode.IsActive = true;
                         skuId = SaveSkuDetails(savemode);
                     }
 
@@ -220,7 +222,8 @@ namespace POEM.Services.Repository
                 semiMinWt = ParseDecimal(dto.semiMinWt),
                 centerMinWt = ParseDecimal(dto.centerMinWt),
                 SemiAdjWt = ParseDecimal(dto.SemiAdjWt),
-                CenterAdjWt = ParseDecimal(dto.CenterAdjWt)
+                CenterAdjWt = ParseDecimal(dto.CenterAdjWt),
+               
                 //CreatedBy = 1,
                 //CreatedOn = DateTime.Now
             };
@@ -230,6 +233,8 @@ namespace POEM.Services.Repository
         {
             return new SKUMetalDbDto
             {
+                CastingVendor = dto.castingVendorText,
+                CastingVendorID = dto.castingVendorId,
                 MetalText = dto.metalText,
                 MetalIdText = dto.metalId,
                 KaratText = dto.karatText,
@@ -374,10 +379,12 @@ namespace POEM.Services.Repository
                 Price1 = dto.Price1,
                 Price2 = dto.Price2,
                 Price3 = dto.Price3,
+                Price4= dto.Price4,
 
                 Margin1 = dto.Margin1,
                 Margin2 = dto.Margin2,
                 Margin3 = dto.Margin3,
+                Margin4 = dto.Margin4,
 
                 CompleteFOB = dto.CompleteFOB,
                 CompleteDuty = dto.CompleteDuty,
@@ -386,10 +393,12 @@ namespace POEM.Services.Repository
                 CompletePrice1 = dto.CompletePrice1,
                 CompletePrice2 = dto.CompletePrice2,
                 CompletePrice3 = dto.CompletePrice3,
+                CompletePrice4 = dto.CompletePrice4,    
 
                 CompleteMargin1 = dto.CompleteMargin1,
                 CompleteMargin2 = dto.CompleteMargin2,
                 CompleteMargin3 = dto.CompleteMargin3,
+                CompleteMargin4 = dto.CompleteMargin4,
                 LaborDutyVal=dto.LaborDutyVal,
                 LaborPenaltyVal=dto.LaborPenaltyVal,
                 LaborTariffVal=dto.LaborTariffVal,
@@ -507,9 +516,9 @@ namespace POEM.Services.Repository
                                {
                                    Sku = sku.SKUNumber,
                                    Top1Metal = metal.KaratText+" "+ metal.ColorText+" " + metal.MetalText ,
-                                   Price1 = labor.Price1 ?? 0.00m,
-                                   Price2 = labor.Price2 ?? 0.00m,
-                                   Price3 = labor.Price3 ?? 0.00m,
+                                   Price1 = labor.CompletePrice1,
+                                   Price2 = labor.CompletePrice2,
+                                   Price3 = labor.CompletePrice3,
                                    ModifiedDate = sku.ModifiedOn,
                                    IsActive = sku.IsActive 
                                })
@@ -558,6 +567,28 @@ namespace POEM.Services.Repository
             
         }
 
+        public bool Exists(string skuNumber, int skuid)
+        {
+            return  _context.SKUDetails.FirstOrDefault(s => s.SKUNumber == skuNumber && s.SKUId != skuid) != null   ;
+
+        }
+
+        /// <summary>
+        /// Set the active status for a SKU by id.
+        /// Returns true when update succeeds, false when SKU not found.
+        /// </summary>
+        public bool SetActiveStatus(long skuId, bool isActive)
+        {
+            var sku = _context.SKUDetails.SingleOrDefault(s => s.SKUId == skuId);
+            if (sku == null) return false;
+
+            sku.IsActive = isActive;
+            sku.ModifiedOn = DateTime.Now;
+            _context.Entry(sku).State = EntityState.Modified;
+            _context.SaveChanges();
+            return true;
+        }
+
         //public async Task<bool> GetImage(string skuNumber, int skuid)
         //{
         //    return await _context.SKUDetails.AnyAsync(s => s.SKUNumber == skuNumber && s.SKUId != skuid);
@@ -577,6 +608,9 @@ namespace POEM.Services.Repository
                 .Where(m => m.SKUId == skuEntity.SKUId)
                 .Select(m => new MetalDto
                 {
+                    
+                    castingVendorId = m.CastingVendorID,
+                    castingVendorText=m.CastingVendor,
                     metalText = m.MetalText,
                     metalId = m.MetalId.ToString(),
                     karatText = m.KaratText,
@@ -630,50 +664,93 @@ namespace POEM.Services.Repository
 
                 }).ToList();
 
-            // 4. Stones
-            var stones = _context.SKUStoneDetails
-                .Where(st => st.SKUId == skuEntity.SKUId)
-                .Select(st => new StoneDto
-                {
-                    StoneVendor = st.StoneVendor,
-                    StoneVendorCode = st.StoneVendorCode,
-                    StoneType = st.StoneType,
-                    ShapeText = st.ShapeText,
-                    SizeRange=st.SizeRange,
-                    Qty = st.StoneQty.ToString(),
-                    SemiMinWt = st.SemiMinWt.ToString(),
-                    CenterMinWt = st.CenterMinWt.ToString(),
-                    TotalMinWt = st.TotalMinWt.ToString(),
-                    StoneQuality = st.StoneQuality,
-                    StoneTotalCost = st.StoneTotalCost.ToString(),
-                    SettingLocation = st.SettingLocation,
-                    PerStoneWt = st.PerStoneWt.ToString(),
-                    TotalStoneWt = st.TotalStoneWt.ToString(),
-                    TotalAdjWt = st.TotalAdjWt.ToString(),
-                    TotalAdjStoneWt = st.TotalAdjStoneWt.ToString(),
-                    Growing = st.Growing,
-                    Shape = st.StoneShape,
-                    StoneCostPerCarat = st.StoneCostPerCarat.ToString(),
-                    TotalCost = st.SettingTotalCost.ToString(),
-                    SettingType = st.StoneSettingType,
-                    SettingTypeCode = st.StoneSettingTypeCode,
-                    SettingVendor = st.StoneSettingVendor,
-                    SettingVendorCode=st.StoneSettingVendorCode,
-                    CostPerStone = st.CostPerStone.ToString(),
-                    SemiAdjWt = st.SemiAdjWt.ToString(),
-                    MMSize = st.StoneMMSize,
-                    Width1 = st.StoneWidth1,
-                    Width2 = st.StoneWidth2,
-                    CenterAdjWt = st.CenterAdjWt.ToString(),
-                    Lab = st.Lab,
-                    StoneDutyVal = st.StoneDutyVal,
-                    StonePenaltyVal = st.StonePenaltyVal,
-                    StoneTariffVal = st.StoneTariffVal,
-                    SettingDutyVal  = st.SettingDutyVal,
-                    SettingPenaltyVal = st.SettingPenaltyVal,
-                    SettingTariffVal = st.SettingTariffVal
-                }).ToList();
-
+            //// 4. Stones
+            //var stones = _context.SKUStoneDetails
+            //    .Where(st => st.SKUId == skuEntity.SKUId)
+            //    .Select(st => new StoneDto
+            //    {
+            //        StoneVendor = st.StoneVendor,
+            //        StoneVendorCode = st.StoneVendorCode,
+            //        StoneType = st.StoneType,
+            //        ShapeText = st.ShapeText,
+            //        SizeRange=st.SizeRange,
+            //        Qty = st.StoneQty.ToString(),
+            //        SemiMinWt = st.SemiMinWt.ToString(),
+            //        CenterMinWt = st.CenterMinWt.ToString(),
+            //        TotalMinWt = st.TotalMinWt.ToString(),
+            //        StoneQuality = st.StoneQuality,
+            //        StoneTotalCost = st.StoneTotalCost.ToString(),
+            //        SettingLocation = st.SettingLocation,
+            //        PerStoneWt = st.PerStoneWt.ToString(),
+            //        TotalStoneWt = st.TotalStoneWt.ToString(),
+            //        TotalAdjWt = st.TotalAdjWt.ToString(),
+            //        TotalAdjStoneWt = st.TotalAdjStoneWt.ToString(),
+            //        Growing = st.Growing,
+            //        Shape = st.StoneShape,
+            //        StoneCostPerCarat = st.StoneCostPerCarat.ToString(),
+            //        TotalCost = st.SettingTotalCost.ToString(),
+            //        SettingType = st.StoneSettingType,
+            //        SettingTypeCode = st.StoneSettingTypeCode,
+            //        SettingVendor = st.StoneSettingVendor,
+            //        SettingVendorCode=st.StoneSettingVendorCode,
+            //        CostPerStone = st.CostPerStone.ToString(),
+            //        SemiAdjWt = st.SemiAdjWt.ToString(),
+            //        MMSize = st.StoneMMSize,
+            //        Width1 = st.StoneWidth1,
+            //        Width2 = st.StoneWidth2,
+            //        CenterAdjWt = st.CenterAdjWt.ToString(),
+            //        Lab = st.Lab,
+            //        StoneDutyVal = st.StoneDutyVal,
+            //        StonePenaltyVal = st.StonePenaltyVal,
+            //        StoneTariffVal = st.StoneTariffVal,
+            //        SettingDutyVal  = st.SettingDutyVal,
+            //        SettingPenaltyVal = st.SettingPenaltyVal,
+            //        SettingTariffVal = st.SettingTariffVal
+            //    }).ToList();
+            var stones = (from st in _context.SKUStoneDetails
+                          where st.SKUId == skuEntity.SKUId
+                          select new StoneDto
+                          {
+                              StoneVendor = st.StoneVendor,
+                              StoneVendorCode = st.StoneVendorCode,
+                              StoneType = st.StoneType,
+                              ShapeText = st.ShapeText,
+                              SizeRange = st.SizeRange,
+                              Qty = st.StoneQty.ToString(),
+                              SemiMinWt = st.SemiMinWt.ToString(),
+                              CenterMinWt = st.CenterMinWt.ToString(),
+                              TotalMinWt = st.TotalMinWt.ToString(),
+                              StoneQuality = st.StoneQuality,
+                              // use DiamondDetail.StoneQuality when available, otherwise fall back to stored value
+                              StoneQualityVal = st.StoneQuality,
+                              StoneTotalCost = st.StoneTotalCost.ToString(),
+                              SettingLocation = st.SettingLocation,
+                              PerStoneWt = st.PerStoneWt.ToString(),
+                              TotalStoneWt = st.TotalStoneWt.ToString(),
+                              TotalAdjWt = st.TotalAdjStoneWt.ToString(),
+                              TotalAdjStoneWt = st.TotalAdjStoneWt.ToString(),
+                              Growing = st.Growing,
+                              Shape = st.StoneShape,
+                              StoneCostPerCarat = st.StoneCostPerCarat.ToString(),
+                              TotalCost = st.SettingTotalCost.ToString(),
+                              SettingType = st.StoneSettingType,
+                              SettingTypeCode = st.StoneSettingTypeCode,
+                              SettingVendor = st.StoneSettingVendor,
+                              SettingVendorCode = st.StoneSettingVendorCode,
+                              CostPerStone = st.CostPerStone.ToString(),
+                              SemiAdjWt = st.SemiAdjWt.ToString(),
+                              MMSize = st.StoneMMSize,
+                              Width1 = st.StoneWidth1,
+                              Width2 = st.StoneWidth2,
+                              CenterAdjWt = st.CenterAdjWt.ToString(),
+                              Lab = st.Lab,
+                              StoneDutyVal = st.StoneDutyVal,
+                              StonePenaltyVal = st.StonePenaltyVal,
+                              StoneTariffVal = st.StoneTariffVal,
+                              SettingDutyVal = st.SettingDutyVal,
+                              SettingPenaltyVal = st.SettingPenaltyVal,
+                              SettingTariffVal = st.SettingTariffVal
+                          }).ToList();
             // 5. LaborInfo
             var labor = _context.SKULaborDetails
                 .FirstOrDefault(l => l.SKUId == skuEntity.SKUId);
@@ -709,8 +786,8 @@ namespace POEM.Services.Repository
                         subCategoryCode=skuEntity.SubCategoryCode,
                         collectionCode=skuEntity.CollectionCode,
                         createdBy=skuEntity.CreatedBy,
-                        createdOn=skuEntity.CreatedOn
-                        
+                        createdOn=skuEntity.CreatedOn,
+                        isActive=skuEntity.IsActive
                     },
                     Metals = metals,
                     Findings = findings
@@ -727,7 +804,27 @@ namespace POEM.Services.Repository
                     Price2 = labor.Price2 ?? 0.00m,
                     Price3 = labor.Price3 ?? 0.00m,
                     Price4=labor.Price4 ?? 0.00m,
+                    Margin1=labor.Margin1 ?? 0.00m,
+                    Margin2=labor.Margin2 ?? 0.00m,
+                    Margin3=labor.Margin3 ?? 0.00m, 
+                    Margin4=labor.Margin4 ??0.00m,
+                    
+
+
                     CompleteFOB = labor.CompleteFOB,
+                    CompletePrice1 = labor.CompletePrice1 ,
+                    CompletePrice2 = labor.CompletePrice2 ,
+                    CompletePrice3 = labor.CompletePrice3 ,
+                    CompletePrice4 = labor.CompletePrice4 ?? 0.00m,
+
+                    CompleteMargin1 = labor.CompleteMargin1,
+                    CompleteMargin2 = labor.CompleteMargin2,
+                    CompleteMargin3 = labor.CompleteMargin3,
+                    CompleteMargin4 = labor.CompleteMargin4 ?? 0.00m,
+
+
+
+
                     Remark = labor.Remark,
                     /* Added By Mahesh Start*/
                     DiaHandling= labor.DiaHandling,

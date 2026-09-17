@@ -46,7 +46,9 @@ namespace POEMPricing.Managers
                         "LaborLocation",
                         "LaborDuty", "LaborTariff", "LaborPenalty",
                         "FindingLocation",
-                        "FindingDuty", "FindingTariff", "FindingPenalty"
+                        "FindingDuty", "FindingTariff", "FindingPenalty",
+                        "SettingLocation",
+                        "SettingDuty", "SettingTariff", "SettingPenalty"
                     };
 
                     for (int i = 0; i < expectedHeaders.Count; i++)
@@ -87,12 +89,17 @@ namespace POEMPricing.Managers
                         var findingDutyStr = worksheet.Cell(row, 14).GetValue<string>().Trim();
                         var findingTariffStr = worksheet.Cell(row, 15).GetValue<string>().Trim();
                         var findingPenStr = worksheet.Cell(row, 16).GetValue<string>().Trim();
+                        var settingLocation = worksheet.Cell(row, 17).GetValue<string>().Trim();
+                        var settingDutyStr = worksheet.Cell(row, 18).GetValue<string>().Trim();
+                        var settingTariffStr = worksheet.Cell(row, 19).GetValue<string>().Trim();
+                        var settingPenStr = worksheet.Cell(row, 20).GetValue<string>().Trim();
 
                         // Skip fully blank rows
                         if (string.IsNullOrWhiteSpace(vendorLocation)
                             && string.IsNullOrWhiteSpace(diamondLocation)
                             && string.IsNullOrWhiteSpace(laborLocation)
-                            && string.IsNullOrWhiteSpace(findingLocation))
+                            && string.IsNullOrWhiteSpace(findingLocation)
+                            && string.IsNullOrWhiteSpace(settingLocation))
                             continue;
 
                         rows.Add(new DutyDetailsImportRowDto
@@ -104,7 +111,7 @@ namespace POEMPricing.Managers
                             DiamondLocation = diamondLocation ?? "",
                             LaborLocation = laborLocation ?? "",
                             FindingLocation = findingLocation ?? "",
-
+                            SettingLocation= settingLocation ?? "",
                             // bool values — empty cell = false
                             Duty = dutyStr.Equals("true", StringComparison.OrdinalIgnoreCase) || dutyStr == "1",
                             Tariff = tariffStr.Equals("true", StringComparison.OrdinalIgnoreCase) || tariffStr == "1",
@@ -118,6 +125,9 @@ namespace POEMPricing.Managers
                             FindingDuty = findingDutyStr.Equals("true", StringComparison.OrdinalIgnoreCase) || findingDutyStr == "1",
                             FindingTariff = findingTariffStr.Equals("true", StringComparison.OrdinalIgnoreCase) || findingTariffStr == "1",
                             FindingPenalty = findingPenStr.Equals("true", StringComparison.OrdinalIgnoreCase) || findingPenStr == "1",
+                            SettingDuty = settingDutyStr.Equals("true", StringComparison.OrdinalIgnoreCase) || settingDutyStr == "1",
+                            SettingTariff = settingTariffStr.Equals("true", StringComparison.OrdinalIgnoreCase) || settingTariffStr == "1",
+                            SettingPenalty = settingPenStr.Equals("true", StringComparison.OrdinalIgnoreCase) || settingPenStr == "1",
                         });
                     }
                 }
@@ -155,6 +165,11 @@ namespace POEMPricing.Managers
                 {
                     row.IsValid = false;
                     row.ErrorMessage1 = "finding  location is required.";
+                }
+                else if (string.IsNullOrWhiteSpace(row.SettingLocation))
+                {
+                    row.IsValid = false;
+                    row.ErrorMessage1 = "setting  location is required.";
                 }
                 else
                 {
@@ -232,7 +247,11 @@ namespace POEMPricing.Managers
                 FindingLocation = x.FindingLocation,
                 FindingDuty = x.FindingDuty,
                 FindingTariff = x.FindingTariff,
-                FindingPenalty = x.FindingPenalty
+                FindingPenalty = x.FindingPenalty,
+                SettingLocation = x.SettingLocation,    
+                SettingDuty = x.SettingDuty,    
+                SettingPenalty = x.SettingPenalty,  
+                SettingTariff = x.SettingTariff
             }).ToList();
 
             _repository.ReplaceDutyDetails(records);

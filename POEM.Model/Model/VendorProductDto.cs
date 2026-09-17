@@ -28,6 +28,7 @@ namespace POEM.Model.Model
         public string CenterAdjWt { get; set; }
         public int createdBy { get; set; }
         public DateTime createdOn { get; set; }
+        public bool isActive { get; set; } = true;
 
     }
 }
