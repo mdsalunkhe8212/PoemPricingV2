@@ -78,15 +78,7 @@
             <div class="collapse sidebar" id="sidebarMenu">
                 <nav class="nav flex-column py-3">
                     @Html.ActionLink("Home", "Index", "SKU", new { area = "" }, new { @class = "nav-link" })
-                    @if (User.IsInRole("Admin"))
-                    {
-                        @Html.ActionLink(
-                            "Users",
-                            "Index",
-                            "User",
-                            null,
-                            new { @class = "nav-link" })
-                    }
+                    
                     @Html.ActionLink("New", "Create", "SKU", new { area = "" }, new { @class = "nav-link" })
                     @if (User.IsInRole("Admin"))
                     {
@@ -122,6 +114,15 @@
                     <a class="nav-link" href="#">BOM</a>
                     <a class="nav-link" href="#">Proposals</a>
                     <a class="nav-link" href="#">Reports</a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        @Html.ActionLink(
+                            "Users",
+                            "Index",
+                            "User",
+                            null,
+                            new { @class = "nav-link" })
+                    }
                     <a class="nav-link" id="btnLogout" href="#">Logout</a>
                 </nav>
             </div>

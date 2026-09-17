@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -228,14 +229,14 @@ namespace POEMPricing.API
         }
         //GET: api/sku/stonequality
         [HttpGet]
-        [Route("stonequality/{StoneType}/{GrowingType}/{StoneShape}")]
-        public async Task<IHttpActionResult> stonequality([FromUri] string stonetype, string growingtype, string stoneshape)
+        [Route("stonequality/{StoneType}/{GrowingType}/{StoneShape}/{Lab}")]
+        public async Task<IHttpActionResult> stonequality([FromUri] string stonetype, string growingtype, string stoneshape,string Lab)
         {
             try
             {
                 if (growingtype == "Lab - HPHT  CVD") { growingtype = "Lab - HPHT / CVD"; }
                
-                var stoneQuality = _masterDataRepository.GetDropdownFromDb("StoneQuality", stonetype + '|' + growingtype + '|' + stoneshape);
+                var stoneQuality = _masterDataRepository.GetDropdownFromDb("StoneQuality", stonetype + '|' + growingtype + '|' + stoneshape+'|'+Lab);
                 await Task.Delay(0);
                 return Ok(stoneQuality);
             }
@@ -277,7 +278,14 @@ namespace POEMPricing.API
             if (weight == null)
                 return NotFound();
 
-            return Ok(new { perStoneWeight = weight });
+            // Return a flat JSON object with individual fields expected by the client
+            return Ok(new
+            {
+                perStoneWeight = weight.PerStoneWeight,
+                width1 = weight.Width1,
+                width2 = weight.Width2,
+                sizeRange = weight.SizeRange
+            });
         }
 
         // GET api/sku/stonecostpercarat?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
@@ -300,12 +308,12 @@ namespace POEMPricing.API
         // GET api/sku/stonecostpercarat?stoneType=...&growingType=...&stoneShape=...&lengthDiameter=...
         [HttpGet]
         [Route("stonecostpercarat")]
-        public async Task<IHttpActionResult> GetStoneCostPerCarat([FromUri] string vendor, string stoneType, [FromUri] string growingType, [FromUri] string stoneShape, [FromUri] string lengthDiameter, [FromUri] string stoneQuality)
+        public async Task<IHttpActionResult> GetStoneCostPerCarat([FromUri] string vendor, string stoneType, [FromUri] string growingType, [FromUri] string stoneShape, [FromUri] string lengthDiameter, [FromUri] string stoneQuality, [FromUri] string lab)
         {
-            if (string.IsNullOrWhiteSpace(stoneType) || string.IsNullOrWhiteSpace(stoneShape) || string.IsNullOrWhiteSpace(lengthDiameter) || string.IsNullOrWhiteSpace(stoneQuality))
-                return BadRequest("Missing required parameters: stoneType, stoneShape, lengthDiameter, stoneQuality.");
+            if (string.IsNullOrWhiteSpace(stoneType) || string.IsNullOrWhiteSpace(stoneShape) || string.IsNullOrWhiteSpace(lengthDiameter) || string.IsNullOrWhiteSpace(stoneQuality) || string.IsNullOrWhiteSpace(lab))
+                return BadRequest("Missing required parameters: stoneType, stoneShape, lengthDiameter, stoneQuality, and lab are required.");
             if (growingType == "Lab - HPHT  CVD") { growingType = "Lab - HPHT / CVD"; }
-            var cost = await _masterDataRepository.GetStoneCostPerCarat(vendor, stoneType, growingType, stoneShape, lengthDiameter, stoneQuality);
+            var cost = await _masterDataRepository.GetStoneCostPerCarat(vendor, stoneType, growingType, stoneShape, lengthDiameter, stoneQuality,lab);
 
             if (cost == null) {
                 cost = 0;
@@ -363,6 +371,13 @@ namespace POEMPricing.API
 
             try
             {
+
+                var Exists = _skuRepository.Exists(model.skuInfo.VendorProduct.skuNumber,(int) model.skuInfo.VendorProduct.skuId);
+
+                if (Exists) { 
+                throw new Exception("SKU Number already exists. Please use a different SKU Number.");
+                }
+
                 long skuId = _skuRepository.SaveSkuModule(model);
 
                 return Ok(new
@@ -449,6 +464,104 @@ namespace POEMPricing.API
                 return InternalServerError(ex);
             }
         }
+
+        // POST: api/sku/activate/{skunumber}
+        [HttpPost]
+        [Route("activate/{skunumber}")]
+        public async Task<IHttpActionResult> Activate([FromUri] string skunumber)
+        {
+            if (string.IsNullOrWhiteSpace(skunumber))
+                return BadRequest("Invalid skuid");
+
+            string decodedSku;
+            try
+            {
+                byte[] data = Convert.FromBase64String(skunumber);
+                decodedSku = Encoding.UTF8.GetString(data);
+            }
+            catch
+            {
+                return BadRequest("Invalid skuid encoding");
+            }
+
+            try
+            {
+                var skuModule = _skuRepository.GetSkuByNumber(decodedSku);
+                if (skuModule == null || skuModule.skuInfo == null || skuModule.skuInfo.VendorProduct == null)
+                    return NotFound();
+
+                var skuId = skuModule.skuInfo.VendorProduct.skuId;
+                var updated = _skuRepository.SetActiveStatus(skuId, true);
+                await Task.Delay(0);
+                if (!updated) return InternalServerError(new Exception("Failed to activate SKU"));
+                return Ok(new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        // POST: api/sku/inactivate/{skunumber}
+        [HttpPost]
+        [Route("inactivate/{skunumber}")]
+        public async Task<IHttpActionResult> Inactivate([FromUri] string skunumber)
+        {
+            if (string.IsNullOrWhiteSpace(skunumber))
+                return BadRequest("Invalid skuid");
+
+            string decodedSku;
+            try
+            {
+                byte[] data = Convert.FromBase64String(skunumber);
+                decodedSku = Encoding.UTF8.GetString(data);
+            }
+            catch
+            {
+                return BadRequest("Invalid skuid encoding");
+            }
+
+            try
+            {
+                var skuModule = _skuRepository.GetSkuByNumber(decodedSku);
+                if (skuModule == null || skuModule.skuInfo == null || skuModule.skuInfo.VendorProduct == null)
+                    return NotFound();
+
+                var skuId = skuModule.skuInfo.VendorProduct.skuId;
+                var updated = _skuRepository.SetActiveStatus(skuId, false);
+                await Task.Delay(0);
+                if (!updated) return InternalServerError(new Exception("Failed to inactivate SKU"));
+                return Ok(new { Success = true });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+        // POST: api/sku/setstatus/{skuid}/{isActive}
+        [HttpPost]
+        [Route("setstatus/{skuid}/{isActive}")]
+        public async Task<IHttpActionResult> SetStatus([FromUri] long skuid, [FromUri] bool isActive)
+        {
+            if (skuid <= 0)
+                return BadRequest("Invalid skuid");
+
+            try
+            {
+                var updated = _skuRepository.SetActiveStatus(skuid, isActive);
+                await Task.Delay(0);
+                if (!updated) return NotFound();
+                isActive = !isActive;
+                return Ok(new { Success = true, SKUId = skuid, IsActive = isActive });
+            }
+            catch (Exception ex)
+            {
+                return InternalServerError(ex);
+            }
+        }
+
+
 
     }
 }

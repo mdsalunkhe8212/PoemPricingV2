@@ -7,6 +7,8 @@ namespace POEM.Model.Model
 {
 	public class MetalDto
 	{
+        public string castingVendorText { get; set; }
+        public string castingVendorId { get; set; }
         public string metalText { get; set; }
         public string metalId { get; set; }
         public string karatText { get; set; }

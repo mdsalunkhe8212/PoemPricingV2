@@ -4,8 +4,8 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 -->
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <_PublishTargetUrl>E:\POEM\SourceCode\Publish\PUB20260526</_PublishTargetUrl>
-    <History>False|2026-06-26T09:52:13.2782499Z||;True|2026-05-25T18:45:32.3549777+05:30||;True|2026-05-19T14:34:36.8466016+05:30||;True|2026-05-12T13:32:10.5485225+05:30||;True|2026-04-23T16:53:22.7213954+05:30||;</History>
+    <_PublishTargetUrl>E:\POEM\SourceCode\Publish\PUB20260803</_PublishTargetUrl>
+    <History>True|2026-08-03T10:48:00.3117722Z||;False|2026-06-26T15:22:13.2782499+05:30||;True|2026-05-25T18:45:32.3549777+05:30||;True|2026-05-19T14:34:36.8466016+05:30||;True|2026-05-12T13:32:10.5485225+05:30||;True|2026-04-23T16:53:22.7213954+05:30||;</History>
     <LastFailureDetails />
   </PropertyGroup>
   <ItemGroup>
@@ -133,34 +133,34 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>05/14/2026 13:21:35</publishTime>
     </File>
     <File Include="bin/netstandard.dll">
-      <publishTime>04/17/2026 13:44:23</publishTime>
+      <publishTime>07/22/2026 11:44:26</publishTime>
     </File>
     <File Include="bin/Newtonsoft.Json.dll">
       <publishTime>05/14/2026 13:21:36</publishTime>
     </File>
     <File Include="bin/POEM.Model.dll">
-      <publishTime>06/26/2026 15:22:10</publishTime>
+      <publishTime>08/03/2026 16:17:57</publishTime>
     </File>
     <File Include="bin/POEM.Model.dll.config">
       <publishTime>05/14/2026 13:21:33</publishTime>
     </File>
     <File Include="bin/POEM.Model.pdb">
-      <publishTime>06/26/2026 15:22:10</publishTime>
+      <publishTime>08/03/2026 16:17:57</publishTime>
     </File>
     <File Include="bin/POEM.Services.dll">
-      <publishTime>06/26/2026 15:22:12</publishTime>
+      <publishTime>08/03/2026 16:17:58</publishTime>
     </File>
     <File Include="bin/POEM.Services.dll.config">
       <publishTime>06/25/2026 15:47:23</publishTime>
     </File>
     <File Include="bin/POEM.Services.pdb">
-      <publishTime>06/26/2026 15:22:12</publishTime>
+      <publishTime>08/03/2026 16:17:58</publishTime>
     </File>
     <File Include="bin/POEMPricing.dll">
-      <publishTime>06/26/2026 15:23:36</publishTime>
+      <publishTime>08/03/2026 16:17:59</publishTime>
     </File>
     <File Include="bin/POEMPricing.pdb">
-      <publishTime>06/26/2026 15:23:36</publishTime>
+      <publishTime>08/03/2026 16:17:59</publishTime>
     </File>
     <File Include="bin/roslyn/csc.exe">
       <publishTime>05/14/2026 13:21:35</publishTime>
@@ -619,7 +619,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>05/14/2026 13:21:34</publishTime>
     </File>
     <File Include="Scripts/login.js">
-      <publishTime>05/14/2026 13:21:34</publishTime>
+      <publishTime>07/18/2026 13:56:47</publishTime>
     </File>
     <File Include="Scripts/modernizr-2.8.3.js">
       <publishTime>05/14/2026 13:21:34</publishTime>
@@ -628,10 +628,13 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>05/27/2026 14:56:55</publishTime>
     </File>
     <File Include="Scripts/SKUCreate.js">
-      <publishTime>06/26/2026 15:10:31</publishTime>
+      <publishTime>08/03/2026 16:12:15</publishTime>
+    </File>
+    <File Include="Scripts/user.js">
+      <publishTime>07/17/2026 14:13:16</publishTime>
     </File>
     <File Include="Scripts/Validate-SKU.js">
-      <publishTime>06/26/2026 15:02:19</publishTime>
+      <publishTime>06/29/2026 17:37:04</publishTime>
     </File>
     <File Include="Views/Home/About.cshtml">
       <publishTime>05/14/2026 13:21:34</publishTime>
@@ -640,19 +643,25 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>05/14/2026 13:21:34</publishTime>
     </File>
     <File Include="Views/Home/Index.cshtml">
-      <publishTime>05/14/2026 13:21:34</publishTime>
+      <publishTime>07/17/2026 14:13:16</publishTime>
     </File>
     <File Include="Views/Import/Summary.cshtml">
-      <publishTime>06/25/2026 14:57:30</publishTime>
+      <publishTime>07/17/2026 14:13:16</publishTime>
     </File>
     <File Include="Views/Import/Upload.cshtml">
-      <publishTime>06/25/2026 14:57:30</publishTime>
+      <publishTime>07/17/2026 14:13:16</publishTime>
+    </File>
+    <File Include="Views/Report/CollectionProposal.cshtml">
+      <publishTime>07/17/2026 14:13:16</publishTime>
+    </File>
+    <File Include="Views/Report/CollectionProposalPdf.cshtml">
+      <publishTime>07/17/2026 14:13:16</publishTime>
     </File>
     <File Include="Views/Report/SKUReport.cshtml">
-      <publishTime>06/25/2026 14:57:30</publishTime>
+      <publishTime>07/17/2026 14:25:57</publishTime>
     </File>
     <File Include="Views/Report/SKUReportPdf.cshtml">
-      <publishTime>06/25/2026 14:57:30</publishTime>
+      <publishTime>07/17/2026 14:13:16</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>05/14/2026 13:21:34</publishTime>
@@ -661,13 +670,16 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>05/14/2026 13:21:34</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>06/25/2026 14:57:30</publishTime>
+      <publishTime>08/03/2026 16:16:58</publishTime>
     </File>
     <File Include="Views/SKU/Create.cshtml">
-      <publishTime>06/26/2026 15:21:26</publishTime>
+      <publishTime>08/03/2026 16:11:34</publishTime>
     </File>
     <File Include="Views/SKU/Index.cshtml">
-      <publishTime>05/14/2026 13:21:34</publishTime>
+      <publishTime>07/16/2026 12:59:15</publishTime>
+    </File>
+    <File Include="Views/User/Users.cshtml">
+      <publishTime>07/17/2026 14:13:16</publishTime>
     </File>
     <File Include="Views/Web.config">
       <publishTime>05/14/2026 13:21:34</publishTime>
@@ -676,7 +688,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
       <publishTime>05/14/2026 13:21:34</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>06/26/2026 15:22:13</publishTime>
+      <publishTime>08/03/2026 16:17:59</publishTime>
     </File>
   </ItemGroup>
 </Project>

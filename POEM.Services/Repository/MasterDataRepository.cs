@@ -381,10 +381,12 @@ namespace POEM.Services.Repository
                     var stonetype = stoneQualityParts[0];
                     var growingtype = stoneQualityParts[1];
                     var stoneshape = stoneQualityParts[2];
+                    var lab= stoneQualityParts[3];
                     items = _context.DiamondDetails
                         .Where(c => c.StoneType == stonetype
                         && c.GrowingType == growingtype
-                        && c.StoneShapeCode == stoneshape)
+                        && c.StoneShapeCode == stoneshape
+                        && c.StoneCertificate == lab)
                         .Select(f => new
                         {
                             Key = f.StoneQualityCode,
@@ -503,26 +505,41 @@ namespace POEM.Services.Repository
             return marginDetails;
         }
 
-        public Task<decimal?> GetPerStoneWeight(string stoneType, string growingType, string stoneShape, string lengthDiameter)
+        public async Task<POEM.Model.Model.PerStoneWeightDto> GetPerStoneWeight(string stoneType, string growingType, string stoneShape, string lengthDiameter)
         {
             // normalize inputs if needed
             var ld = (lengthDiameter ?? string.Empty).Trim();
-            if(!decimal.TryParse(ld, out decimal ldValue))
+            if (!decimal.TryParse(ld, out decimal ldValue))
             {
-                return Task.FromResult<decimal?>(null);
+                return null;
             }
             var ldDecimal = ldValue;
-            var result = _context.DiamondDetails
+
+            var record = await _context.DiamondDetails
                 .AsNoTracking()
                 .Where(dd =>
                     dd.StoneType == stoneType &&
                     dd.GrowingType == growingType &&
                     dd.StoneShape == stoneShape &&
                     dd.LengthDiameter == ldDecimal)
-                .Select(dd => (decimal?)dd.PerStoneWeight) // cast to nullable if column can be null
+                .Select(dd => new
+                {
+                    dd.PerStoneWeight,
+                    dd.Width1,
+                    dd.Width2,
+                    dd.SizeRange
+                })
                 .FirstOrDefaultAsync();
-            return result;
 
+            if (record == null) return null;
+
+            return new POEM.Model.Model.PerStoneWeightDto
+            {
+                PerStoneWeight = record.PerStoneWeight,
+                Width1 = record.Width1,
+                Width2 = record.Width2,
+                SizeRange = record.SizeRange
+            };
         }
         public Task<decimal?> GetStoneLengthDiameter(string vendor, string stoneType, string growingType, string stoneShape, string sizeRange)
         {
@@ -541,7 +558,7 @@ namespace POEM.Services.Repository
 
             return result;
         }
-        public Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality)
+        public Task<decimal?> GetStoneCostPerCarat(string vendor,string stoneType, string growingType, string stoneShape, string lengthDiameter, string stoneQuality,string lab)
         {
             // normalize inputs
             var ld = (lengthDiameter ?? string.Empty).Trim();
@@ -558,11 +575,13 @@ namespace POEM.Services.Repository
             var result = _context.DiamondDetails
                 .AsNoTracking()
                 .Where(dd =>
+                    dd.VendorCode==vendor &&
                     dd.StoneType == stoneType &&
                     dd.GrowingType == growingType &&
                     dd.StoneShapeCode == stoneShape &&
                     dd.LengthDiameter == ldDecimal &&
-                    dd.StoneQualityCode == stoneQuality)
+                    dd.StoneQualityCode == stoneQuality &&
+                    dd.StoneCertificate== lab)
                 .Select(dd => (decimal?)dd.CostPerCt)
                 .FirstOrDefaultAsync();
 
@@ -689,6 +708,17 @@ namespace POEM.Services.Repository
                     taxDetails.Duty = dutyDetails.FindingDuty;
                     taxDetails.Tariff = dutyDetails.FindingTariff;
                     taxDetails.Penalty = dutyDetails.FindingPenalty;
+                }
+            }
+            else if (taxtype == "setting")
+            {
+                dutyDetails = _context.DutyDetails
+                .FirstOrDefault(m => m.VendorLocation == vendorCountry && m.SettingLocation == country);
+                if (dutyDetails != null)
+                {
+                    taxDetails.Duty = dutyDetails.SettingDuty;
+                    taxDetails.Tariff = dutyDetails.SettingTariff;
+                    taxDetails.Penalty = dutyDetails.SettingPenalty;
                 }
             }
             DutyChartMasterDbDto dutyChartMaster = _context.DutyChartMaster

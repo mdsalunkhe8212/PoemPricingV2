@@ -579,6 +579,7 @@ namespace POEM.Services.Repository
                         _context.DiamondDetails.RemoveRange(existing);
                     }
 
+
                     _context.DiamondDetails.AddRange(recordsToInsert);
 
                     _context.SaveChanges(); // ← both delete + insert sent together

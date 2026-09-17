@@ -79,7 +79,7 @@ const FieldValidators = {
 
     '#txtSKUNumber': $el => {
         !$el.val().trim() ? "SKU Number is required." : null;
-        //validateSkuNumber();
+        validateSkuNumber();
         },
 
     '#ddlCategory': $el =>
@@ -99,8 +99,10 @@ const FieldValidators = {
     //},
 
     // ======================================================
-    // SKU INFORMATION - METAL 
+    // SKU INFORMATION - METAL
     // ======================================================
+    '#ddlCastingVendor': $el =>
+        !$el.val().trim() ? "Casting Vendor is required." : null,
     '#ddlMetal': $el =>
         !$el.val().trim() ? "Metal is required." : null,
 
@@ -258,21 +260,21 @@ async function validateSkuNumber() {
     // Required check first
     if (!val) {
         setFieldError($('#txtSKUNumber'), 'SKU Number is required.');
-        return 'SKU Number is required.';
+        return false;
     }
 
     // Server uniqueness check
     try {
         var skuid = 0;
-        if (skuModule.skuInfo.VendorProduct.skuId>0) {
+            if (skuModule.skuInfo.VendorProduct.skuId>0) {
             skuid = skuModule.skuInfo.VendorProduct.skuId;
         }
         const exists = await skuExistsAsync(val, skuid);
         if (exists) {
             setFieldError($('#txtSKUNumber'), 'SKU Number already exists.');
-            return 'SKU Number already exists.';
-        } else {
-            loadImage(val)
+            return false;
+        } else if (skuid===0){
+            //loadImage(val);
         }        
         return null;
     } catch (e) {
@@ -352,10 +354,18 @@ function validateAdjStoneGeneric(adjInput, baseWt) {
 
     }
 
-    if (!rule) {
-        setFieldError($(adjInput), "Base weight not in any defined range.");
-        return;
+    if (adjValue > 0 || baseWt > 0) {
+        if (!rule) {
+            setFieldError($(adjInput), "Base weight not in any defined range.");
+            return;
+        } 
     }
+    if (!rule) {
+        clearFieldError($(adjInput));
+        //setFieldError($(adjInput), "Base weight not in any defined range.");
+        return;
+    } 
+
 
     // Allowed range with 4 decimal precision
     if (istotal) {
@@ -394,12 +404,14 @@ function validateSemiAdj() {
     validateAdjStoneGeneric(txtSemiAdjWtVal, baseWt);
 }
 txtSemiAdjWtVal.addEventListener("input", validateSemiAdj);
-txtSemiAdjWtVal.addEventListener("blur", validateSemiAdj);
+txtSemiAdjWtVal.addEventListener("change", validateSemiAdj);
 
 // Center Adj Wt → base = CenterMinWt
 function validateCenterAdj() {
     const baseWt = parseFloat(txtCenterMinWtVal.value) || 0;
     validateAdjStoneGeneric(txtCenterAdjWtVal, baseWt);
 }
+
+
 txtCenterAdjWtVal.addEventListener("input", validateCenterAdj);
-txtCenterAdjWtVal.addEventListener("blur", validateCenterAdj);
+txtCenterAdjWtVal.addEventListener("change", validateCenterAdj);

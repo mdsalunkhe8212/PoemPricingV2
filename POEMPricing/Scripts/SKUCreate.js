@@ -54,6 +54,15 @@ let LaborTariffVal = 0.00;
 let laborPenaltyPer = 0.00;
 let LaborPenaltyVal = 0.00;
 
+
+let settingtotaltax = 0.0;
+let settingDutyper = 0.00
+let settingDutyVal = 0.00
+let settingTariffPer = 0.00;
+let settingTariffVal = 0.00;
+let settingPenaltyPer = 0.00;
+let settingPenaltyVal = 0.00;
+
 let diamondtotalSemitax = 0.0;
 let diamondtotalCentertax = 0.0;
 let diamondDutyper = 0.00
@@ -121,6 +130,7 @@ var centerPrice1Per = 0.00;
 var centerPrice2Per = 0.00;
 var centerPrice3Per = 0.00;
 var centerPrice4Per = 0.00;
+var settingData = false;
 //Added Byh Mahesh End
 // Load msd JSON once
 //fetch('/Config/CFPLaborDetails.json')
@@ -171,11 +181,47 @@ function debounce(fn, delay) {
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('btnActive').addEventListener('click', function () {
         const button = this;
-        if (button.textContent.trim() === 'Active') {
+        // current checkbox state: checked = active
+        const current = $("#chkStatus").is(":checked");
+        const newStatus = !current;
+        const skuID = parseInt(skuModule.skuInfo.VendorProduct.skuId);
+
+        // update UI immediately
+        $("#chkStatus").prop('checked', newStatus);
+        if (newStatus) {
             button.textContent = 'In Active';
+            button.classList.remove('btn-inactive');    
         } else {
             button.textContent = 'Active';
+            button.classList.add('btn-inactive');
         }
+
+        // Call new SetStatus API
+        fetch(`/api/sku/setstatus/${skuID}/${newStatus}`, {
+            method: 'POST',
+            headers: { 'Accept': 'application/json' }
+        })
+            .then(response => {
+                if (!response.ok) throw new Error('Server returned ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                // success - optionally show a notification
+                console.log('SKU status updated', data);
+            })
+            .catch(err => {
+                // revert UI on error
+                $("#chkStatus").prop('checked', current);
+                if (current) {
+                    button.textContent = 'In Active';
+                    button.classList.remove('btn-inactive');
+                } else {
+                    button.textContent = 'Active';
+                    button.classList.add('btn-inactive');
+                }
+                console.error('Failed to update SKU status', err);
+                alert('Failed to update SKU status: ' + err.message);
+            });
     });
 });
 
@@ -404,7 +450,7 @@ $(document).ready(function () {
                 });
             });
         }
-        $('#ddlFindingColor').change();
+        $('#ddlFindingColor').trigger("change");
     });
 
     /********************************************************
@@ -681,7 +727,7 @@ function HandlingCaluculation() {
     //if (DimondHndl < diaHndLow) {
     //    DimondHndl = diaHndLow;
     //}
-    $("#txtDiaHandling").val(parseFloat(DimondHndl).toFixed(2)).change();
+    $("#txtDiaHandling").val(parseFloat(DimondHndl).toFixed(2)).trigger("change");
 
     // Dimond Handling Calculation End
     var labourFindingcost = 0.0;
@@ -731,7 +777,8 @@ function HandlingCaluculation() {
     }
     $('#txtModel').val(parseFloat(vendorModelCost).toFixed(2));
     $('#txtCAM').val(parseFloat(vendorCamCost).toFixed(2));
-    $('#txtCAM').change();
+    $('#txtCAM').trigger("change");
+    calculateTotalLabor();
 
 }
 
@@ -740,7 +787,15 @@ $('#txtFindingSku').on('change', function () {
     loadFindingDetails($(this).val().trim());
 });
 
-
+$('#txtSemiMinWt').on('input', function () {
+    //$('#txtSemiAdjWt').trigger('change');
+    validateSemiAdj();
+    calculateTotals();
+}); 
+$('#txtCenterMinWt').on('input', function () {
+    validateCenterAdj();
+    calculateTotals();
+}); 
 
 $('#ddlLaborLocation').on('change', function () {
     //var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
@@ -764,11 +819,11 @@ $('#ddlLaborLocation').on('change', function () {
             subDropdown3.append($('<option>').val(item.Key).text(item.Value));
         });
     });
-
+    $("#ddlProcessType").trigger("change");
     const selectedValue = vendorlist[0];
     const selectedText = $('#ddlLaborLocation option:selected').text();
     getTaxDetails('labor', selectedValue);
-    fillLaborFOBValues();
+    
     console.log('labor:', selectedValue);
     
 });
@@ -819,6 +874,20 @@ $('#ddlProcessType').on('change', function () {
             }
             setProcessValues(data, 'txtRhodium', type);
         });
+        var ptype = encodeURIComponent('Laser Stamping');
+        type = 'Stamping';
+        url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + ptype +'/' + category;
+        $.getJSON(url, function (data) {
+            if (!data) {
+                data = {
+                    GoldCharges: 0,
+                    PlatinumCharges: 0,
+                    SilverCharges: 0,
+                }
+
+            }
+            setProcessValues(data, 'txtStamping', type);
+        });
     }
 
     //calculateTotalLabor();
@@ -826,7 +895,7 @@ $('#ddlProcessType').on('change', function () {
 
 function setProcessValues(data, ctrl, type) {
     type = decodeURI(type);
-    if (type === 'CFP' || type === 'Rhodium') {
+    if (type === 'CFP' || type === 'Rhodium' || type === 'Stamping') {
         if (metalLines[0].metalText === 'Gold') {
             $('#' + ctrl).val(data.GoldCharges);
         }
@@ -901,12 +970,12 @@ function setProcessValues(data, ctrl, type) {
         //    cost = data.SilverCharges;
         //}
 
-        var totalGoldRate = metalLines.filter(s => s.metalType.toLowerCase() === "gold")
+        var totalGoldRate = metalLines.filter(s => s.metalText.toLowerCase() === "gold")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
 
-        var totalPlatinumRate = metalLines.filter(s => s.metalType.toLowerCase() === "platinum")
+        var totalPlatinumRate = metalLines.filter(s => s.metalText.toLowerCase() === "platinum")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
-        var totalSilverRate = metalLines.filter(s => s.metalType.toLowerCase() === "silver")
+        var totalSilverRate = metalLines.filter(s => s.metalText.toLowerCase() === "silver")
             .reduce((sum, s) => sum + (parseFloat(s.metalCost) || 0), 0);
 
         var chargesGold = (parseFloat(totalGoldRate) * cost).toFixed(2);
@@ -944,9 +1013,13 @@ function setProcessValues(data, ctrl, type) {
     if (el) {
         el.addEventListener("change", function () {
             var ctrl = this.id
-            var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
+            var vendorlist = $('#ddlLaborLocation').val().split('|');
+            var vendor = encodeURIComponent(vendorlist[0]);
+            // var vendor = encodeURIComponent($('#ddlLaborLocation  option:selected').text().trim());
             var type = encodeURIComponent($(this).val().trim());
-            var category = encodeURIComponent($('#' + ctrl + '  option:selected').text().trim());
+            // var category = encodeURIComponent($('#' + ctrl + '  option:selected').text().trim());
+            var category = encodeURIComponent($('#ddlCategory  option:selected').text().trim());
+
             var url = webRoot + '/api/sku/getprocesscost/' + vendor + '/' + type + '/' + category;
             if (category.trim().length > 0) {
                 $.getJSON(url, function (data) {
@@ -1233,6 +1306,8 @@ function readMetalForm() {
     vendorPenaltyVal = cost * vendorPenaltyPer;
     vendorTariffVal = cost * vendorTariffPer;
     return {
+        castingVendorText: $('#ddlCastingVendor option:selected').text(),
+        castingVendorId: $('#ddlCastingVendor').val(),
         metalText: $('#ddlMetal option:selected').text(),
         metalId: $('#ddlMetal').val(),
         karatText: $('#ddlKarat option:selected').text(),
@@ -1272,6 +1347,7 @@ function renderMetalGrid() {
         vendortotaltax += row.metalDutyVal + row.metalPenaltyVal + row.metalTariffVal;
         const tr = `
             <tr data-index="${idx}">
+                <td class="text-center">${row.castingVendorText}</td>
                 <td class="text-center">${row.metalText}</td>
                 <td class="text-center">${row.karatText}</td>
                 <td class="text-center">${row.colorText}</td>
@@ -1301,6 +1377,7 @@ $(function () {
         if (validateButtonAddUpdate("btnMetalAddUpdate")) {
             const row = readMetalForm();
             metalLines.push(row);
+            $('#ddlCastingVendor').val('');
             $('#ddlMetal').val('');
             $('#txtMetalRatePOz').val('0.00');
             $('#ddlKarat').val('');
@@ -1336,7 +1413,7 @@ function calculateMetalCost() {
     const rateOz = parseFloat($('#txtMetalRatePOz').val()) || 0;
     const metal = $('#ddlMetal').val();
     const karat = parseFloat($('#ddlKarat').val()) || 24;
-    const vendor = $('#ddlVendor').val().trim();
+    const vendor = $('#ddlCastingVendor').val().trim();
     calculateRatePerGram(metal, rateOz, karat, vendor)
         .then(rate => {
             if (rate) {
@@ -1358,16 +1435,16 @@ function calculateMetalCost() {
 
 
 
-    calculateRatePerGram(metal, rateOz, karat, vendor)
-        .then(rate => {
-            if (rate) {
-                console.log("Rate per gram:", rate);
-                $("#txtMetalRatePerGm").val(rate);
-            } else {
-                console.log("Invalid inputs");
-            }
-        })
-        .catch(err => console.error("Error fetching metal loss:", err));
+    // calculateRatePerGram(metal, rateOz, karat, vendor)
+    //     .then(rate => {
+    //         if (rate) {
+    //             console.log("Rate per gram:", rate);
+    //             $("#txtMetalRatePerGm").val(rate);
+    //         } else {
+    //             console.log("Invalid inputs");
+    //         }
+    //     })
+    //     .catch(err => console.error("Error fetching metal loss:", err));
 }
 
 /************************************************************
@@ -1377,7 +1454,7 @@ function calculateMetalCost() {
 //    const metal = $('#ddlMetal').val();
 //    const rateOz = parseFloat($('#txtMetalRatePOz').val()) || 0;
 //    const karat = parseFloat($('#ddlKarat').val()) || 24;
-//    const vendor = $('#ddlVendor option:selected').text().trim();
+//    const vendor = $('#ddlCastingVendor option:selected').text().trim();
 
 //    if (!metal || !vendor || !rateOz) {
 //        $('#txtMetalRatePerGm').val('');
@@ -1414,7 +1491,7 @@ function calculateRatePerGram(metal, rateOz, karat = 24, vendor) {
             encodeURIComponent(metal);
 
         $.getJSON(url, function (data) {
-            const first = (data && data.length) ? data[0] : null;
+            const first = (data && data.length) ? data[0] : 0;
             const metalLossPercent = first ? parseFloat(first.Value) || 0 : 0;
 
             const lossFactor = 1 + (metalLossPercent / 100.0);
@@ -1470,6 +1547,7 @@ const $txtTotalStoneWt = $('#txtTotalStoneWt'); // referenced but missing earlie
 const $costPerStone = $('#txtCostPerStone');
 const $stoneQty = $('#txtStoneQty');
 const $totalCost = $('#txtTotalCost');
+const $txtPerStoneWt = $('#txtPerStoneWt');
 
 
 // ======================================================
@@ -1512,6 +1590,7 @@ function parseValOrText($el) {
 
 
 $ddlSizeRange.on('change', function () {
+    return;
      const stoneType = $stoneType.val();
     const growingType = $growingType.val();
     const stoneShape = $stoneShape.find('option:selected').text() || '';
@@ -1554,7 +1633,7 @@ $ddlSizeRange.on('change', function () {
 async function fetchAndSetCost() {
     const stoneQuality = parseValOrText($ddlQuality);
     const lengthDiameter = ($mmSize.val() || '').toString().trim();
-
+    const stoneqty = $stoneQty.val() || 0;
     if (!stoneQuality || !lengthDiameter) {
         $txtCost.val('');
         return;
@@ -1565,6 +1644,7 @@ async function fetchAndSetCost() {
     //const stoneShape = $stoneShape.find('option:selected').text() || '';
     const stoneShapeCpde = $stoneShape.val() || '';
     const vendor = $stoneVendor.val();
+    var lab = $('#ddlLab').val();
     $.ajax({
         url: webRoot + '/api/sku/stonecostpercarat',
         method: 'GET',
@@ -1574,7 +1654,8 @@ async function fetchAndSetCost() {
             growingType: growingType,
             stoneShape: stoneShapeCpde,
             lengthDiameter: lengthDiameter,
-            stoneQuality: stoneQuality
+            stoneQuality: stoneQuality,
+            lab: lab
         },
         beforeSend: function () {
             //$txtCost.prop('disabled', true);
@@ -1583,9 +1664,15 @@ async function fetchAndSetCost() {
             if (res && res.stoneCostPerCarat !== undefined && res.stoneCostPerCarat !== null) {
                 const cost = Number(res.stoneCostPerCarat).toFixed(2);
                 $txtCost.val(cost);
+                calculatetStoneTotalCost();
+                //const qty = parseNumber($stoneQty.val())||0;
+                //const per = parseFloat($txtPerStoneWt.val())||0;
+                //const total = qty * per;
 
-                const adjWt = parseFloat($txtTotalAdjStoneWt.val()) || parseFloat($txtTotalStoneWt.val()) || 0;
-                $txtStoneTotalCost.val((res.stoneCostPerCarat * adjWt).toFixed(2));
+                //$txtTotalStoneWt.val(total.toFixed(3));
+                //$txtTotalAdjStoneWt.val(total.toFixed(3));
+                //const adjWt = parseFloat($txtTotalAdjStoneWt.val()) || parseFloat($txtTotalStoneWt.val()) || 0;
+                //$txtStoneTotalCost.val((res.stoneCostPerCarat * adjWt).toFixed(2));
             } else {
                 $txtCost.val('');
             }
@@ -1598,7 +1685,16 @@ async function fetchAndSetCost() {
         }
     });
 }
-
+function calculatetStoneTotalCost() {
+    const qty = parseNumber($stoneQty.val()) || 0;
+    const per = parseFloat($txtPerStoneWt.val()) || 0;
+    const total = qty * per;
+    const stonecostpercaret = $txtCost.val();
+    $txtTotalStoneWt.val(total.toFixed(3));
+    //$txtTotalAdjStoneWt.val(total.toFixed(3));
+    const adjWt = parseFloat($txtTotalAdjStoneWt.val()) || parseFloat($txtTotalStoneWt.val()) || 0;
+    $txtStoneTotalCost.val((parseFloat(stonecostpercaret) * adjWt).toFixed(2));
+}
 const costHandler = debounce(fetchAndSetCost, 250);
 
 // wire dependent controls
@@ -1608,8 +1704,11 @@ $ddlStoneType.on('change', costHandler);
 $ddlGrowingType.on('change', costHandler);
 $ddlStoneShape.on('change', costHandler);
 $ddlSizeRange.on('change', costHandler);
-$ddlQuality.on('input change', costHandler);
-$txtTotalAdjStoneWt.on('input change', costHandler);
+//$stoneQty.on('input change', costHandler);
+$stoneQty.on('input change', calculatetStoneTotalCost);
+
+$ddlQuality.on('change', costHandler);
+$txtTotalAdjStoneWt.on('input change', calculatetStoneTotalCost);
 
 
 // initial load
@@ -1638,6 +1737,8 @@ $('#ddlSettingVendor').on('change', function () {
             settingType.append($('<option>').val(item.Key).text(item.Value));
         });
     });
+
+    getTaxDetails('setting', vendor);
 });
 
 
@@ -1736,8 +1837,9 @@ $('#ddlStoneShape').on('change', function () {
     const stoneType = $('#ddlStoneType').val();
     const growing = $('#ddlGrowing').val();
     const vendor = $('#ddlStoneVendor').val();
+    const lab = $('#ddlLab').val();
     $.get(webRoot + 'api/sku/stonequality/' +
-        stoneType + '/' + growing + '/' + stoneShape,
+        stoneType + '/' + growing + '/' + stoneShape + '/' + lab,
         function (data) {
             const stoneQuality = $('#ddlStoneQuality');
             stoneQuality.empty().append('<option value=""></option>');
@@ -1783,29 +1885,39 @@ updatePerStone();
 /************************************************************
  * TOTAL STONE WEIGHT CALCULATION
  ************************************************************/
-const $qty = $('#txtStoneQty');
-const $per = $('#txtPerStoneWt');
+//const $qty = $('#txtStoneQty');
+//const $per = $('#txtPerStoneWt');
 
 
-function recalcTotal() {
-    const qty = parseNumber($qty.val());
-    const per = parseNumber($per.val());
-    const total = qty * per;
+//function recalcTotal() {
+//    const qty = parseNumber($qty.val());
+//    const per = parseNumber($per.val());
+//    const total = qty * per;
 
-    $txtTotalStoneWt.val(total.toFixed(3));
-    $txtTotalAdjStoneWt.val(total.toFixed(3));
+//    $txtTotalStoneWt.val(total.toFixed(3));
+//    $txtTotalAdjStoneWt.val(total.toFixed(3));
 
-}
+//}
 
-$qty.on('input change', recalcTotal);
-$per.on('input change', recalcTotal);
-recalcTotal();
+//$qty.on('input change', recalcTotal);
+//$per.on('input change', recalcTotal);
+//recalcTotal();
 
 /************************************************************
  * PER-STONE WEIGHT API
  ************************************************************/
 function loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter) {
     var errormsg = "Per Stone Wt not found for given size.";
+    // If lengthDiameter is not provided or shorter than 4 characters, reset dependent fields and skip API call
+    var ld = lengthDiameter ? lengthDiameter.toString().trim() : '';
+    if (!ld || ld.length < 4) {
+        $('#txtStoneWidth1').val('');
+        $('#txtStoneWidth2').val('');
+        $('#txtPerStoneWt').val('');
+        $('#txtStoneTotalCost').val('');
+        $('#ddlSizeRange').val('');
+        return;
+    }
     $.ajax({
         url: webRoot + '/api/sku/perstoneweight',
         method: 'GET',
@@ -1820,6 +1932,26 @@ function loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter) 
                 $('#txtPerStoneWt').val(Number(res.perStoneWeight).toFixed(3));
             } else {
                 $('#txtPerStoneWt').val('');
+            }
+
+            // Also update Width1, Width2 and SizeRange when API provides them (do not trigger change events)
+            if (res && res.width1 !== undefined && res.width1 !== null) {
+                $('#txtStoneWidth1').val(res.width1);
+            } else {
+                $('#txtStoneWidth1').val('');
+            }
+
+            if (res && res.width2 !== undefined && res.width2 !== null) {
+                $('#txtStoneWidth2').val(res.width2);
+            } else {
+                $('#txtStoneWidth2').val('');
+            }
+
+            if (res && res.sizeRange !== undefined && res.sizeRange !== null) {
+                // set dropdown value without triggering change
+                $('#ddlSizeRange').val(res.sizeRange);
+            } else {
+                $('#ddlSizeRange').val('');
             }
         },
         error: function (jqXHR, textStatus, errorThrown) {
@@ -1848,10 +1980,16 @@ let stoneEditIndex = -1; // -1 = add mode, >=0 = edit mode
 function getStoneModel() {
 
     var totalCost = parseFloat($('#txtStoneTotalCost').val());
+    var settingtotalCost = parseFloat($('#txtTotalCost').val());
     var settinglocation = $('#ddlSettingLocation').val();
         diamondDutyVal = totalCost * diamondDutyper;
         diamondPenaltyVal = totalCost * diamondPenaltyPer;
-        diamondTariffVal = totalCost * diamondTariffPer;
+    diamondTariffVal = totalCost * diamondTariffPer;
+
+    settingDutyVal = settingtotalCost * settingDutyper;
+    settingPenaltyVal = settingtotalCost * settingPenaltyPer;
+    settingTariffVal = settingtotalCost * settingTariffPer;
+
     //if (settinglocation === 'Semi') {
     //    diamondDutyVal = totalCost * diamondDutyper;
     //    diamondPenaltyVal = totalCost * diamondPenaltyPer;
@@ -1884,6 +2022,7 @@ function getStoneModel() {
         TotalAdjStoneWt: $('#txtTotalAdjStoneWt').val(),
 
         StoneQuality: $('#ddlStoneQuality').val(),
+        StoneQualityText: $('#ddlStoneQuality option:selected').text(),
         StoneCostPerCarat: $('#txtStoneCostPerCarat').val(),
         StoneTotalCost: $('#txtStoneTotalCost').val(),
 
@@ -1903,9 +2042,9 @@ function getStoneModel() {
         StoneDutyVal: diamondDutyVal,
         StonePenaltyVal: diamondPenaltyVal,
         StoneTariffVal: diamondTariffVal,
-        SettingDutyVal: 0.00,
-        SettingPenaltyVal: 0.00,
-        SettingTariffVal: 0.00,
+        SettingDutyVal: settingDutyVal,
+        SettingPenaltyVal: settingPenaltyVal,
+        SettingTariffVal: settingTariffVal,
     };
 }
 //Added By Mahesh   Start
@@ -1924,28 +2063,11 @@ $('#btnStoneAddUpdate').on('click', function () {
         return 0;
     }
     const model = getStoneModel();
-    totalStoneQty = parseInt(totalStoneQty) + parseInt(model.Qty);
     // Total Center and Simi cost accumulators
-    if (model.SettingLocation === 'Center') {
-        totalCenterStoneCost += parseFloat(model.StoneTotalCost) || 0;
-        totalCenterWt += parseFloat(model.TotalStoneWt) || 0;
-        totalCenterSettingCost += parseFloat(model.TotalCost) || 0;
-        totalCenterAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;//added By Mahesh
-        $('#txtCenterAdjWt').prop('disabled', false);
-
-    }
-    else {
-        totalSemiStoneCost += parseFloat(model.StoneTotalCost) || 0;
-        totalSemiWt += parseFloat(model.TotalStoneWt) || 0;
-        totalSemiSettingCost += parseFloat(model.TotalCost) || 0;
-        totalSemiAdjWt += parseFloat(model.TotalAdjStoneWt) || 0;  //added By Mahesh
-        $('#txtSemiAdjWt').prop('disabled', false);
-    }
-    $('#txtSemiMinWt').val(parseFloat(totalSemiWt).toFixed(3));
-    $('#txtCenterMinWt').val(parseFloat(totalCenterWt).toFixed(3));
-    $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(3));//added By Mahesh
-    $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(3));//added By Mahesh
-    calculateTotals();
+   
+   
+   
+   
     if (stoneEditIndex === -1) {
         // ADD
         stoneList.push(model);
@@ -1953,10 +2075,21 @@ $('#btnStoneAddUpdate').on('click', function () {
         // UPDATE
         stoneList[stoneEditIndex] = model;
         stoneEditIndex = -1;
+        
         $('#btnStoneAddUpdate').text('Add Stone');
     }
 
     renderStoneTable();
+     $('#txtSemiAdjWt').val(parseFloat(totalSemiAdjWt).toFixed(3));//added By Mahesh
+    $('#txtCenterAdjWt').val(parseFloat(totalCenterAdjWt).toFixed(3));//added By Mahesh
+    calculateTotals();
+    if (model.SettingLocation === 'Center') {
+        validateCenterAdj();
+
+    }
+    else {
+        validateSemiAdj();
+    }
     clearStoneControls();
     // $("#ddlStoneVendor").focus();
 });
@@ -1969,6 +2102,8 @@ function renderStoneTable() {
     totalCosttotal = 0;
     $('#txtCenterAdjWt').prop('disabled', true);
     $('#txtSemiAdjWt').prop('disabled', true);
+   
+
     stoneList.sort(function (a, b) {
 
         // 1. SettingLocation (string)
@@ -1986,16 +2121,30 @@ function renderStoneTable() {
     });
     diamondtotalCentertax = 0.00;
     diamondtotalSemitax = 0.00;
-    //totalCenterSettingCost = 0.00;
-    //totalSemiSettingCost = 0.00;
+    totalCenterSettingCost = 0.00;
+    totalSemiSettingCost = 0.00;
+    totalCenterAdjWt = 0.00;
+    totalSemiAdjWt = 0.00;
+    totalCenterStoneCost = 0.00;
+    totalSemiStoneCost = 0.00;
+    totalCenterWt = 0.00;
+    totalSemiWt = 0.00;
     stoneList.forEach((s, i) => {
-        
+        totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
         if (s.SettingLocation === 'Center') {
-            $('#txtCenterAdjWt').prop('disabled', false);
+            $('#txtCenterAdjWt').prop('disabled', true  );
+            totalCenterStoneCost += parseFloat(s.StoneTotalCost) || 0;
+            totalCenterWt += parseFloat(s.TotalStoneWt) || 0;
+            totalCenterSettingCost += parseFloat(s.TotalCost) || 0;
+            totalCenterAdjWt += parseFloat(s.TotalAdjStoneWt) || 0;//added By Mahesh
             diamondtotalCentertax += (parseFloat(s.StoneDutyVal) + parseFloat(s.StonePenaltyVal) + parseFloat(s.StoneTariffVal));
             //totalCenterSettingCost += s.TotalCost;
         }else{
-            $('#txtSemiAdjWt').prop('disabled', false);
+            $('#txtSemiAdjWt').prop('disabled', true);
+            totalSemiStoneCost += parseFloat(s.StoneTotalCost) || 0;
+            totalSemiWt += parseFloat(s.TotalStoneWt) || 0;
+            totalSemiSettingCost += parseFloat(s.TotalCost) || 0;
+            totalSemiAdjWt += parseFloat(s.TotalAdjStoneWt) || 0;  //added By Mahesh
             diamondtotalSemitax += (parseFloat(s.StoneDutyVal) + parseFloat(s.StonePenaltyVal) + parseFloat(s.StoneTariffVal));
             //totalSemiSettingCost += s.TotalCost;
         }
@@ -2005,19 +2154,19 @@ function renderStoneTable() {
                 <td>${s.SettingLocation}</td>
                 <td>${s.ShapeText}</td>
                 <td class="text-center">${s.MMSize}</td>
-                <td class="text-center">${s.PerStoneWt}</td>
+                <td class="text-center">${parseFloat(s.PerStoneWt).toFixed(3) }</td>
                 <td class="text-center">${s.Qty}</td>
-                <td class="text-center">${s.TotalStoneWt}</td>
-                <td class="text-center">${s.TotalAdjStoneWt}</td>
+                <td class="text-center d-none">${s.TotalStoneWt}</td>
+                <td class="text-center">${parseFloat(s.TotalAdjStoneWt).toFixed(3) }</td >
                 <td>${s.SettingVendor}</td>
-                <td class="text-center">$${(parseFloat(s.TotalCost) + parseFloat(s.StoneTotalCost))}</td>
+                <td class="text-center">$${parseFloat((parseFloat(s.TotalCost) + parseFloat(s.StoneTotalCost))).toFixed(2) }</td>
                 <td class="text-center">
                     <button class="btn btn-sm btn-info m-1" onclick="setStoneData(${i})">View</button>
                     <button class="btn btn-sm btn-danger  m-1" onclick="deleteStone(${i})">Delete</button>
                 </td>
             </tr>
         `;
-        totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
+       // totalStoneQty = parseInt(totalStoneQty) + parseInt(s.Qty);
         totalTotalStoneWt = parseFloat(totalTotalStoneWt) + parseFloat(s.TotalStoneWt);
         totalTotalAdjStoneWt = parseFloat(totalTotalAdjStoneWt) + parseFloat(s.TotalAdjStoneWt);
         totalCosttotal = parseFloat(totalCosttotal) + parseFloat(s.TotalCost) + parseFloat(s.StoneTotalCost);
@@ -2030,7 +2179,7 @@ function renderStoneTable() {
                 <td></td>
                                 <td></td>
                 <td class="text-center">${totalStoneQty}</td>
-                <td class="text-center">${totalTotalStoneWt.toFixed(3)}</td>
+                <td class="text-center d-none">${totalTotalStoneWt.toFixed(3)}</td>
                 <td class="text-center">${totalTotalAdjStoneWt.toFixed(3)}</td>
                 <td></td>
                 <td class="text-center">$${totalCosttotal.toFixed(2)}</td>
@@ -2123,8 +2272,8 @@ function deleteStone(index) {
 
     }
     totalStoneQty = parseInt(totalStoneQty) - parseInt(stoneList[index].Qty);
-    $('#txtSemiMinWt').val(Number(totalSemiWt).toFixed(3));
-    $('#txtCenterMinWt').val(Number(totalCenterWt).toFixed(3));
+    //$('#txtSemiMinWt').val(Number(totalSemiWt).toFixed(3));
+    //$('#txtCenterMinWt').val(Number(totalCenterWt).toFixed(3));
 
     $('#txtSemiAdjWt').val(Number(totalSemiAdjWt).toFixed(3));//added By Mahesh
     $('#txtCenterAdjWt').val(Number(totalCenterAdjWt).toFixed(3));//added By Mahesh
@@ -2136,46 +2285,48 @@ function deleteStone(index) {
 }
 
 function setStoneData(index) {
+    settingData = true;
     var data = stoneList[index];
-    $('#ddlStoneVendor').val(data.StoneVendorCode);
-    $('#ddlStoneType').val(data.StoneType).trigger('change');
+    stoneEditIndex = index;
+    $('#btnStoneAddUpdate').text("Update Stone");
+    $('#ddlStoneVendor').val(data.StoneVendorCode).trigger('change').addClass('disabled').attr('disabled', true);
+    $('#ddlStoneType').val(data.StoneType).trigger('change').addClass('disabled').attr('disabled', true);
 
-    $('#ddlGrowing').val(data.Growing);
-    $('#ddlSettingLocation').val(data.SettingLocation);
-    $('#ddlLab').val(data.Lab);
+    $('#ddlGrowing').val(data.Growing).addClass('disabled').attr('disabled', true);
+    $('#ddlSettingLocation').val(data.SettingLocation).addClass('disabled').attr('disabled', true);
+    $('#ddlLab').val(data.Lab).addClass('disabled').attr('disabled', true);
     setTimeout(function () {
-        $('#ddlStoneShape').val(data.Shape).trigger('change');
+        $('#ddlStoneShape').val(data.Shape).trigger('change').addClass('disabled').attr('disabled', true);
         setTimeout(function () {
-            $('#ddlStoneQuality').val(data.StoneQuality);
-            $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat);
-            $('#ddlSizeRange').val(data.SizeRange); 
+            $('#ddlStoneQuality').val(data.StoneQuality).addClass('disabled').attr('disabled', true);
+            $('#txtStoneCostPerCarat').val(data.StoneCostPerCarat).addClass('disabled').attr('disabled', true);
+            $('#ddlSizeRange').val(data.SizeRange);//.addClass('disabled').attr('disabled', true); 
 
         }, 800);
     }, 800);
     //$('#ddlStoneShape').val(data.Shape);
     // ShapeText usually not set manually (comes from dropdown)
 
-    $('#txtStoneMMSize').val(data.MMSize);
-    $('#txtStoneWidth1').val(data.Width1);
-    $('#txtStoneWidth2').val(data.Width2);
+    $('#txtStoneMMSize').val(data.MMSize);//.addClass('disabled').attr('disabled', true);
+    $('#txtStoneWidth1').val(data.Width1).addClass('disabled').attr('disabled', true);
+    $('#txtStoneWidth2').val(data.Width2).addClass('disabled').attr('disabled', true);
 
-    $('#txtPerStoneWt').val(data.PerStoneWt);
-    $('#txtStoneQty').val(data.Qty);
+    $('#txtPerStoneWt').val(data.PerStoneWt).addClass('disabled').attr('disabled', true);
+    $('#txtStoneQty').val(data.Qty);//.addClass('disabled').attr('disabled', true);
     $('#txtTotalStoneWt').val(data.TotalStoneWt);
     $('#txtTotalAdjStoneWt').val(data.TotalAdjStoneWt);
 
     // $('#ddlStoneQuality').val(data.StoneQuality);
 
-    $('#txtStoneTotalCost').val(data.StoneTotalCost);
+    $('#txtStoneTotalCost').val(data.StoneTotalCost).addClass('disabled').attr('disabled', true);
 
-    $('#ddlSettingVendor').val(data.SettingVendorCode).trigger('change');
+    $('#ddlSettingVendor').val(data.SettingVendorCode).addClass('disabled').attr('disabled', true).trigger('change');
     setTimeout(function () {
-        $('#ddlSettingType').val(data.SettingTypeCode);
+        $('#ddlSettingType').val(data.SettingTypeCode).addClass('disabled').attr('disabled', true);
     }, 800);
     //$('#ddlSettingType').val(data.SettingType);
-    $('#txtCostPerStone').val(data.CostPerStone);
-    $('#txtTotalCost').val(data.TotalCost);
-
+    $('#txtCostPerStone').val(data.CostPerStone).addClass('disabled').attr('disabled', true);
+    $('#txtTotalCost').val(data.TotalCost).addClass('disabled').attr('disabled', true);
     //$('#txtSemiMinWt').val(data.SemiMinWt);
     //$('#txtSemiAdjWt').val(data.SemiAdjWt);
     //$('#txtCenterMinWt').val(data.CenterMinWt);
@@ -2183,35 +2334,41 @@ function setStoneData(index) {
     //$('#txtTotalMinWt').val(data.TotalMinWt);
     //$('#txtTotalAdjWt').val(data.TotalAdjWt);
     $('html, body').animate({ scrollTop: 0 }, 800);
-    $('#btnStoneAddUpdate').addClass('disabled').attr('disabled', true);
+    /*$('#btnStoneAddUpdate').addClass('disabled').attr('disabled', true)*/
+    
+    settingData = false;
 }
 
 function clearStoneControls() {
-    $('#ddlStoneVendor').val('');
-    $('#ddlStoneType').val('');
-    $('#ddlGrowing').val('');
-    $('#ddlSettingLocation').val('');
-    $('#ddlLab').val('');
-    $('#ddlStoneShape').val('');
+    settingData = true;
+    $('#ddlStoneVendor').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlStoneType').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlGrowing').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlSettingLocation').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlLab').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlStoneShape').val('').removeClass('disabled').attr('disabled', false);
     //$('#txtSizeRange').val('');
-    $('#ddlSizeRange').val('');
-    $('#txtStoneMMSize').val('');
-    $('#txtStoneWidth1').val('');
-    $('#txtStoneWidth2').val('');
+    $('#ddlSizeRange').val('').removeClass('disabled').attr('disabled', false);
+    $('#txtStoneMMSize').val('').removeClass('disabled').attr('disabled', false);
+    $('#txtStoneWidth1').val('').removeClass('disabled').attr('disabled', false);
+    $('#txtStoneWidth2').val('').removeClass('disabled').attr('disabled', false);
     $('#txtPerStoneWt').val('');
-    $('#txtStoneQty').val('');
+    $('#txtStoneQty').val('').removeClass('disabled').attr('disabled', false);
     $('#txtTotalStoneWt').val('');
-    $('#txtTotalAdjStoneWt').val('');
+    $('#txtTotalAdjStoneWt').val('').removeClass('disabled').attr('disabled', false);
 
-    $('#ddlStoneQuality').val('');
+    $('#ddlStoneQuality').val('').removeClass('disabled').attr('disabled', false);
     $('#txtStoneCostPerCarat').val('');
     $('#txtStoneTotalCost').val('');
 
-    $('#ddlSettingVendor').val('');
-    $('#ddlSettingType').val('');
+    $('#ddlSettingVendor').val('').removeClass('disabled').attr('disabled', false);
+    $('#ddlSettingType').val('').removeClass('disabled').attr('disabled', false);
     $('#txtCostPerStone').val('');
     $('#txtTotalCost').val('');
-    $('#btnStoneAddUpdate').removeClass('disabled').attr('disabled', false);
+    //$('#btnStoneAddUpdate').removeClass('disabled').attr('disabled', false);
+    $('#btnStoneAddUpdate').text("Add Stone");
+    settingData=false
+
 }
 
 
@@ -2262,24 +2419,24 @@ function getMarginDetails() {
 function fillLaborFOBValues() {
 
      //getMarginDetails();
-    if (laborTariffPer > 0 || laborDutyper > 0 || laborPenaltyPer> 0) {
+    //if (laborTariffPer > 0 || laborDutyper > 0 || laborPenaltyPer> 0) {
         settingtotalCentertax = 0.00;
         settingtotalSemitax = 0.00;
 
         stoneList.forEach((s, i) => {
             
-            s.SettingDutyVal = (parseFloat(s.TotalCost) * laborDutyper);
-            s.SettingPenaltyVal = (parseFloat(s.TotalCost) * laborPenaltyPer);
-            s.SettingTariffVal = (parseFloat(s.TotalCost) * laborTariffPer);
+            //s.SettingDutyVal = (parseFloat(s.TotalCost) * settingDutyper);
+            //s.SettingPenaltyVal = (parseFloat(s.TotalCost) * settingPenaltyPer);
+            //s.SettingTariffVal = (parseFloat(s.TotalCost) * settingTariffPer);
             if (s.SettingLocation === "Semi") {
                 settingtotalSemitax += s.SettingDutyVal + s.SettingPenaltyVal + s.SettingTariffVal;
             } else {
-                settingtotalSemitax += s.SettingDutyVal + s.SettingPenaltyVal + s.SettingTariffVal;
+                settingtotalCentertax += s.SettingDutyVal + s.SettingPenaltyVal + s.SettingTariffVal;
 
             }
         });
-        settingtotalCentertax = (totalSemiSettingCost * laborTariffPer)
-    }
+        //settingtotalCentertax = (totalCenterSettingCost * laborTariffPer)
+    //}
 
     var landedcost = 0.00;
     var landedcostCenter = 0.00;
@@ -2369,7 +2526,7 @@ function fillLaborFOBValues() {
     LaborTariffVal = taxableLabor * laborTariffPer;
     LaborPenaltyVal = taxableLabor * laborPenaltyPer;
 
-    laborSemiTax = LaborDutyVal + LaborTariffVal + LaborTariffVal + settingtotalSemitax;
+    laborSemiTax = LaborDutyVal + LaborPenaltyVal + LaborTariffVal + settingtotalSemitax;
     laborCenterTax = laborSemiTax + settingtotalCentertax;
 
     semiDuty = parseFloat(vendortotaltax) + parseFloat(findingtotaltax) + parseFloat(diamondtotalSemitax) + parseFloat(laborSemiTax);// + parseFloat(laborSemiTax);
@@ -2413,20 +2570,21 @@ function fillLaborFOBValues() {
 
 
 
-    skuModule.calculations.semiFOB = semiFOB.toFixed(0);
-    skuModule.calculations.completeFOB = completeFOB.toFixed(0);
+    skuModule.calculations.semiFOB = parseFloat(semiFOB).toFixed(2);
+    skuModule.calculations.completeFOB = parseFloat(completeFOB).toFixed(2);
 
-    skuModule.calculations.landedcost = landedcost.toFixed(0);
-    skuModule.calculations.landedcostCenter = landedcostCenter.toFixed(0);
+    skuModule.calculations.landedcost = parseFloat(landedcost).toFixed(2);
+    skuModule.calculations.landedcostCenter = parseFloat(landedcostCenter).toFixed(2);
 
-    skuModule.calculations.semiPrice1 = semiPrice1.toFixed(0);
-    skuModule.calculations.semiPrice2 = semiPrice2.toFixed(0);
-    skuModule.calculations.semiPrice3 = semiPrice3.toFixed(0);
-    skuModule.calculations.semiPrice4 = semiPrice4.toFixed(0);
-    skuModule.calculations.centerPrice1 = centerPrice1.toFixed(0);
-    skuModule.calculations.centerPrice2 = centerPrice2.toFixed(0);
-    skuModule.calculations.centerPrice3 = centerPrice3.toFixed(0);
-    skuModule.calculations.centerPrice4 = centerPrice4.toFixed(0);
+    // Prices: round up to whole numbers (no decimals)
+    skuModule.calculations.semiPrice1 = (Math.ceil(semiPrice1)).toFixed(0);
+    skuModule.calculations.semiPrice2 = (Math.ceil(semiPrice2)).toFixed(0);
+    skuModule.calculations.semiPrice3 = (Math.ceil(semiPrice3)).toFixed(0);
+    skuModule.calculations.semiPrice4 = (Math.ceil(semiPrice4)).toFixed(0);
+    skuModule.calculations.centerPrice1 = (Math.ceil(centerPrice1)).toFixed(0);
+    skuModule.calculations.centerPrice2 = (Math.ceil(centerPrice2)).toFixed(0);
+    skuModule.calculations.centerPrice3 = (Math.ceil(centerPrice3)).toFixed(0);
+    skuModule.calculations.centerPrice4 = (Math.ceil(centerPrice4)).toFixed(0);
     skuModule.calculations.semiMargin1 = semiMargin1.toFixed(0);
     skuModule.calculations.semiMargin2 = semiMargin2.toFixed(0);
     skuModule.calculations.semiMargin3 = semiMargin3.toFixed(0);
@@ -2464,28 +2622,28 @@ function fillLaborFOBValues() {
     const txtLandedCostComplete = document.getElementById("txtLandedCostComplete");
 
 
-    if (txtSemiFOB) txtSemiFOB.value = semiFOB.toFixed(0);
-    if (txtCompleteFOB) txtCompleteFOB.value = completeFOB.toFixed(0);
-    if (txtSemiDuty) txtSemiDuty.value =parseFloat( semiDuty).toFixed(0);
-    if (txtCompleteDuty) txtCompleteDuty.value = centerDuty.toFixed(0);
-    if (txtPrice1) txtPrice1.value = semiPrice1.toFixed(0);
-    if (txtPrice2) txtPrice2.value = semiPrice2.toFixed(0);
-    if (txtPrice3) txtPrice3.value = semiPrice3.toFixed(0);
-    if (txtPrice4) txtPrice4.value = semiPrice4.toFixed(0);
+    if (txtSemiFOB) txtSemiFOB.value = parseFloat(semiFOB).toFixed(2);
+    if (txtCompleteFOB) txtCompleteFOB.value = parseFloat(completeFOB).toFixed(2);
+    if (txtSemiDuty) txtSemiDuty.value = parseFloat(semiDuty).toFixed(2);
+    if (txtCompleteDuty) txtCompleteDuty.value = parseFloat(centerDuty).toFixed(2);
+    if (txtPrice1) txtPrice1.value = Math.ceil(parseFloat(semiPrice1 || 0));
+    if (txtPrice2) txtPrice2.value = Math.ceil(parseFloat(semiPrice2 || 0));
+    if (txtPrice3) txtPrice3.value = Math.ceil(parseFloat(semiPrice3 || 0));
+    if (txtPrice4) txtPrice4.value = Math.ceil(parseFloat(semiPrice4 || 0));
     if (txtMargin1) txtMargin1.value = semiMargin1.toFixed(0);
     if (txtMargin2) txtMargin2.value = semiMargin2.toFixed(0);
     if (txtMargin3) txtMargin3.value = semiMargin3.toFixed(0);
     if (txtMargin4) txtMargin4.value = semiMargin4.toFixed(0);
-    if (txtCompletePrice1) txtCompletePrice1.value = centerPrice1.toFixed(0);
-    if (txtCompletePrice2) txtCompletePrice2.value = centerPrice2.toFixed(0);
-    if (txtCompletePrice3) txtCompletePrice3.value = centerPrice3.toFixed(0);
-    if (txtCompletePrice4) txtCompletePrice4.value = centerPrice4.toFixed(0);
+    if (txtCompletePrice1) txtCompletePrice1.value = Math.ceil(parseFloat(centerPrice1 || 0));
+    if (txtCompletePrice2) txtCompletePrice2.value = Math.ceil(parseFloat(centerPrice2 || 0));
+    if (txtCompletePrice3) txtCompletePrice3.value = Math.ceil(parseFloat(centerPrice3 || 0));
+    if (txtCompletePrice4) txtCompletePrice4.value = Math.ceil(parseFloat(centerPrice4 || 0));
     if (txtCompleteMargin1) txtCompleteMargin1.value = centerMargin1.toFixed(0);
     if (txtCompleteMargin2) txtCompleteMargin2.value = centerMargin2.toFixed(0);
     if (txtCompleteMargin3) txtCompleteMargin3.value = centerMargin3.toFixed(0);
     if (txtCompleteMargin4) txtCompleteMargin4.value = centerMargin4.toFixed(0);
-    if (txtLandedCost) txtLandedCost.value = landedcost.toFixed(0);
-    if (txtLandedCostComplete) txtLandedCostComplete.value = landedcostCenter.toFixed(0);
+    if (txtLandedCost) txtLandedCost.value = parseFloat(landedcost).toFixed(2);
+    if (txtLandedCostComplete) txtLandedCostComplete.value = parseFloat(landedcostCenter).toFixed(2);
 
 }
 
@@ -2731,8 +2889,16 @@ function collectSkuInfo() {
     var skuID = 0;
     var createdby = 1;
     var createdon = new Date();
+    var isActive = true;
     // ✅ Skip updating VendorProduct if on /SKU/Edit
     if (window.location.pathname.toLowerCase().includes("/sku/edit")) {
+        // return; // exit early
+        skuID = parseInt(skuModule.skuInfo.VendorProduct.skuId);
+        createdby = parseInt(skuModule.skuInfo.VendorProduct.createdBy);
+        createdon = skuModule.skuInfo.VendorProduct.createdOn;
+
+    }
+    if (window.location.pathname.toLowerCase().includes("/sku/Info")) {
         // return; // exit early
         skuID = parseInt(skuModule.skuInfo.VendorProduct.skuId);
         createdby = parseInt(skuModule.skuInfo.VendorProduct.createdBy);
@@ -2762,6 +2928,7 @@ function collectSkuInfo() {
             CenterAdjWt: $('#txtCenterAdjWt').val(),//Added By Mahesh
             createdBy: createdby,
             createdOn: createdon,
+            isActive: $('#chkStatus').is(':checked')
 
 
         };
@@ -2779,8 +2946,8 @@ function collectSkuInfo() {
  ************************************************************/
 function collectStoneInfo() {
     skuModule.stoneInfo = stoneList;
-    semiMinWt = totalSemiWt;
-    centerMinWt = totalCenterWt;
+    semiMinWt = $('#txtSemiMinWt').val(); //totalSemiWt;
+    centerMinWt = $('#txtCenterMinWt').val(); //totalCenterWt;
     SemiAdjWt = $('#txtSemiAdjWt').val();
     CenterAdjWt = $('#txtCenterAdjWt').val();
     skuModule.skuInfo.VendorProduct.semiMinWt = semiMinWt;
@@ -2904,7 +3071,13 @@ function saveSkuModule() {
 
         error: function (xhr) {
             console.error("Save failed:", xhr);
-
+            //{
+            //    "Message": "An error has occurred.",
+            //        "ExceptionMessage": "SKU Number already exists. Please use a different SKU Number.",
+            //            "ExceptionType": "System.Exception",
+            //                "StackTrace": "   at POEMPricing.API.SKUController.SaveSku(SkuModuleDto model) in E:\\POEM\\SourceCode\\PoemPricingV2\\POEMPricing\\API\\SKUController.cs:line 380"
+            //}
+            //if (xhr.responseJSON.ExceptionMessage)
             // Keep Summary disabled on failure
             alert("Error saving SKU. Please try again.");
         }
@@ -2944,28 +3117,28 @@ function loadSummaryFromSkuModel(skuModel) {
     // Stones
     if (skuModel.stoneInfo && Array.isArray(skuModel.stoneInfo)) {
         // Total Qty across all stones
-        const totalQty = skuModel.stoneInfo.reduce((sum, s) => sum + (parseInt(s.Qty, 10) || 0), 0);
+        var totalQty = skuModel.stoneInfo.reduce((sum, s) => sum + (parseInt(s.Qty, 10) || 0), 0);
         setLabel("lblNoOfStonesValue", totalQty);
 
         // Semi Wt = sum of TotalStoneWt where SettingLocation = 'Semi'
-        const semiWt = skuModel.stoneInfo
-            .filter(s => s.SettingLocation === "Semi")
-            .reduce((sum, s) => sum + (parseFloat(s.TotalStoneWt) || 0), 0);
-        setLabel("lblSemiWtValue", semiWt.toFixed(2));
+        var semiWt = skuModel.skuInfo.VendorProduct.semiMinWt;
+            // .filter(s => s.SettingLocation === "Semi")
+            // .reduce((sum, s) => sum + (parseFloat(s.SemiMinWt) || 0), 0);
+        setLabel("lblSemiWtValue", parseFloat(semiWt).toFixed(2));
 
         // Center Wt = sum of TotalStoneWt where SettingLocation = 'Center'
-        const centerWt = skuModel.stoneInfo
-            .filter(s => s.SettingLocation === "Center")
-            .reduce((sum, s) => sum + (parseFloat(s.TotalStoneWt) || 0), 0);
-        setLabel("lblCenterWtValue", centerWt.toFixed(2));
+        var centerWt = skuModel.skuInfo.VendorProduct.centerMinWt;
+            // .filter(s => s.SettingLocation === "Center")
+            // .reduce((sum, s) => sum + (parseFloat(s.CenterMinWt) || 0), 0);
+        setLabel("lblCenterWtValue", parseFloat(centerWt).toFixed(2));
 
         // Complete Wt = Semi + Center
-        const completeWt = semiWt + centerWt;
-        setLabel("lblCompleteWtValue", completeWt.toFixed(2));
+        var completeWt = (parseFloat(semiWt)+ parseFloat(centerWt)).toFixed(2);
+        setLabel("lblCompleteWtValue", parseFloat(completeWt).toFixed(2));
 
         // Stone qualities (optional: pick first or aggregate)
-        const semiQuality = skuModel.stoneInfo.find(s => s.SettingLocation === "Semi")?.StoneQuality || "";
-        const centerQuality = skuModel.stoneInfo.find(s => s.SettingLocation === "Center")?.StoneQuality || "";
+        var semiQuality = skuModel.stoneInfo.find(s => s.SettingLocation === "Semi")?.StoneQualityVal || "";
+        var centerQuality = skuModel.stoneInfo.find(s => s.SettingLocation === "Center")?.StoneQualityVal || "";
 
         setLabel("lblSemiStoneQualityValue", semiQuality);
         setLabel("lblCenterStoneQualityValue", centerQuality);
@@ -2978,10 +3151,10 @@ function loadSummaryFromSkuModel(skuModel) {
 
 
 
-    // Prices (from laborInfo)
-    setLabel("lblPrice1Value", '$ ' + parseFloat(labor.Price1).toFixed(0));
-    setLabel("lblPrice2Value", '$ ' + parseFloat(labor.Price2).toFixed(0));
-    setLabel("lblPrice3Value", '$ ' + parseFloat(labor.Price3).toFixed(0));
+    // Prices (from laborInfo) - display as rounded up whole numbers with $ prefix
+    setLabel("lblPrice1Value", '$ ' + Math.ceil(parseFloat(labor.CompletePrice1 || 0)));
+    setLabel("lblPrice2Value", '$ ' + Math.ceil(parseFloat(labor.CompletePrice2 || 0)));
+    setLabel("lblPrice3Value", '$ ' + Math.ceil(parseFloat(labor.CompletePrice3 || 0)));
 }
 
 /************************************************************
@@ -3021,9 +3194,12 @@ const debouncedLoadPerStoneWeight = debounce(function () {
     const growingType = $('#ddlGrowing').val();
     const stoneShape = $('#ddlStoneShape option:selected').text().trim();
     const lengthDiameter = $('#txtStoneMMSize').val();
-
+    
     if (stoneType && growingType && stoneShape && lengthDiameter) {
         loadPerStoneWeight(stoneType, growingType, stoneShape, lengthDiameter);
+        if ($('#txtStoneQty').val().length > 0) {
+            $('#txtStoneQty').trigger('input'); // Trigger recalculation if quantity is present 
+        }
     }
 }, 400);
 
@@ -3087,6 +3263,14 @@ document.addEventListener("DOMContentLoaded", function () {
             $('#nav-summary-tab').removeClass('disabled').attr('disabled', false);
 
         }
+        $('input').prop('readonly', true);
+        $('select').prop('disabled', true);
+        //$('select').on('focus', function () {
+        //    $(this).data('current-value', $(this).val());
+        //}).on('change', function () {
+        //    $(this).val($(this).data('current-value'));
+        //});
+        $('select option:not(:selected)').prop('disabled', true);
     }
 
     if (path.includes("/sku/copy")) {
@@ -3199,7 +3383,17 @@ function bindFormData(skuModel) {
     setValue("txtCenterMinWt", vp.centerMinWt);
     setValue("txtSemiAdjWt", vp.SemiAdjWt);
     setValue("txtCenterAdjWt", vp.CenterAdjWt);
-
+    //$("$chkStatus").val(vp.isActive);
+    if (vp.isActive) {
+        $("#chkStatus").prop("checked", true);
+        $("#btnActive").text('In Active');
+        $("#btnActive").removeClass('btn-inactive');
+        
+    } else {
+        $("#chkStatus").prop("checked", false);
+        $("#btnActive").text('Active');
+        $("#btnActive").addClass('btn-inactive');
+    }
     //Findings
 
     findingLines = skuModel.skuInfo.Findings || [];
@@ -3279,9 +3473,10 @@ function bindSummaryData(skuModel) {
     setLabel("lblSemiStoneQualityValue", stones.StoneQuality);
     setLabel("lblCenterStoneQualityValue", stones.CenterStoneQuality || "");
 
-    setLabel("lblPrice1Value", labor.Price1);
-    setLabel("lblPrice2Value", labor.Price2);
-    setLabel("lblPrice3Value", labor.Price3);
+    // Bind summary labels: rounded up whole numbers (no decimals)
+    setLabel("lblPrice1Value", '$ ' + Math.ceil(parseFloat(labor.Price1 || 0)));
+    setLabel("lblPrice2Value", '$ ' + Math.ceil(parseFloat(labor.Price2 || 0)));
+    setLabel("lblPrice3Value", '$ ' + Math.ceil(parseFloat(labor.Price3 || 0)));
 }
 // Helper: Base64 encode
 function encryptSku(value) {
@@ -3481,26 +3676,29 @@ $(document).ready(function () {
 
 function validateTabs(tabname, newTab) {
     var validate = true;
-    if (tabname === "nav-stone-information-tab" && newTab === "nav-sku-information-tab") {
-        return true;
-    } else if (tabname === "nav-labor-information-tab" && (newTab === "nav-sku-information-tab" || newTab === "nav-stone-information-tab")) {
-        return true;
-    } else if (tabname === "nav-summary-tab") {
-        return true;
-    }
+   
     var ValidateField = ["#", "#"];
 
     if (tabname === "nav-sku-information-tab") {
         ValidateField = ["ddlCompany", "ddlVendor", "ddlOrderType", "ddlCategory", "ddlSubCategory", , "txtSKUNumber"];
     } else if (tabname === "nav-stone-information-tab") {
         //ValidateField = ["ddlStoneVendor", "ddlStoneType", "ddlGrowing", "ddlSettingLocation", "ddlStoneShape", "txtStoneMMSize", "txtStoneQty", "txtTotalAdjStoneWt","ddlStoneQuality"]
+        validateCenterAdj();
+        validateSemiAdj();
         var stoneAdded = $("#tblStone tr").length;
         if (stoneAdded > 1) {
             clearFieldError($("#tblStone"));
-            return true;
+            validate= true;
         } else {
             setFieldError($("#tblStone"), "Please add Stone information");
-            return false;
+            validate= false;
+        }
+        ValidateField = [];
+
+        if ($('#txtSemiAdjWt').hasClass('is-invalid')) {
+            validate = false;
+        } if ($('#txtCenterAdjWt').hasClass('is-invalid')) {
+            validate = false;
         }
     } else if (tabname === "nav-labor-information-tab") {
         //ValidateField = ["txtCastPcs"]
@@ -3522,6 +3720,14 @@ function validateTabs(tabname, newTab) {
         }
     });
 
+    if (tabname === "nav-stone-information-tab" && newTab === "nav-sku-information-tab") {
+        return validate;
+    } else if (tabname === "nav-labor-information-tab" && (newTab === "nav-sku-information-tab" || newTab === "nav-stone-information-tab")) {
+        return validate;
+    } else if (tabname === "nav-summary-tab") {
+        return validate;
+    }
+
     return validate;
 
 
@@ -3536,7 +3742,7 @@ function validateButtonAddUpdate(buttonid) {
     var validate = true;
     var ValidateField = [];
     if (buttonid === "btnMetalAddUpdate") {
-        ValidateField = ["#ddlMetal", "#ddlKarat", "#ddlMetalColor", "#txtMetalGmWt"];
+        ValidateField = ["#ddlCastingVendor", "#ddlMetal", "#ddlKarat", "#ddlMetalColor", "#txtMetalGmWt"];
     } else if (buttonid === "btnFindingAddUpdate") {
         ValidateField = ["#ddlFindingSupplier", "#txtFindingSku", "#ddlFindingAssembly", "#txtFindingQty"];
     } else if (buttonid === "btnStoneAddUpdate") {
@@ -3720,11 +3926,105 @@ function getTaxDetails(taxtype, location='') {
             laborDutyper = DutyPer;
             laborTariffPer = TariffPer;
             laborPenaltyPer = PenaltyPer;
+            fillLaborFOBValues();
         } else if(taxtype === 'finding'){
             findingDutyper = DutyPer;
             findingTariffPer = TariffPer;
             findingPenaltyPer = PenaltyPer;
-    }
+        } else if(taxtype === 'setting'){
+            settingDutyper = DutyPer;
+            settingTariffPer = TariffPer;
+            settingPenaltyPer = PenaltyPer;
+        }
         return returndata;
+    });
+}
+
+$(function () {
+    // adjust selectors to match your actual element IDs/classes
+    var $semiMin = $('#SemiMinWt');
+    var $semiAdj = $('#SemiAdjWt');
+    var $centreMin = $('#CentreMinWt');
+    var $centreAdj = $('#CentreAdjWt');
+
+    if ($semiMin.length) {
+        $semiMin.on('input change', function () {
+            $semiAdj.trigger('change');
+        });
+    }
+
+    if ($centreMin.length) {
+        $centreMin.on('input change', function () {
+            $centreAdj.trigger('change');
+        });
+    }
+});
+
+
+$(function () {
+    // replace '#Shape' and the field IDs below with your actual selectors
+    $('#ddlStoneShape').on('change', function () {
+        var fieldsToClear1 = [
+            '#ddlSizeRange',
+            '#txtStoneMMSize',
+            '#txtStoneWidth1',
+            '#txtStoneWidth2',
+            '#txtStoneQty',
+            '#txtTotalStoneWt',
+            '#txtTotalAdjStoneWt',
+            '#ddlStoneQuality',
+            '#txtStoneCostPerCarat',
+            '#txtStoneTotalCost'
+        ];
+        if ($('#btnStoneAddUpdate').text() === 'Update Stone')
+            return;
+
+        fieldsToClear(fieldsToClear1);
+    });
+
+    $('#txtStoneMMSize').on('change input', function () {
+        var fieldsToClear1 = [
+            '#txtStoneWidth1',
+            '#txtStoneWidth2',
+            '#txtStoneCostPerCarat',
+            '#txtStoneTotalCost'
+        ];
+        if ($('#btnStoneAddUpdate').text() ==='Update Stone')
+            return;
+
+        fieldsToClear(fieldsToClear1);
+    });
+    $('#ddlProcessType').on('change', function () {
+        var fieldsToClear1 = [
+            '#txtCFP',
+            '#txtRhodium',
+            '#txtDiaHandling',
+            '#txtFinHandling',
+            '#txtStamping',
+            '#txtModel',
+            '#txtCAM',
+            '#txtGiftBox',
+            '#txtTotalLabor',
+            '#ddlOtherHead1',
+            '#ddlOtherHead2',
+            '#ddlOtherHead3',
+            '#txtOtherCost1',
+            '#txtOtherCost2',
+            '#txtOtherCost3'
+        ];
+       
+        fieldsToClear(fieldsToClear1);
+    });
+});
+function fieldsToClear(fields) {
+    fields.forEach(function (sel) {
+        var $el = $(sel);
+        if (!$el.length) return;
+        if ($el.is(':checkbox') || $el.is(':radio')) {
+            $el.prop('checked', false);
+        } else {
+            $el.val('');
+        }
+        // $el.trigger('change'); // propagate change in case other logic depends on it
     });
 }

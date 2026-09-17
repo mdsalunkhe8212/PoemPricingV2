@@ -13,6 +13,8 @@ namespace POEM.Model.Model
         [Key]
         public long MetalId { get; set; }
         public long SKUId { get; set; }
+        public string CastingVendor { get; set; }
+        public string CastingVendorID { get; set; }
         public string MetalText { get; set; }
         public string MetalIdText { get; set; }
         public string KaratText { get; set; }

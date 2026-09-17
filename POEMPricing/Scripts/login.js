@@ -1,4 +1,11 @@
-﻿document.getElementById('btnLogin').addEventListener('click', async function () {
+﻿
+$(document).on('keypress', function (e) {
+    if (e.which === 13) { // Enter key
+        e.preventDefault();
+        $('#btnLogin').click();
+    }
+});
+document.getElementById('btnLogin').addEventListener('click', async function () {
     const email = document.getElementById('txtEmail').value.trim();
     const password = document.getElementById('txtPassword').value;
 
@@ -13,6 +20,7 @@
     }
 
     try {
+        $("#loader").show();
         const response = await fetch(webRoot + '/api/login/login', {
             method: 'POST',
             headers: {
@@ -22,6 +30,7 @@
         });
 
         if (!response.ok) {
+            $("#loader").hide();
             const errorData = await response.json().catch(() => null);
             errorDiv.textContent = errorData?.message || 'Invalid email or password.';
             errorDiv.style.display = 'block';
