@@ -21,6 +21,8 @@ namespace POEM.Model.Model
         public string MetalType { get; set; } = string.Empty;
 
         [Required]
-        public int LossPer { get; set; }
+        public decimal LossPer { get; set; }
+
+        public int CreatedBy { get; set; }
     }
 }

@@ -213,6 +213,17 @@ namespace POEMPricing.Controllers
                     return View("Summary", result);
                 }
 
+                if (model.MasterType == "MetalLossDetails")
+                {
+                    TempData["master"] = "Metal Loss Details";
+                    var manager = new MetalLossDetailsImportManager();
+                    var result = manager.ValidateExcel(model.File);
+                    Session["ImportMasterType"] = model.MasterType;
+                    Session["MetalLossDetailsImportData"] =
+                        JsonConvert.SerializeObject(result.ValidRecords);
+                    return View("Summary", result);
+                }
+
                 TempData["Error"] = "Invalid master type.";
 
                 return RedirectToAction("Index");
@@ -680,6 +691,27 @@ namespace POEMPricing.Controllers
                         insertedCount + " duty details records imported successfully.";
                     return RedirectToAction("Upload");
                 }
+
+                //MetalLossDetails
+                if (masterType == "MetalLossDetails")
+                {
+                    var sessionData = Session["MetalLossDetailsImportData"];
+                    if (sessionData == null)
+                    {
+                        TempData["Error"] = "Session expired.";
+                        return RedirectToAction("Upload");
+                    }
+                    var rows = JsonConvert.DeserializeObject
+                        <List<MetalLossDetailsImportRowDto>>(sessionData.ToString());
+                    var manager = new MetalLossDetailsImportManager();
+                    var insertedCount = manager.ImportMetalLossDetails(rows);
+                    Session.Remove("MetalLossDetailsImportData");
+                    Session.Remove("ImportMasterType");
+                    TempData["Success"] =
+                        insertedCount + " metal loss details records imported successfully.";
+                    return RedirectToAction("Upload");
+                }
+
 
 
                 // ← FIX: fallback for unmatched master type — was missing before,

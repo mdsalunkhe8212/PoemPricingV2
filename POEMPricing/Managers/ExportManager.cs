@@ -61,6 +61,9 @@ namespace POEMPricing.Managers
                 case "DutyDetails":
                     return ExportDutyDetails();
 
+                case "MetalLossDetails":
+                    return ExportMetalLossDetails();
+
                 default:
                     throw new Exception("Invalid master type");
             }
@@ -104,6 +107,9 @@ namespace POEMPricing.Managers
 
                 case "DutyDetails":
                     return _repository.GetDutyDetailsCount();
+
+                case "MetalLossDetails":
+                    return _repository.GetMetalLossDetailsCount();
                 default:
                     return 0;
             }
@@ -705,6 +711,36 @@ namespace POEMPricing.Managers
 
         }
 
+
+        private byte[] ExportMetalLossDetails()
+        {
+
+            using (var wb = new XLWorkbook())
+            {
+                var ws = wb.Worksheets.Add("MetalLossDetails");
+                var data = _repository.GetAllMetalLossDetailsRecords();
+                ws.Cell(1, 1).Value = "VendorCode";
+                ws.Cell(1, 2).Value = "VendorName";
+                ws.Cell(1, 3).Value = "MetalType";
+                ws.Cell(1, 4).Value = "LossPer";
+
+                for (int i = 0; i < data.Count; i++)
+                {
+                    ws.Cell(i + 2, 1).Value = data[i].VendorCode;
+                    ws.Cell(i + 2, 2).Value = data[i].VendorName;
+                    ws.Cell(i + 2, 3).Value = data[i].MetalType;
+                    ws.Cell(i + 2, 4).Value = data[i].LossPer;
+                }
+
+                ws.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    wb.SaveAs(stream);
+                    return stream.ToArray();
+                }
+            }
+        }
     }
 }
 

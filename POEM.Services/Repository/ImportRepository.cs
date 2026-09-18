@@ -687,5 +687,41 @@ namespace POEM.Services.Repository
             return _context.DutyDetails.ToList();
         }
         #endregion
+
+        #region MetalLossDetails
+        public void ReplaceMetalLossDetails(List<MetalLossDetails> recordsToInsert)
+        {
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    // Delete ALL existing records first
+                    var existing = _context.MetalLossDetails.ToList();
+                    _context.MetalLossDetails.RemoveRange(existing);
+
+                    // Insert all new records from Excel
+                    _context.MetalLossDetails.AddRange(recordsToInsert);
+
+                    _context.SaveChanges(); // ← delete + insert in single transaction
+                    transaction.Commit();   // ← commits only if both succeed
+                }
+                catch
+                {
+                    transaction.Rollback(); // ← if insert fails, delete is also rolled back
+                    throw;
+                }
+            }
+        }
+
+        public int GetMetalLossDetailsCount()
+        {
+            return _context.MetalLossDetails.Count();
+        }
+
+        public List<MetalLossDetails> GetAllMetalLossDetailsRecords()
+        {
+            return _context.MetalLossDetails.ToList();
+        }
+        #endregion
     }
 }
