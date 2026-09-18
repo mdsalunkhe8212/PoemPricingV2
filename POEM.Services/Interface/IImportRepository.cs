@@ -132,5 +132,11 @@ namespace POEM.Services.Interface
         int GetDutyDetailsCount();
         List<DutyDetailsDbDto> GetAllDutyDetailsRecords();
         #endregion
+
+        #region MetalLossDetails
+        void ReplaceMetalLossDetails(List<MetalLossDetails> recordsToInsert);
+        int GetMetalLossDetailsCount();
+        List<MetalLossDetails> GetAllMetalLossDetailsRecords();
+        #endregion
     }
 }
