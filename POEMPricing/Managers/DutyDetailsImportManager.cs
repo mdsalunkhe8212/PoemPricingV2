@@ -227,9 +227,42 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportDutyDetails(List<DutyDetailsImportRowDto> rows)
+        //{
+        //    // Full replace — delete ALL then insert ALL valid rows
+        //    var records = rows.Select(x => new DutyDetailsDbDto
+        //    {
+        //        VendorLocation = x.VendorLocation,
+        //        Duty = x.Duty,
+        //        Tariff = x.Tariff,
+        //        Penalty = x.Penalty,
+        //        DiamondLocation = x.DiamondLocation,
+        //        DiamondDuty = x.DiamondDuty,
+        //        DiamondTariff = x.DiamondTariff,
+        //        DiamondPenalty = x.DiamondPenalty,
+        //        LaborLocation = x.LaborLocation,
+        //        LaborDuty = x.LaborDuty,
+        //        LaborTariff = x.LaborTariff,
+        //        LaborPenalty = x.LaborPenalty,
+        //        FindingLocation = x.FindingLocation,
+        //        FindingDuty = x.FindingDuty,
+        //        FindingTariff = x.FindingTariff,
+        //        FindingPenalty = x.FindingPenalty,
+        //        SettingLocation = x.SettingLocation,    
+        //        SettingDuty = x.SettingDuty,    
+        //        SettingPenalty = x.SettingPenalty,  
+        //        SettingTariff = x.SettingTariff
+        //    }).ToList();
+
+        //    _repository.ReplaceDutyDetails(records);
+        //    return records.Count;
+        //}
+
         public int ImportDutyDetails(List<DutyDetailsImportRowDto> rows)
         {
-            // Full replace — delete ALL then insert ALL valid rows
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var records = rows.Select(x => new DutyDetailsDbDto
             {
                 VendorLocation = x.VendorLocation,
@@ -248,10 +281,16 @@ namespace POEMPricing.Managers
                 FindingDuty = x.FindingDuty,
                 FindingTariff = x.FindingTariff,
                 FindingPenalty = x.FindingPenalty,
-                SettingLocation = x.SettingLocation,    
-                SettingDuty = x.SettingDuty,    
-                SettingPenalty = x.SettingPenalty,  
-                SettingTariff = x.SettingTariff
+                SettingLocation = x.SettingLocation,
+                SettingDuty = x.SettingDuty,
+                SettingPenalty = x.SettingPenalty,
+                SettingTariff = x.SettingTariff,
+
+                // Full replace — all rows are fresh inserts
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = null,
+                ModifiedOn = null,
             }).ToList();
 
             _repository.ReplaceDutyDetails(records);

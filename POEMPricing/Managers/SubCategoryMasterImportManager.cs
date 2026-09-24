@@ -182,23 +182,52 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportSubCategories(List<SubCategoryMasterRowDto> rows)
+        //{
+        //    // Step 1 — Delete existing DB records being replaced
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.Code)
+        //        .ToList();
+
+
+        //    // Step 2 — Insert all valid rows (new + replaced)
+        //    var subCategories = rows.Select(x => new SubCategoryMasterDbDto
+        //    {
+        //        Code = x.Code,
+        //        SubCategoryName = x.SubCategoryName
+        //    }).ToList();
+
+        //    _repository.ReplaceSubCategoryDetails(codesToDelete,subCategories);
+        //    return subCategories.Count;
+        //}
+
         public int ImportSubCategories(List<SubCategoryMasterRowDto> rows)
         {
-            // Step 1 — Delete existing DB records being replaced
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.Code)
                 .ToList();
 
-
-            // Step 2 — Insert all valid rows (new + replaced)
             var subCategories = rows.Select(x => new SubCategoryMasterDbDto
             {
                 Code = x.Code,
-                SubCategoryName = x.SubCategoryName
+                SubCategoryName = x.SubCategoryName,
+
+                // Both new and replace always get CreatedBy + CreatedOn
+                CreatedBy = loginId,
+                CreatedOn = now,
+
+                // Only replace gets ModifiedBy + ModifiedOn
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
+
             }).ToList();
 
-            _repository.ReplaceSubCategoryDetails(codesToDelete,subCategories);
+            _repository.ReplaceSubCategoryDetails(codesToDelete, subCategories);
             return subCategories.Count;
         }
     }

@@ -41,4 +41,12 @@ namespace POEM.Model.Model
 
         public string ConfirmPassword { get; set; }
     }
+
+    public class UserSession
+    {
+        public int LoginId { get; set; }
+
+        public string FullName { get; set; }
+
+    }
 }

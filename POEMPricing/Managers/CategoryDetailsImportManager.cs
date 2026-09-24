@@ -187,23 +187,53 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportCategories(List<CategoryDetailsImportRowDto> rows)
+        //{
+        //    // Step 1 — Delete existing DB records being replaced
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.Code)
+        //        .ToList();
+
+
+        //    // Step 2 — Insert all valid rows (new + replaced)
+        //    var categories = rows.Select(x => new CategoryDetails
+        //    {
+        //        Code = x.Code,
+        //        CategoryName = x.CategoryName
+        //    }).ToList();
+
+        //    _repository.ReplaceCategories(codesToDelete,categories);
+        //    return categories.Count;
+        //}
+
         public int ImportCategories(List<CategoryDetailsImportRowDto> rows)
         {
-            // Step 1 — Delete existing DB records being replaced
+            var loginId = CurrentUserManager.LoginId; // int
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.Code)
                 .ToList();
 
-
-            // Step 2 — Insert all valid rows (new + replaced)
             var categories = rows.Select(x => new CategoryDetails
             {
                 Code = x.Code,
-                CategoryName = x.CategoryName
+                CategoryName = x.CategoryName,
+
+                // Both new and replace always get CreatedBy + CreatedOn
+                CreatedBy = loginId,
+                CreatedOn = now,
+
+                // Only replace gets ModifiedBy + ModifiedOn
+                // New records → null (never modified)
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null, // ← FIX: null not 0
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
+
             }).ToList();
 
-            _repository.ReplaceCategories(codesToDelete,categories);
+            _repository.ReplaceCategories(codesToDelete, categories);
             return categories.Count;
         }
     }

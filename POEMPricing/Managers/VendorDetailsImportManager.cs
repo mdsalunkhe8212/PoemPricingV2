@@ -329,26 +329,68 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportVendorDetails(List<VendorDetailsImportRowDto> rows)
+        //{
+        //    // =============================================
+        //    // STEP 1 — DELETE existing DB records
+        //    // Find all rows marked as IsExistingInDb = true
+        //    // These are rows where VendorCode already exists in DB
+        //    // Delete them first before inserting new data
+        //    // =============================================
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.VendorCode)
+        //        .ToList();
+
+
+        //    // =============================================
+        //    // STEP 2 — INSERT all valid rows
+        //    // This includes:
+        //    //   - Brand new VendorCodes (never in DB)
+        //    //   - Replaced VendorCodes (old deleted above, new inserted now)
+        //    // =============================================
+        //    var records = rows.Select(x => new VendorDetails
+        //    {
+        //        VendorLocation = x.VendorLocation,
+        //        VendorName = x.VendorName,
+        //        VendorCode = x.VendorCode,
+        //        DiamondHandlingLab = x.DiamondHandlingLab,
+        //        DiaHndLabLow = x.DiaHndLabLow,
+        //        DiaHndLabHigh = x.DiaHndLabHigh,
+        //        DiamondHandlingMined = x.DiamondHandlingMined,
+        //        DiaHndMinedLow = x.DiaHndMinedLow,
+        //        DiaHndMinedHigh = x.DiaHndMinedHigh,
+        //        FindingHndGold = x.FindingHndGold,
+        //        FindingHndPlatinum = x.FindingHndPlatinum,
+        //        FindingHndSilver = x.FindingHndSilver,
+        //        ModelMkgGold = x.ModelMkgGold,
+        //        ModelMkgPlatinum = x.ModelMkgPlatinum,
+        //        ModelMkgSilver = x.ModelMkgSilver,
+        //        CAMGold = x.CAMGold,
+        //        CAMPlatinum = x.CAMPlatinum,
+        //        CAMSilver = x.CAMSilver,
+        //        ProductVendor = x.ProductVendor,
+        //        FindingsSupplier = x.FindingsSupplier,
+        //        FindingsAssembly = x.FindingsAssembly,
+        //        StoneVendor = x.StoneVendor,
+        //        SettingVendor = x.SettingVendor,
+        //        LabourLocation = x.LabourLocation
+        //    }).ToList();
+
+        //    _repository.ReplaceVendorDetails(codesToDelete,records);
+        //    return records.Count;
+        //}
+
         public int ImportVendorDetails(List<VendorDetailsImportRowDto> rows)
         {
-            // =============================================
-            // STEP 1 — DELETE existing DB records
-            // Find all rows marked as IsExistingInDb = true
-            // These are rows where VendorCode already exists in DB
-            // Delete them first before inserting new data
-            // =============================================
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.VendorCode)
                 .ToList();
 
-
-            // =============================================
-            // STEP 2 — INSERT all valid rows
-            // This includes:
-            //   - Brand new VendorCodes (never in DB)
-            //   - Replaced VendorCodes (old deleted above, new inserted now)
-            // =============================================
             var records = rows.Select(x => new VendorDetails
             {
                 VendorLocation = x.VendorLocation,
@@ -374,10 +416,14 @@ namespace POEMPricing.Managers
                 FindingsAssembly = x.FindingsAssembly,
                 StoneVendor = x.StoneVendor,
                 SettingVendor = x.SettingVendor,
-                LabourLocation = x.LabourLocation
+                LabourLocation = x.LabourLocation,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
-            _repository.ReplaceVendorDetails(codesToDelete,records);
+            _repository.ReplaceVendorDetails(codesToDelete, records);
             return records.Count;
         }
     }

@@ -210,12 +210,40 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportSettingLaborDetails(List<SettingLaborDetailsImportRowDto> rows)
+        //{
+        //    var codesToDelete = rows
+        //       .Where(x => x.IsExistingInDb)
+        //       .Select(x => x.Code)
+        //       .ToList();
+
+        //    var records = rows.Select(x => new SettingLaborDetail
+        //    {
+        //        Code = x.Code,
+        //        SettingVendor = x.SettingVendor,
+        //        SettingType = x.SettingType,
+        //        ShapeCode = x.ShapeCode,
+        //        Shape = x.Shape,
+        //        DiamondPSWtFrom = x.DiamondPSWtFrom,
+        //        DiamondPSWtTo = x.DiamondPSWtTo,
+        //        GoldCostPS = x.GoldCostPS,
+        //        PlatinumCostPS = x.PlatinumCostPS,
+        //        SilverCostPS = x.SilverCostPS
+        //    }).ToList();
+
+        //    _repository.ReplaceSettingLaborDetails(codesToDelete,records);
+        //    return records.Count;
+        //}
+
         public int ImportSettingLaborDetails(List<SettingLaborDetailsImportRowDto> rows)
         {
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
-               .Where(x => x.IsExistingInDb)
-               .Select(x => x.Code)
-               .ToList();
+                .Where(x => x.IsExistingInDb)
+                .Select(x => x.Code)
+                .ToList();
 
             var records = rows.Select(x => new SettingLaborDetail
             {
@@ -228,10 +256,14 @@ namespace POEMPricing.Managers
                 DiamondPSWtTo = x.DiamondPSWtTo,
                 GoldCostPS = x.GoldCostPS,
                 PlatinumCostPS = x.PlatinumCostPS,
-                SilverCostPS = x.SilverCostPS
+                SilverCostPS = x.SilverCostPS,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
-            _repository.ReplaceSettingLaborDetails(codesToDelete,records);
+            _repository.ReplaceSettingLaborDetails(codesToDelete, records);
             return records.Count;
         }
     }

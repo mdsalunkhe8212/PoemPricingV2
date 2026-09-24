@@ -181,24 +181,53 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportCollections(List<CollectionDetailsImportRowDto> rows)
+        //{
+        //    // Step 1 — Delete existing DB records being replaced
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.Code)
+        //        .ToList();
+
+
+        //    // Step 2 — Insert all valid rows (new + replaced)
+        //    var collections = rows.Select(x => new CollectionDtl
+        //    {
+        //        Code = x.Code,
+        //        Collection = x.Collection
+        //    }).ToList();
+
+        //    _repository.ReplaceCollectionDetails(codesToDelete,collections);
+
+        //    return collections.Count;
+        //}
+
         public int ImportCollections(List<CollectionDetailsImportRowDto> rows)
         {
-            // Step 1 — Delete existing DB records being replaced
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.Code)
                 .ToList();
 
-
-            // Step 2 — Insert all valid rows (new + replaced)
             var collections = rows.Select(x => new CollectionDtl
             {
                 Code = x.Code,
-                Collection = x.Collection
+                Collection = x.Collection,
+
+                // Both new and replace always get CreatedBy + CreatedOn
+                CreatedBy = loginId,
+                CreatedOn = now,
+
+                // Only replace gets ModifiedBy + ModifiedOn
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null, // ← fix: null not 0
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
+
             }).ToList();
 
-            _repository.ReplaceCollectionDetails(codesToDelete,collections);
-
+            _repository.ReplaceCollectionDetails(codesToDelete, collections);
             return collections.Count;
         }
     }

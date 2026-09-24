@@ -273,16 +273,50 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportFindingDetails(List<FindingDetailsImportRowDto> rows)
+        //{
+        //    // Step 1 — Delete existing DB records for FindingNumbers being replaced
+        //    var numbersToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.FindingNumber)
+        //        .ToList();
+
+
+        //    // Step 2 — Insert all valid rows (new + replaced)
+        //    var records = rows.Select(x => new FindingDetail
+        //    {
+        //        FindingSupplier = x.FindingSupplier,
+        //        FindingVendorName = x.FindingVendorName,
+        //        FindingVendorCode = x.FindingVendorCode,
+        //        Company = x.Company,
+        //        FindingNumber = x.FindingNumber,
+        //        FindingMetalType = x.FindingMetalType,
+        //        FindingMetalKt = x.FindingMetalKt,
+        //        FindingMetalColor = x.FindingMetalColor,
+        //        FindingType = x.FindingType,
+        //        FindingDescription = x.FindingDescription,
+        //        FindingShortDescription = x.FindingShortDescription,
+        //        PerPcFindingWeightGms = x.PerPcFindingWeightGms,
+        //        Increment = x.Increment,
+        //        Decrement = x.Decrement,
+        //        MetalLock = x.MetalLock,
+        //        FindingCost = x.FindingCost
+        //    }).ToList();
+
+        //    _repository.ReplaceFindingDetails(numbersToDelete,records);
+        //    return records.Count;
+        //}
+
         public int ImportFindingDetails(List<FindingDetailsImportRowDto> rows)
         {
-            // Step 1 — Delete existing DB records for FindingNumbers being replaced
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var numbersToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.FindingNumber)
                 .ToList();
 
-
-            // Step 2 — Insert all valid rows (new + replaced)
             var records = rows.Select(x => new FindingDetail
             {
                 FindingSupplier = x.FindingSupplier,
@@ -300,10 +334,14 @@ namespace POEMPricing.Managers
                 Increment = x.Increment,
                 Decrement = x.Decrement,
                 MetalLock = x.MetalLock,
-                FindingCost = x.FindingCost
+                FindingCost = x.FindingCost,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
-            _repository.ReplaceFindingDetails(numbersToDelete,records);
+            _repository.ReplaceFindingDetails(numbersToDelete, records);
             return records.Count;
         }
     }

@@ -296,8 +296,44 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportDiamondDetails(List<DiamondDetailsImportRowDto> rows)
+        //{
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.Code)
+        //        .ToList();
+
+        //    var records = rows.Select(x => new DiamondDetail
+        //    {
+        //        Code = x.Code,
+        //        VendorCode = x.VendorCode,
+        //        StoneType = x.StoneType,
+        //        GrowingType = x.GrowingType,
+        //        StoneShapeCode = x.StoneShapeCode,
+        //        StoneShape = x.StoneShape,
+        //        StoneQualityCode = x.StoneQualityCode,
+        //        StoneQuality = x.StoneQuality,
+        //        SizeRange = x.SizeRange,
+        //        SizeFrom = x.SizeFrom,
+        //        SizeTo = x.SizeTo,
+        //        SieveSize = x.SieveSize,
+        //        LengthDiameter = x.LengthDiameter,
+        //        Width1 = x.Width1,
+        //        Width2 = x.Width2,
+        //        PerStoneWeight = x.PerStoneWeight,
+        //        StoneCertificate = x.StoneCertificate,
+        //        CostPerCt = x.CostPerCt
+        //    }).ToList();
+
+        //    _repository.ReplaceDiamondDetails(codesToDelete, records);
+        //    return records.Count;
+        //}
+
         public int ImportDiamondDetails(List<DiamondDetailsImportRowDto> rows)
         {
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.Code)
@@ -322,7 +358,11 @@ namespace POEMPricing.Managers
                 Width2 = x.Width2,
                 PerStoneWeight = x.PerStoneWeight,
                 StoneCertificate = x.StoneCertificate,
-                CostPerCt = x.CostPerCt
+                CostPerCt = x.CostPerCt,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
             _repository.ReplaceDiamondDetails(codesToDelete, records);

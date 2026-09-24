@@ -168,20 +168,43 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportMetalLossDetails(List<MetalLossDetailsImportRowDto> rows)
+        //{
+        //    // Full replace — delete ALL existing records, insert all valid rows
+        //    var records = rows.Select(x => new MetalLossDetails
+        //    {
+        //        VendorCode = x.VendorCode,
+        //        VendorName = x.VendorName,
+        //        MetalType = x.MetalType,
+        //        LossPer = x.LossPer
+        //    }).ToList();
+
+        //    // Single atomic transaction — delete all then insert all
+        //    _repository.ReplaceMetalLossDetails(records);
+
+        //    return records.Count;
+        //}
+
         public int ImportMetalLossDetails(List<MetalLossDetailsImportRowDto> rows)
         {
-            // Full replace — delete ALL existing records, insert all valid rows
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var records = rows.Select(x => new MetalLossDetails
             {
                 VendorCode = x.VendorCode,
                 VendorName = x.VendorName,
                 MetalType = x.MetalType,
-                LossPer = x.LossPer
+                LossPer = x.LossPer,
+
+                // Full replace — all rows are fresh inserts
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = null,
+                ModifiedOn = null,
             }).ToList();
 
-            // Single atomic transaction — delete all then insert all
             _repository.ReplaceMetalLossDetails(records);
-
             return records.Count;
         }
 

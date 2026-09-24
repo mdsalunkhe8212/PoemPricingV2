@@ -1,16 +1,17 @@
-﻿using POEM.Model.Model;
+﻿using Newtonsoft.Json;
+using POEM.Model;
+using POEM.Model.Model;
 using POEM.Services.Repository;
+using POEMPricing.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
-using POEM.Model;
-using System.Web.Security;
 using System.Web;
-using POEMPricing.Managers;
+using System.Web.Http;
+using System.Web.Security;
 
 
 namespace POEMPricing.API
@@ -43,8 +44,42 @@ namespace POEMPricing.API
             if (!isValid)
                 return Unauthorized();
 
+            var user = await _userRepository.GetByEmailAsync(request.Email);
+
+            var userSession = new UserSession
+            {
+                LoginId = user.LoginId,
+                FullName = user.FullName
+            };
+
+
             // Issue FormsAuth cookie
-            FormsAuthentication.SetAuthCookie(request.Email, false);
+            //FormsAuthentication.SetAuthCookie(request.Email, false);
+
+            //new
+            // Serialize user information
+            string userData = JsonConvert.SerializeObject(userSession);
+
+            // Create Forms Authentication Ticket
+            var ticket = new FormsAuthenticationTicket(
+                1,
+                request.Email,
+                DateTime.Now,
+                DateTime.Now.AddMinutes(30),
+                false,
+                userData
+            );
+
+            // Encrypt ticket
+            string encryptedTicket = FormsAuthentication.Encrypt(ticket);
+
+            // Create authentication cookie
+            var cookie = new HttpCookie(
+                FormsAuthentication.FormsCookieName,
+                encryptedTicket
+            );
+
+            HttpContext.Current.Response.Cookies.Add(cookie);
 
 
             return Ok(new { message = "Login successful" });

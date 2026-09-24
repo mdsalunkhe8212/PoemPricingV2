@@ -38,5 +38,12 @@ namespace POEM.Model.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public decimal MaxDiPSWtRange { get; }
 
+        public int? CreatedBy { get; set; }
+
+        public int? ModifiedBy { get; set; }
+
+        public DateTime? ModifiedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
+
     }
 }

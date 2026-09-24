@@ -37,5 +37,12 @@ namespace POEM.Model.Model
 
         
         public decimal? FindingCost { get; set; }    // money-style 
+
+        public int? CreatedBy { get; set; }
+
+        public int? ModifiedBy { get; set; }
+
+        public DateTime? ModifiedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
 }

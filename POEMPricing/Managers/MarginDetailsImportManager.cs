@@ -252,18 +252,48 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportMarginDetails(List<MarginDetailsImportRowDto> rows)
+        //{
+        //    // Step 1 — Delete existing DB records being replaced
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.Code)
+        //        .ToList();
+
+        //    //if (codesToDelete.Any())
+        //    //    _repository.DeleteMarginDetailsByCodes(codesToDelete);
+
+        //    // Step 2 — Insert all valid rows (new + replaced)
+        //    var records = rows.Select(x => new MarginDetailsDbDto
+        //    {
+        //        Code = x.Code,
+        //        Vendor = x.Vendor,
+        //        CategoryCode = x.CategoryCode,
+        //        Category = x.Category,
+        //        SubCategoryCode = x.SubCategoryCode,
+        //        SubCategory = x.SubCategory,
+        //        Metal = x.Metal,
+        //        PMargin1 = x.PMargin1,
+        //        PMargin2 = x.PMargin2,
+        //        PMargin3 = x.PMargin3,
+        //        PMargin4 = x.PMargin4
+        //    }).ToList();
+
+        //    _repository.ReplaceMarginDetails(codesToDelete, records);
+        //    //_repository.BulkInsertMarginDetails(records);
+        //    return records.Count;
+        //}
+
         public int ImportMarginDetails(List<MarginDetailsImportRowDto> rows)
         {
-            // Step 1 — Delete existing DB records being replaced
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.Code)
                 .ToList();
 
-            //if (codesToDelete.Any())
-            //    _repository.DeleteMarginDetailsByCodes(codesToDelete);
-
-            // Step 2 — Insert all valid rows (new + replaced)
             var records = rows.Select(x => new MarginDetailsDbDto
             {
                 Code = x.Code,
@@ -276,11 +306,14 @@ namespace POEMPricing.Managers
                 PMargin1 = x.PMargin1,
                 PMargin2 = x.PMargin2,
                 PMargin3 = x.PMargin3,
-                PMargin4 = x.PMargin4
+                PMargin4 = x.PMargin4,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
             _repository.ReplaceMarginDetails(codesToDelete, records);
-            //_repository.BulkInsertMarginDetails(records);
             return records.Count;
         }
     }

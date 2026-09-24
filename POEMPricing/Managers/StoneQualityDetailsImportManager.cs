@@ -178,13 +178,39 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportStoneQualityDetails(List<StoneQualityDetailsImportRowDto> rows)
+        //{
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.StoneQualityCode)
+        //        .ToList();
+
+
+        //    var records = rows.Select(x => new StoneQualityDetailsDbDto
+        //    {
+        //        Company = x.CompanyCode,
+        //        StoneVendorCode = x.StoneVendorCode,
+        //        StoneType = x.StoneType,
+        //        StoneShapeCode = x.StoneShapeCode,
+        //        StoneShape = x.StoneShape,
+        //        StoneQualityCode = x.StoneQualityCode,
+        //        StoneQuality = x.StoneQuality,
+        //        IntertionalGrading = x.InternationalGrading
+        //    }).ToList();
+
+        //    _repository.ReplaceStoneQualityDetails(codesToDelete,records);
+        //    return records.Count;
+        //}
+
         public int ImportStoneQualityDetails(List<StoneQualityDetailsImportRowDto> rows)
         {
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.StoneQualityCode)
                 .ToList();
-
 
             var records = rows.Select(x => new StoneQualityDetailsDbDto
             {
@@ -195,10 +221,14 @@ namespace POEMPricing.Managers
                 StoneShape = x.StoneShape,
                 StoneQualityCode = x.StoneQualityCode,
                 StoneQuality = x.StoneQuality,
-                IntertionalGrading = x.InternationalGrading
+                IntertionalGrading = x.InternationalGrading,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
-            _repository.ReplaceStoneQualityDetails(codesToDelete,records);
+            _repository.ReplaceStoneQualityDetails(codesToDelete, records);
             return records.Count;
         }
     }

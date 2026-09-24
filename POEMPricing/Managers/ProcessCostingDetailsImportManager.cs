@@ -225,16 +225,42 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportProcessCostingDetails(List<ProcessCostingDetailsImportRowDto> rows)
+        //{
+        //    // Step 1 — Delete existing DB records being replaced
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.Code)
+        //        .ToList();
+
+
+        //    // Step 2 — Insert all valid rows (new + replaced)
+        //    var records = rows.Select(x => new ProcessCostingDetails
+        //    {
+        //        Code = x.Code,
+        //        VendorCode = x.VendorCode,
+        //        Category = x.Category,
+        //        Type = x.Type,
+        //        Unit = x.Unit,
+        //        GoldCharges = x.GoldCharges,
+        //        PlatinumCharges = x.PlatinumCharges,
+        //        SilverCharges = x.SilverCharges,
+        //        IsOptional = x.IsOptional
+        //    }).ToList();
+
+        //    _repository.ReplaceProcessCostingDetails(codesToDelete,records);
+        //    return records.Count;
+        //}
         public int ImportProcessCostingDetails(List<ProcessCostingDetailsImportRowDto> rows)
         {
-            // Step 1 — Delete existing DB records being replaced
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.Code)
                 .ToList();
 
-
-            // Step 2 — Insert all valid rows (new + replaced)
             var records = rows.Select(x => new ProcessCostingDetails
             {
                 Code = x.Code,
@@ -245,10 +271,14 @@ namespace POEMPricing.Managers
                 GoldCharges = x.GoldCharges,
                 PlatinumCharges = x.PlatinumCharges,
                 SilverCharges = x.SilverCharges,
-                IsOptional = x.IsOptional
+                IsOptional = x.IsOptional,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
-            _repository.ReplaceProcessCostingDetails(codesToDelete,records);
+            _repository.ReplaceProcessCostingDetails(codesToDelete, records);
             return records.Count;
         }
     }

@@ -182,23 +182,47 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportCompanyMaster(List<CompanyMasterImportRowDto> rows)
+        //{
+        //    // Step 1 — Delete existing DB records being replaced
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.Code)
+        //        .ToList();
+
+
+        //    // Step 2 — Insert all valid rows (new + replaced)
+        //    var records = rows.Select(x => new CompanyMasterDbDto
+        //    {
+        //        Code = x.Code,
+        //        CompanyName = x.CompanyName
+        //    }).ToList();
+
+        //    _repository.ReplaceCompanyMaster(codesToDelete,records);
+        //    return records.Count;
+        //}
+
         public int ImportCompanyMaster(List<CompanyMasterImportRowDto> rows)
         {
-            // Step 1 — Delete existing DB records being replaced
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.Code)
                 .ToList();
 
-
-            // Step 2 — Insert all valid rows (new + replaced)
             var records = rows.Select(x => new CompanyMasterDbDto
             {
                 Code = x.Code,
-                CompanyName = x.CompanyName
+                CompanyName = x.CompanyName,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
-            _repository.ReplaceCompanyMaster(codesToDelete,records);
+            _repository.ReplaceCompanyMaster(codesToDelete, records);
             return records.Count;
         }
     }

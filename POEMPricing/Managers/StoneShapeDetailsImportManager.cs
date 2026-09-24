@@ -221,27 +221,52 @@ namespace POEMPricing.Managers
             return result;
         }
 
+        //public int ImportStoneShapeDetails(List<StoneShapeDetailsImportRowDto> rows)
+        //{
+        //    var codesToDelete = rows
+        //        .Where(x => x.IsExistingInDb)
+        //        .Select(x => x.Code)
+        //        .ToList();
+
+
+        //    var records = rows.Select(x => new StoneShapeDetail
+        //    {
+        //        Code = x.Code,
+        //        StoneType = x.StoneType,
+        //        StoneShape = x.StoneShape,
+        //        CategoryFancyRound = x.CategoryFancyRound
+
+        //    }).ToList();
+
+        //    _repository.ReplaceStoneShapeDetails(codesToDelete,records);
+
+        //    return records.Count;
+        //}
+
         public int ImportStoneShapeDetails(List<StoneShapeDetailsImportRowDto> rows)
         {
+            var loginId = CurrentUserManager.LoginId;
+            var now = DateTime.Now;
+
             var codesToDelete = rows
                 .Where(x => x.IsExistingInDb)
                 .Select(x => x.Code)
                 .ToList();
 
-           
             var records = rows.Select(x => new StoneShapeDetail
             {
                 Code = x.Code,
                 StoneType = x.StoneType,
                 StoneShape = x.StoneShape,
-                CategoryFancyRound = x.CategoryFancyRound
-
+                CategoryFancyRound = x.CategoryFancyRound,
+                CreatedBy = loginId,
+                CreatedOn = now,
+                ModifiedBy = x.IsExistingInDb ? loginId : (int?)null,
+                ModifiedOn = x.IsExistingInDb ? now : (DateTime?)null,
             }).ToList();
 
-            _repository.ReplaceStoneShapeDetails(codesToDelete,records);
-
+            _repository.ReplaceStoneShapeDetails(codesToDelete, records);
             return records.Count;
         }
-
     }
 }

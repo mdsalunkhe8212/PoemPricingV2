@@ -19,5 +19,12 @@ namespace POEM.Model.Model
         [MaxLength(50)]
         public string StoneShape { get; set; } = string.Empty;
         public string CategoryFancyRound { get; set; }
+
+        public int? CreatedBy { get; set; }
+
+        public int? ModifiedBy { get; set; }
+
+        public DateTime? ModifiedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
 }

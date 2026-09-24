@@ -177,6 +177,7 @@
     <Compile Include="Managers\CategoryDetailsImportManager.cs" />
     <Compile Include="Managers\CollectionDetailsImportManager.cs" />
     <Compile Include="Managers\CompanyMasterImportManager.cs" />
+    <Compile Include="Managers\CurrentUserManager.cs" />
     <Compile Include="Managers\DiamondDetailsImportManager.cs" />
     <Compile Include="Managers\DutyChartMasterImportManager.cs" />
     <Compile Include="Managers\DutyDetailsImportManager.cs" />

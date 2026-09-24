@@ -1,3 +1,5 @@
+using Newtonsoft.Json;
+using POEM.Model.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +8,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using System.Web.Security;
 
 namespace POEMPricing
 {
@@ -18,6 +21,26 @@ namespace POEMPricing
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+        }
+
+        protected void Application_PostAuthenticateRequest()
+        {
+            if (!Request.IsAuthenticated)
+                return;
+
+            var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+
+            if (authCookie == null)
+                return;
+
+            var ticket = FormsAuthentication.Decrypt(authCookie.Value);
+
+            if (ticket == null || string.IsNullOrWhiteSpace(ticket.UserData))
+                return;
+
+            var userSession = JsonConvert.DeserializeObject<UserSession>(ticket.UserData);
+
+            HttpContext.Current.Items["CurrentUser"] = userSession;
         }
     }
 }

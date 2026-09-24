@@ -26,16 +26,15 @@ namespace POEM.Model.Model
        
         public decimal PenaltyPer { get; set; }
 
-       
-        public long CreatedBy { get; set; }
 
-       
-        //public DateTime CreatedOn { get; set; }
+        public int? CreatedBy { get; set; }
 
-        public long? ModifiedBy { get; set; }
+        public int? ModifiedBy { get; set; }
 
         public DateTime? ModifiedOn { get; set; }
+        public DateTime? CreatedOn { get; set; }
 
-    
+
+
     }
 }
